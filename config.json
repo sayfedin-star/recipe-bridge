@@ -10,5 +10,11 @@
     "scrollThreshold": 80,
     "timerDelayMs": 3000,
     "actionDelayMs": 150
+  },
+  "productDefaults": {
+    "price": "2.25",
+    "currency": "USD",
+    "availability": "https://schema.org/InStock",
+    "brand": "Recipe Bridge"
   }
 }

