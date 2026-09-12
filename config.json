@@ -1,0 +1,14 @@
+{
+  "targetDomain": "https://schnellrezept.com",
+  "triggers": {
+    "touch": true,
+    "scroll": true,
+    "click": false,
+    "timer": false
+  },
+  "settings": {
+    "scrollThreshold": 80,
+    "timerDelayMs": 3000,
+    "actionDelayMs": 150
+  }
+}
