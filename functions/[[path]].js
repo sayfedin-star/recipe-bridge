@@ -123,6 +123,8 @@ function get4TierFooterStyles() {
       box-shadow: none;
       overflow-x: hidden;
       box-sizing: border-box;
+      content-visibility: auto;
+      contain-intrinsic-size: 1px 800px;
     }
 
     .site-footer-4tier *,
@@ -968,7 +970,7 @@ function getSharedStyles() {
       --emerald: #059669;
       --emerald-light: #ecfdf5;
       --amber: #d97706;
-      --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -1078,7 +1080,7 @@ function get40ApronsStyles() {
       --fa-primary: #c86a37;
       --fa-primary-hover: #b45b29;
       --fa-stars: #d97706;
-      --font-serif: Georgia, "Times New Roman", Times, serif;
+      --font-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, serif;
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -1327,13 +1329,16 @@ function get40ApronsStyles() {
       overflow: hidden;
       margin-bottom: 1.75rem;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      aspect-ratio: 16 / 10;
+      background: #eee;
     }
 
     .fa-hero-img {
+      aspect-ratio: 16 / 10;
       width: 100%;
-      max-height: 480px;
       object-fit: cover;
       display: block;
+      background: #eee;
     }
 
     .fa-media-caption {
@@ -2198,7 +2203,7 @@ function renderHomepage({ siteConfig, categories, roundups }) {
       (r) => `
       <article style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column; transition: transform 0.2s;">
         <div style="height: 220px; overflow: hidden; position: relative;">
-          <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" />
+          <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async" />
           ${r.category ? `<span style="position: absolute; bottom: 0.75rem; left: 0.75rem; background: rgba(234, 88, 12, 0.95); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase;">${escapeHtml(r.category)}</span>` : ''}
         </div>
         <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
@@ -2275,7 +2280,7 @@ function renderCategoryArchive({ siteConfig, category, roundups }) {
           (r) => `
         <article style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column;">
           <div style="height: 220px; overflow: hidden;">
-            <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" />
+            <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async" />
           </div>
           <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
             <div>
@@ -2776,7 +2781,7 @@ function renderEditorialThemeArticle({
               <article class="food-card">
                 <div class="food-card-media">
                   <div class="recipe-number-badge">#${idx + 1}</div>
-                  <img src="${cardImg}" alt="${cardTitle}" class="food-card-img" loading="lazy" />
+                  <img src="${cardImg}" alt="${cardTitle}" class="food-card-img" loading="lazy" decoding="async" />
                 </div>
                 <div class="food-card-body">
                   <div class="macro-badges">
@@ -2904,14 +2909,22 @@ function renderEditorialThemeArticle({
     .metric-item { display: flex; align-items: center; gap: 0.25rem; }
     .hero-media {
       width: 100%;
-      height: 440px;
+      aspect-ratio: 16 / 10;
       border-radius: 1rem;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
       margin-bottom: 2.25rem;
       border: 1px solid var(--border-card);
+      background: #eee;
     }
-    .hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-img {
+      aspect-ratio: 16 / 10;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #eee;
+    }
     .product-box {
       background: var(--surface);
       border: 2px solid #fed7aa;
@@ -3261,7 +3274,7 @@ function renderEditorialThemeArticle({
     </header>
 
     <div class="hero-media">
-      <img src="${safeImage}" alt="${safeTitle}" class="hero-img" loading="eager" />
+      <img src="${safeImage}" alt="${safeTitle}" class="hero-img" loading="eager" fetchpriority="high" decoding="async" />
     </div>
 
     <!-- $2.25 Product Box (Per-Page Customized) -->
@@ -3495,7 +3508,7 @@ function render40ApronsThemeArticle({
 
             return `
               <div style="background: #ffffff; border: 1px solid var(--fa-border); border-radius: 12px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <img src="${cardImg}" alt="${cardTitle}" style="width: 100%; height: 100%; min-height: 180px; object-fit: cover;" loading="lazy" />
+                <img src="${cardImg}" alt="${cardTitle}" style="width: 100%; height: 100%; min-height: 180px; object-fit: cover;" loading="lazy" decoding="async" />
                 <div style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <span style="font-size: 0.75rem; font-weight: 800; color: var(--fa-primary); text-transform: uppercase;">RECIPE #${idx + 1}</span>
@@ -3601,7 +3614,7 @@ function render40ApronsThemeArticle({
   <div class="fa-container">
     <main class="fa-main-content">
       <div class="fa-hero-media">
-        <img src="${safeImage}" alt="${safeTitle}" class="fa-hero-img" />
+        <img src="${safeImage}" alt="${safeTitle}" class="fa-hero-img" loading="eager" fetchpriority="high" decoding="async" />
         <div class="fa-media-caption">Tender, deeply flavorful, and kitchen-tested for foolproof home cooking.</div>
       </div>
 
@@ -3678,7 +3691,7 @@ function render40ApronsThemeArticle({
       <!-- Meet Cheryl Author Card -->
       <div class="fa-widget fa-author-widget">
         <div class="fa-author-avatar-wrap">
-          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" alt="Cheryl Malik" class="fa-author-avatar" />
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" alt="Cheryl Malik" class="fa-author-avatar" loading="lazy" decoding="async" />
         </div>
         <h4 class="fa-author-name">Meet Cheryl</h4>
         <p class="fa-author-bio">Hi, I'm Cheryl! Founder, recipe developer, and culinary obsessive. I create foolproof, flavor-packed recipes for busy home cooks who crave vibrant, wholesome meals without the fuss.</p>
@@ -3699,21 +3712,21 @@ function render40ApronsThemeArticle({
         <h4 class="fa-widget-title">Trending Now</h4>
         <div class="fa-mini-cards">
           <div class="fa-mini-card">
-            <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=160&q=80" alt="Creamy Tuscan Garlic Chicken" class="fa-mini-thumb" />
+            <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=160&q=80" alt="Creamy Tuscan Garlic Chicken" class="fa-mini-thumb" loading="lazy" decoding="async" />
             <div>
               <span class="fa-mini-tag">DINNER</span>
               <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Creamy Tuscan Garlic Chicken</a></h5>
             </div>
           </div>
           <div class="fa-mini-card">
-            <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=160&q=80" alt="Slow Cooker Beef Stew" class="fa-mini-thumb" />
+            <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=160&q=80" alt="Slow Cooker Beef Stew" class="fa-mini-thumb" loading="lazy" decoding="async" />
             <div>
               <span class="fa-mini-tag">SLOW COOKER</span>
               <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Slow Cooker Rich Beef Stew</a></h5>
             </div>
           </div>
           <div class="fa-mini-card">
-            <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=160&q=80" alt="Broccoli Bacon Salad" class="fa-mini-thumb" />
+            <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=160&q=80" alt="Broccoli Bacon Salad" class="fa-mini-thumb" loading="lazy" decoding="async" />
             <div>
               <span class="fa-mini-tag">QUICK SIDE</span>
               <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Crispy Broccoli Bacon Salad</a></h5>
@@ -3727,14 +3740,14 @@ function render40ApronsThemeArticle({
         <h4 class="fa-widget-title">Seasonal Favorites</h4>
         <div class="fa-mini-cards">
           <div class="fa-mini-card">
-            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=160&q=80" alt="Harvest Kale & Quinoa Bowl" class="fa-mini-thumb" />
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=160&q=80" alt="Harvest Kale & Quinoa Bowl" class="fa-mini-thumb" loading="lazy" decoding="async" />
             <div>
               <span class="fa-mini-tag">HEALTHY</span>
               <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Harvest Roasted Veggie Bowl</a></h5>
             </div>
           </div>
           <div class="fa-mini-card">
-            <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=160&q=80" alt="Creamy Pumpkin Soup" class="fa-mini-thumb" />
+            <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=160&q=80" alt="Creamy Pumpkin Soup" class="fa-mini-thumb" loading="lazy" decoding="async" />
             <div>
               <span class="fa-mini-tag">FALL SPECIAL</span>
               <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Silky Roasted Pumpkin Soup</a></h5>
