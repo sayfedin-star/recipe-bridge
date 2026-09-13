@@ -109,10 +109,11 @@ function resolveRecipe(slug) {
  */
 function get4TierFooterStyles() {
   return `
-    /* 4-Tier 40 Aprons Professional Food Blog Footer */
+    /* 4-Tier 40 Aprons Professional Food Blog Footer - Mobile-First Responsive */
     footer.site-footer-4tier,
     .site-footer-4tier {
       width: 100%;
+      max-width: 100%;
       margin-top: 60px;
       padding: 0;
       background: transparent;
@@ -120,6 +121,14 @@ function get4TierFooterStyles() {
       position: static;
       display: block;
       box-shadow: none;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+
+    .site-footer-4tier *,
+    .site-footer-4tier *::before,
+    .site-footer-4tier *::after {
+      box-sizing: border-box;
     }
 
     /* TIER 1: As Seen On Bar */
@@ -129,6 +138,8 @@ function get4TierFooterStyles() {
       padding: 40px 20px 28px;
       text-align: center;
       width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .seen-on-label {
@@ -148,6 +159,7 @@ function get4TierFooterStyles() {
       align-items: center;
       gap: 32px 36px;
       max-width: 1140px;
+      width: 100%;
       margin: 0 auto;
       opacity: 0.85;
       filter: grayscale(100%);
@@ -163,6 +175,7 @@ function get4TierFooterStyles() {
       user-select: none;
       display: inline-flex;
       align-items: center;
+      min-height: 44px;
     }
 
     .logo-gh {
@@ -264,10 +277,13 @@ function get4TierFooterStyles() {
       color: #ffffff;
       padding: 36px 30px;
       width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .footer-vip-container {
       max-width: 1140px;
+      width: 100%;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -317,8 +333,10 @@ function get4TierFooterStyles() {
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       white-space: nowrap;
+      min-height: 48px;
       transition: background 0.2s ease, transform 0.15s ease;
     }
 
@@ -333,10 +351,13 @@ function get4TierFooterStyles() {
       padding: 60px 30px 50px;
       border-top: 1px solid #f0e6dc;
       width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .footer-cream-container {
       max-width: 1140px;
+      width: 100%;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 1.15fr 1.15fr 1fr;
@@ -401,6 +422,8 @@ function get4TierFooterStyles() {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
       transition: color 0.2s ease, transform 0.15s ease;
     }
 
@@ -443,7 +466,9 @@ function get4TierFooterStyles() {
       letter-spacing: 1px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      min-height: 48px;
       transition: background 0.2s ease, transform 0.15s ease;
     }
 
@@ -464,6 +489,9 @@ function get4TierFooterStyles() {
       font-size: 14px;
       font-weight: 500;
       text-decoration: none;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
       transition: color 0.15s ease;
     }
 
@@ -481,6 +509,7 @@ function get4TierFooterStyles() {
       overflow: hidden;
       width: 100%;
       max-width: 320px;
+      min-height: 48px;
     }
 
     .footer-search-input {
@@ -488,9 +517,10 @@ function get4TierFooterStyles() {
       border: none;
       background: transparent;
       padding: 10px 14px;
-      font-size: 14px;
+      font-size: 16px; /* 16px prevents iOS Safari auto-zoom */
       color: #2d2926;
       outline: none;
+      min-height: 48px;
     }
 
     .footer-search-btn {
@@ -502,6 +532,8 @@ function get4TierFooterStyles() {
       align-items: center;
       justify-content: center;
       color: #4a423a;
+      min-width: 48px;
+      min-height: 48px;
       transition: background 0.15s ease;
     }
 
@@ -517,10 +549,13 @@ function get4TierFooterStyles() {
       font-size: 13px;
       color: #555555;
       width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .footer-bottom-container {
       max-width: 1140px;
+      width: 100%;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -536,14 +571,33 @@ function get4TierFooterStyles() {
       gap: 8px;
     }
 
+    .bottom-copy-text {
+      color: #555555;
+    }
+
+    .bottom-legal-links-row {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .bottom-link {
       color: #555555;
       text-decoration: none;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
       transition: color 0.15s ease;
     }
 
     .bottom-link:hover {
       color: #c05621;
+    }
+
+    .bottom-bullet {
+      color: #888888;
+      user-select: none;
     }
 
     .bottom-top-link {
@@ -552,7 +606,9 @@ function get4TierFooterStyles() {
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      justify-content: center;
+      gap: 4px;
+      min-height: 44px;
       transition: color 0.15s ease;
     }
 
@@ -598,10 +654,117 @@ function get4TierFooterStyles() {
       margin-top: 1px;
     }
 
-    @media (max-width: 860px) {
+    /* 📱 MOBILE-FIRST RESPONSIVE PERFECTION (MAX-WIDTH: 768PX) */
+    @media (max-width: 768px) {
+      /* TIER 1: SEEN ON 3-Column Grid */
+      .footer-seen-on-bar {
+        padding: 24px 16px 18px;
+      }
+      .seen-on-label {
+        font-size: 11px;
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+      }
+      .seen-on-logos {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        align-items: center;
+        justify-items: center;
+        gap: 16px 20px;
+        width: 100%;
+      }
+      .media-logo {
+        font-size: 13px;
+        font-weight: 800;
+        text-align: center;
+        justify-content: center;
+        min-height: 44px;
+        width: 100%;
+      }
+      .logo-gh {
+        font-size: 10px;
+        line-height: 1.1;
+      }
+      .logo-gh span {
+        font-size: 11px;
+      }
+      .logo-buzzfeed {
+        font-size: 18px;
+      }
+      .logo-self {
+        font-size: 20px;
+      }
+      .logo-yahoo {
+        font-size: 18px;
+      }
+      .logo-shape {
+        font-size: 15px;
+        letter-spacing: 2px;
+      }
+      .logo-womansday {
+        font-size: 17px;
+      }
+      .logo-popsugar {
+        font-size: 10px;
+        letter-spacing: 2px;
+      }
+      .logo-kitchn {
+        font-size: 17px;
+      }
+      .logo-cosmo {
+        font-size: 14px;
+        letter-spacing: 1px;
+      }
+
+      /* TIER 2: VIP Sage Green Stacked */
+      .footer-vip-wrap {
+        padding: 32px 20px;
+      }
+      .footer-vip-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 18px;
+        align-items: center;
+        width: 100%;
+      }
+      .footer-vip-left {
+        flex: 1 1 100%;
+        width: 100%;
+        text-align: center;
+      }
+      .vip-heading {
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .vip-subtext {
+        font-size: 14px;
+        line-height: 1.55;
+        text-align: center;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .footer-vip-right {
+        width: 100%;
+      }
+      .vip-cta-btn {
+        width: 100%;
+        min-height: 48px;
+        height: 48px;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      /* TIER 3: Cream Main 1-Column Stack */
+      .footer-cream-wrap {
+        padding: 40px 20px;
+      }
       .footer-cream-container {
         grid-template-columns: 1fr;
         gap: 36px;
+        text-align: center;
+        width: 100%;
       }
       .col-promise,
       .col-join {
@@ -609,38 +772,177 @@ function get4TierFooterStyles() {
         border-bottom: 1px solid #f0e6dc;
         padding-right: 0;
         padding-left: 0;
-        padding-bottom: 30px;
+        padding-bottom: 32px;
+        text-align: center;
+        width: 100%;
       }
       .col-nav-search {
         padding-left: 0;
+        text-align: center;
+        width: 100%;
+      }
+      .promise-header-wrap {
+        justify-content: center;
+      }
+      .promise-body {
+        max-width: 420px;
+        margin: 0 auto 20px auto;
+        text-align: center;
+        font-size: 14px;
+      }
+      .social-icons-row {
+        justify-content: center;
+        gap: 20px;
+      }
+      .social-icon-link {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .join-list-title {
+        text-align: center;
+      }
+      .join-list-desc {
+        text-align: center;
+        max-width: 380px;
+        margin: 0 auto 20px auto;
+      }
+      .join-list-cta {
+        width: 100%;
+      }
+      .join-subscribe-btn {
+        width: 100%;
+        min-height: 48px;
+        height: 48px;
+        border-radius: 6px;
+        justify-content: center;
+        font-size: 14px;
+      }
+      .footer-category-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 14px;
+        margin-bottom: 24px;
+        width: 100%;
+      }
+      .cat-grid-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid #e0d6cb;
+        border-radius: 6px;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
       }
       .footer-search-bar {
         max-width: 100%;
+        width: 100%;
+        min-height: 48px;
+        border-radius: 6px;
       }
-    }
+      .footer-search-input {
+        font-size: 16px; /* Prevents iPhone Safari auto-zoom */
+        min-height: 48px;
+        padding: 10px 14px;
+      }
+      .footer-search-btn {
+        min-width: 48px;
+        min-height: 48px;
+      }
 
-    @media (max-width: 580px) {
-      .seen-on-logos {
-        gap: 20px 24px;
-      }
-      .footer-vip-container {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .footer-vip-right {
-        width: 100%;
-      }
-      .vip-cta-btn {
-        width: 100%;
-        justify-content: center;
+      /* TIER 4: Bottom Legal Bar Stacked */
+      .footer-bottom-bar {
+        padding: 20px 16px;
       }
       .footer-bottom-container {
         flex-direction: column;
+        gap: 14px;
         text-align: center;
         justify-content: center;
+        align-items: center;
+        width: 100%;
       }
       .footer-bottom-left {
+        flex-direction: column;
+        gap: 10px;
         justify-content: center;
+        align-items: center;
+        text-align: center;
+        line-height: 1.6;
+        width: 100%;
+      }
+      .bottom-copy-text {
+        display: block;
+        font-size: 13px;
+      }
+      .bottom-legal-links-row {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+      }
+      .bottom-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+      .bottom-bullet {
+        display: none;
+      }
+      .bottom-top-link {
+        min-height: 44px;
+        padding: 10px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fbf5ee;
+        border: 1px solid #e0d6cb;
+        border-radius: 6px;
+        width: 100%;
+        max-width: 240px;
+        font-size: 14px;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+      .footer-bottom-right {
+        text-align: center;
+        padding-top: 4px;
+        font-size: 13px;
+      }
+    }
+
+    /* 📱 EXTRA NARROW SCREENS (MAX-WIDTH: 420PX) */
+    @media (max-width: 420px) {
+      .seen-on-logos {
+        gap: 12px 10px;
+      }
+      .media-logo {
+        font-size: 11.5px;
+      }
+      .logo-buzzfeed { font-size: 16px; }
+      .logo-self { font-size: 17px; }
+      .logo-yahoo { font-size: 16px; }
+      .logo-shape { font-size: 13px; letter-spacing: 1.5px; }
+      .logo-womansday { font-size: 15px; }
+      .logo-popsugar { font-size: 9px; letter-spacing: 1.5px; }
+      .logo-kitchn { font-size: 15px; }
+      .logo-cosmo { font-size: 13px; }
+      .footer-category-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .cat-grid-link {
+        width: 100%;
       }
     }
   `;
@@ -1849,10 +2151,14 @@ function renderFooter(siteConfig) {
     <div class="footer-bottom-bar">
       <div class="footer-bottom-container">
         <div class="footer-bottom-left">
-          &copy;2026, ${siteName}. Meet Cheryl Malik &bull;
-          <a href="/privacy-policy" class="bottom-link">Privacy Policy</a> &bull;
-          <a href="/terms" class="bottom-link">Disclaimers</a> &bull;
-          <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="bottom-top-link">Back To Top <span class="top-arrow">&#x2303;</span></a>
+          <span class="bottom-copy-text">&copy;2026, ${siteName}. Meet Cheryl Malik</span>
+          <span class="bottom-legal-links-row">
+            <a href="/privacy-policy" class="bottom-link">Privacy Policy</a>
+            <span class="bottom-bullet">&bull;</span>
+            <a href="/terms" class="bottom-link">Disclaimers</a>
+            <span class="bottom-bullet">&bull;</span>
+            <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="bottom-top-link">Back To Top <span class="top-arrow">&#x2303;</span></a>
+          </span>
         </div>
         <div class="footer-bottom-right">
           Developed by <span class="pixel-me-brand"><span class="pixel-me-script">pixel me</span><span class="pixel-designs-text">DESIGNS</span></span>
