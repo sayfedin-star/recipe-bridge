@@ -105,6 +105,548 @@ function resolveRecipe(slug) {
 }
 
 /**
+ * Returns comprehensive CSS styles for the 4-Tier 40 Aprons Professional Food Blog Footer.
+ */
+function get4TierFooterStyles() {
+  return `
+    /* 4-Tier 40 Aprons Professional Food Blog Footer */
+    footer.site-footer-4tier,
+    .site-footer-4tier {
+      width: 100%;
+      margin-top: 60px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      position: static;
+      display: block;
+      box-shadow: none;
+    }
+
+    /* TIER 1: As Seen On Bar */
+    .footer-seen-on-bar {
+      background: #ffffff;
+      border-top: 1px solid #eeeeee;
+      padding: 40px 20px 28px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .seen-on-label {
+      letter-spacing: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #666666;
+      margin-bottom: 22px;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .seen-on-logos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 32px 36px;
+      max-width: 1140px;
+      margin: 0 auto;
+      opacity: 0.85;
+      filter: grayscale(100%);
+      transition: opacity 0.2s ease;
+    }
+
+    .seen-on-logos:hover {
+      opacity: 1;
+    }
+
+    .media-logo {
+      color: #2d2926;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo-gh {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1.05;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 0.5px;
+      color: #2d2926;
+    }
+
+    .logo-gh span {
+      font-size: 11.5px;
+      letter-spacing: 1px;
+      display: block;
+    }
+
+    .logo-buzzfeed {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.6px;
+      color: #2d2926;
+    }
+
+    .logo-self {
+      font-family: Impact, "Arial Black", -apple-system, sans-serif;
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 1.5px;
+      color: #2d2926;
+    }
+
+    .logo-yahoo {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      color: #2d2926;
+    }
+
+    .logo-shape {
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: #2d2926;
+    }
+
+    .logo-womansday {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      font-size: 21px;
+      letter-spacing: -0.3px;
+      color: #2d2926;
+    }
+
+    .logo-womansday em {
+      font-style: italic;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .logo-popsugar {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-weight: 700;
+      font-size: 11.5px;
+      letter-spacing: 4px;
+      color: #2d2926;
+    }
+
+    .logo-kitchn {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+      color: #2d2926;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .kitchn-icon {
+      display: inline-block;
+    }
+
+    .logo-cosmo {
+      font-family: "Arial Narrow", Impact, -apple-system, sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 1.2px;
+      color: #2d2926;
+    }
+
+    /* TIER 2: Sage Green VIP Banner */
+    .footer-vip-wrap {
+      background: #4a675e;
+      color: #ffffff;
+      padding: 36px 30px;
+      width: 100%;
+    }
+
+    .footer-vip-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-vip-left {
+      flex: 1 1 500px;
+    }
+
+    .vip-heading {
+      font-family: Georgia, Cambria, serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .vip-subtext {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .vip-subtext strong {
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .footer-vip-right {
+      flex-shrink: 0;
+    }
+
+    .vip-cta-btn {
+      background: #f5c2a3;
+      color: #2d2926;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 4px;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .vip-cta-btn:hover {
+      background: #f1b38f;
+      transform: translateY(-1px);
+    }
+
+    /* TIER 3: Cream 3-Column Section */
+    .footer-cream-wrap {
+      background: #fbf5ee;
+      padding: 60px 30px 50px;
+      border-top: 1px solid #f0e6dc;
+      width: 100%;
+    }
+
+    .footer-cream-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 1.15fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .footer-cream-col {
+      position: relative;
+    }
+
+    .col-promise {
+      padding-right: 20px;
+      border-right: 1px solid #f0e6dc;
+    }
+
+    .col-join {
+      padding-right: 20px;
+      padding-left: 10px;
+      border-right: 1px solid #f0e6dc;
+      text-align: center;
+    }
+
+    .col-nav-search {
+      padding-left: 10px;
+    }
+
+    .promise-header-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .promise-apron-svg {
+      flex-shrink: 0;
+    }
+
+    .promise-title {
+      font-family: Georgia, Cambria, serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d2926;
+      margin: 0;
+    }
+
+    .promise-body {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #5c554e;
+      margin-bottom: 22px;
+    }
+
+    .social-icons-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .social-icon-link {
+      color: #2d2926;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, transform 0.15s ease;
+    }
+
+    .social-icon-link:hover {
+      color: #c05621;
+      transform: scale(1.1);
+    }
+
+    .join-list-title {
+      font-style: italic;
+      font-family: "Playfair Display", Georgia, cursive, serif;
+      font-size: 32px;
+      color: #2d2926;
+      margin: 0 0 10px 0;
+      font-weight: 400;
+    }
+
+    .join-list-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #5c554e;
+      margin: 0 auto 22px auto;
+      max-width: 290px;
+    }
+
+    .join-list-cta {
+      display: flex;
+      justify-content: center;
+    }
+
+    .join-subscribe-btn {
+      background: #f5c2a3;
+      color: #2d2926;
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .join-subscribe-btn:hover {
+      background: #f1b38f;
+      transform: translateY(-1px);
+    }
+
+    .footer-category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 20px;
+      margin-bottom: 24px;
+    }
+
+    .cat-grid-link {
+      color: #2d2926;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .cat-grid-link:hover {
+      color: #c05621;
+      text-decoration: underline;
+    }
+
+    .footer-search-bar {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e0d6cb;
+      border-radius: 4px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .footer-search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #2d2926;
+      outline: none;
+    }
+
+    .footer-search-btn {
+      border: none;
+      background: #ece3d8;
+      padding: 10px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a423a;
+      transition: background 0.15s ease;
+    }
+
+    .footer-search-btn:hover {
+      background: #dfd4c7;
+    }
+
+    /* TIER 4: Bottom Legal Bar */
+    .footer-bottom-bar {
+      background: #ffffff;
+      padding: 22px 30px;
+      border-top: 1px solid #f0e6dc;
+      font-size: 13px;
+      color: #555555;
+      width: 100%;
+    }
+
+    .footer-bottom-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-bottom-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .bottom-link {
+      color: #555555;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .bottom-link:hover {
+      color: #c05621;
+    }
+
+    .bottom-top-link {
+      font-weight: 700;
+      color: #2d2926;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.15s ease;
+    }
+
+    .bottom-top-link:hover {
+      color: #c05621;
+    }
+
+    .top-arrow {
+      display: inline-block;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .footer-bottom-right {
+      font-size: 13px;
+      color: #666666;
+    }
+
+    .pixel-me-brand {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      line-height: 1;
+      margin-left: 6px;
+    }
+
+    .pixel-me-script {
+      font-family: "Brush Script MT", "Caveat", "Playfair Display", cursive, serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #2d2926;
+      font-style: italic;
+      line-height: 0.9;
+    }
+
+    .pixel-designs-text {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: #555555;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    @media (max-width: 860px) {
+      .footer-cream-container {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .col-promise,
+      .col-join {
+        border-right: none;
+        border-bottom: 1px solid #f0e6dc;
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: 30px;
+      }
+      .col-nav-search {
+        padding-left: 0;
+      }
+      .footer-search-bar {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .seen-on-logos {
+        gap: 20px 24px;
+      }
+      .footer-vip-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .footer-vip-right {
+        width: 100%;
+      }
+      .vip-cta-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .footer-bottom-container {
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+      }
+      .footer-bottom-left {
+        justify-content: center;
+      }
+    }
+  `;
+}
+
+/**
  * Returns shared CSS styles for the Light Editorial Food Theme.
  * Note: header uses position: relative to flow naturally with document.
  */
@@ -211,53 +753,7 @@ function getSharedStyles() {
       padding: 2.5rem 1.25rem 4rem;
     }
 
-    footer {
-      background: #ffffff;
-      border-top: 1px solid var(--border-card);
-      margin-top: auto;
-      padding: 3rem 1.5rem 2rem;
-    }
-
-    .footer-inner {
-      max-width: 1040px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-      list-style: none;
-    }
-
-    .footer-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: color 0.15s ease;
-    }
-
-    .footer-link:hover {
-      color: var(--primary);
-    }
-
-    .footer-disclaimer {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 760px;
-      margin: 0 auto 1.25rem;
-    }
-
-    .footer-copy {
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
+    ${get4TierFooterStyles()}
   `;
 }
 
@@ -1201,63 +1697,7 @@ function get40ApronsStyles() {
       cursor: pointer;
     }
 
-    /* 40 Aprons Food Blog Professional Footer */
-    footer {
-      background: #f4eee6;
-      border-top: 1px solid #e8e0d5;
-      margin-top: 60px;
-      padding: 40px 20px 30px;
-      text-align: center;
-      width: 100%;
-    }
-
-    .footer-inner {
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .footer-links li {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .footer-link {
-      color: #6b635b;
-      font-size: 13px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .footer-link:hover {
-      color: #c05621;
-    }
-
-    .footer-disclaimer {
-      max-width: 680px;
-      margin: 16px auto 0;
-      font-size: 12px;
-      color: #8c8278;
-      line-height: 1.6;
-    }
-
-    .footer-copy {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #a3998f;
-    }
+    ${get4TierFooterStyles()}
   `;
 }
 
@@ -1285,26 +1725,139 @@ function renderHeader(siteConfig) {
 }
 
 /**
- * Returns compliance footer HTML.
+ * Returns authentic 4-tier 40 Aprons inspired food blog footer HTML.
+ * Tier 1: "As Seen On" media credibility bar
+ * Tier 2: Sage green VIP banner with peach CTA
+ * Tier 3: 3-column cream section (Our Promise, Join the List, Nav & Search)
+ * Tier 4: Bottom legal bar with smooth back to top & developer signature
  */
 function renderFooter(siteConfig) {
-  const siteName = escapeHtml(siteConfig.siteName || 'Recipe Bridge');
+  const rawSiteName = siteConfig?.siteName || '40 Aprons';
+  const siteName = escapeHtml(rawSiteName);
+  const kitchenName = escapeHtml(siteConfig?.siteName || 'our kitchen');
+
   return `
-  <footer>
-    <div class="footer-inner">
-      <ul class="footer-links">
-        <li><a href="/privacy-policy" class="footer-link">Privacy Policy</a></li>
-        <li><a href="/terms-of-service" class="footer-link">Terms of Service</a></li>
-        <li><a href="/disclosure" class="footer-link">Affiliate & Recipe Disclosure</a></li>
-        <li><a href="/about-us" class="footer-link">About Us</a></li>
-        <li><a href="/contact" class="footer-link">Contact</a></li>
-      </ul>
-      <p class="footer-disclaimer">
-        Disclaimer: The culinary advice, nutritional guides, and recipe suggestions published on ${siteName} are for educational and inspirational purposes. Actual nutritional values may vary based on preparation and ingredients.
-      </p>
-      <p class="footer-copy">
-        &copy; 2026 ${siteName}. All rights reserved.
-      </p>
+  <footer class="site-footer-4tier">
+    <!-- TIER 1: As Seen On Bar -->
+    <div class="footer-seen-on-bar">
+      <div class="seen-on-label">SEEN ON</div>
+      <div class="seen-on-logos">
+        <span class="media-logo logo-gh">GOOD<br><span>HOUSEKEEPING</span></span>
+        <span class="media-logo logo-buzzfeed">BuzzFeed</span>
+        <span class="media-logo logo-self">SELF</span>
+        <span class="media-logo logo-yahoo">yahoo!</span>
+        <span class="media-logo logo-shape">SHAPE</span>
+        <span class="media-logo logo-womansday">Woman's<em>Day</em></span>
+        <span class="media-logo logo-popsugar">P O P S U G A R .</span>
+        <span class="media-logo logo-kitchn">
+          <svg class="kitchn-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-13c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+          </svg>kitchn
+        </span>
+        <span class="media-logo logo-cosmo">COSMOPOLITAN</span>
+      </div>
+    </div>
+
+    <!-- TIER 2: Sage Green VIP Banner -->
+    <div class="footer-vip-wrap">
+      <div class="footer-vip-container">
+        <div class="footer-vip-left">
+          <h3 class="vip-heading">${siteName} VIP</h3>
+          <p class="vip-subtext">Access all of our new and existing content <strong>AD-FREE</strong> + exclusive member only recipes.</p>
+        </div>
+        <div class="footer-vip-right">
+          <a href="#recipe" class="vip-cta-btn" onclick="const m=document.getElementById('pdf-modal');if(m){m.classList.add('active');return false;}">FIND OUT HOW &rarr;</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 3: Cream 3-Column Section -->
+    <div class="footer-cream-wrap">
+      <div class="footer-cream-container">
+        <!-- Col 1: Our Promise -->
+        <div class="footer-cream-col col-promise">
+          <div class="promise-header-wrap">
+            <svg class="promise-apron-svg" width="48" height="48" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 16 V9 C21 7.5 31 7.5 31 9 V16" stroke="#c08460" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <path d="M18 25 H11 M34 25 H41" stroke="#c08460" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M18 16 H34 L39 46 H13 Z" fill="#f5c2a3" />
+              <rect x="22" y="29" width="8" height="9" rx="2" fill="#eed0be" />
+              <circle cx="17" cy="38" r="1" fill="#c08460" opacity="0.6"/>
+              <circle cx="21" cy="42" r="1" fill="#c08460" opacity="0.6"/>
+              <circle cx="31" cy="41" r="1" fill="#c08460" opacity="0.6"/>
+              <circle cx="35" cy="35" r="1" fill="#c08460" opacity="0.6"/>
+              <circle cx="20" cy="22" r="1" fill="#c08460" opacity="0.6"/>
+              <circle cx="32" cy="22" r="1" fill="#c08460" opacity="0.6"/>
+              <path d="M33 14 C36 10 41 10 43 13 C41 16 37 16 33 14 Z" fill="#4a675e" />
+              <path d="M37 15 C41 13 45 15 45 19 C41 19 38 17 37 15 Z" fill="#5b7e73" />
+              <path d="M33 16 C36 18 38 21 38 24 C34 23 33 20 33 16 Z" fill="#759c90" />
+              <path d="M33 14 Q39 16 44 20" stroke="#3d554e" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            <h3 class="promise-title">our promise</h3>
+          </div>
+          <p class="promise-body">At ${kitchenName} our goal is simple. To serve up delicious, approachable recipes the whole family can enjoy</p>
+          <div class="social-icons-row">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-icon-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-icon-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest" class="social-icon-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.334 1.357-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 12-5.373 12-12 0-6.628-5.393-12-12-12z"/></svg>
+            </a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="social-icon-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 2.89 3.5 2.74 1.25-.05 2.37-.84 2.8-2.02.16-.44.24-.92.24-1.39V.02h.01z"/></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="social-icon-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Join the list! -->
+        <div class="footer-cream-col col-join">
+          <h3 class="join-list-title">join the list!</h3>
+          <p class="join-list-desc">A curated selection of our most recent recipes, delivered straight to your inbox once a week.</p>
+          <div class="join-list-cta">
+            <button type="button" class="join-subscribe-btn" onclick="const email=prompt('Enter your email to join the list:'); if(email){ alert('Thank you for subscribing to ' + (document.title || 'our newsletter') + '!'); }">SUBSCRIBE NOW &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Col 3: Navigation & Search -->
+        <div class="footer-cream-col col-nav-search">
+          <div class="footer-category-grid">
+            <a href="/category/all" class="cat-grid-link">All Recipes</a>
+            <a href="/category/diet" class="cat-grid-link">Recipes By Diet</a>
+            <a href="/category/method" class="cat-grid-link">Recipes By Method</a>
+            <a href="/category/ingredient" class="cat-grid-link">Recipes By Ingredient</a>
+          </div>
+          <form action="/" method="GET" class="footer-search-bar" onsubmit="event.preventDefault(); const q=this.querySelector('input').value.trim(); if(q) window.location.href='/?q=' + encodeURIComponent(q);">
+            <input type="text" name="q" placeholder="Search recipes..." class="footer-search-input" />
+            <button type="submit" class="footer-search-btn" aria-label="Search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 4: Bottom Legal Bar -->
+    <div class="footer-bottom-bar">
+      <div class="footer-bottom-container">
+        <div class="footer-bottom-left">
+          &copy;2026, ${siteName}. Meet Cheryl Malik &bull;
+          <a href="/privacy-policy" class="bottom-link">Privacy Policy</a> &bull;
+          <a href="/terms" class="bottom-link">Disclaimers</a> &bull;
+          <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="bottom-top-link">Back To Top <span class="top-arrow">&#x2303;</span></a>
+        </div>
+        <div class="footer-bottom-right">
+          Developed by <span class="pixel-me-brand"><span class="pixel-me-script">pixel me</span><span class="pixel-designs-text">DESIGNS</span></span>
+        </div>
+      </div>
     </div>
   </footer>`;
 }
