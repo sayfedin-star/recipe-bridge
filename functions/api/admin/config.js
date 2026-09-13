@@ -1,6 +1,14 @@
 import { verifyAdmin, jsonResponse } from './auth.js';
 import defaultConfig from '../../../config.json';
 
+const defaultNavLinks = [
+  { label: 'Home', url: '/' },
+  { label: 'Slow Cooker', url: '/category/slow-cooker' },
+  { label: 'High Protein', url: '/category/high-protein' },
+  { label: 'Quick Dinners', url: '/category/quick-dinners' },
+  { label: 'E-Books', url: '/#recipe' },
+];
+
 export async function onRequestOptions() {
   return jsonResponse({ ok: true });
 }
@@ -37,6 +45,15 @@ export async function onRequestGet(context) {
         availability: 'https://schema.org/InStock',
         brand: 'Recipe Bridge',
       },
+      navigation: {
+        logoText: `${siteId.toUpperCase()} Kitchen`,
+        navLinks: defaultNavLinks,
+      },
+    };
+  } else if (!siteConfig.navigation) {
+    siteConfig.navigation = {
+      logoText: siteConfig.siteName || `${siteId.toUpperCase()} Kitchen`,
+      navLinks: defaultNavLinks,
     };
   }
 
@@ -77,6 +94,17 @@ export async function onRequestPost(context) {
         currency: String(newConfig.productDefaults?.currency || 'USD'),
         availability: String(newConfig.productDefaults?.availability || 'https://schema.org/InStock'),
         brand: String(newConfig.productDefaults?.brand || 'Recipe Bridge'),
+      },
+      navigation: {
+        logoText: String(newConfig.navigation?.logoText || newConfig.siteName || `${siteId.toUpperCase()} Kitchen`),
+        navLinks: Array.isArray(newConfig.navigation?.navLinks)
+          ? newConfig.navigation.navLinks
+              .map((l) => ({
+                label: String(l.label || '').trim(),
+                url: String(l.url || '').trim(),
+              }))
+              .filter((l) => l.label && l.url)
+          : defaultNavLinks,
       },
     };
 

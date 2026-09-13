@@ -143,7 +143,6 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* Cards and Grids */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -173,6 +172,12 @@
       gap: 1.25rem;
     }
 
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
     .grid-4 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -197,7 +202,6 @@
       margin-top: 0.25rem;
     }
 
-    /* Switch toggle */
     .switch-row {
       display: flex;
       align-items: center;
@@ -209,15 +213,8 @@
       margin-bottom: 0.75rem;
     }
 
-    .switch-label {
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .switch-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
+    .switch-label { font-size: 0.9rem; font-weight: 600; }
+    .switch-sub { font-size: 0.75rem; color: var(--text-muted); }
 
     .toggle {
       position: relative;
@@ -252,7 +249,6 @@
     input:checked + .slider { background-color: var(--primary); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* Tables */
     .table-container {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -282,7 +278,6 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
-    /* Toast notification */
     #toast {
       position: fixed;
       bottom: 2rem;
@@ -305,7 +300,6 @@
     #toast.success { border-left-color: var(--success); }
     #toast.error { border-left-color: var(--danger); }
 
-    /* Auth modal */
     #auth-overlay {
       position: fixed;
       inset: 0;
@@ -329,24 +323,9 @@
       text-align: center;
     }
 
-    .auth-card h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-
-    .auth-card p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .auth-card input {
-      width: 100%;
-      margin-bottom: 1rem;
-      text-align: center;
-      font-size: 1rem;
-    }
+    .auth-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .auth-card p { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+    .auth-card input { width: 100%; margin-bottom: 1rem; text-align: center; font-size: 1rem; }
   </style>
 </head>
 <body>
@@ -358,7 +337,7 @@
         <span>Recipe Bridge</span>
       </div>
       <h2>Admin Access</h2>
-      <p>Enter your ADMIN_KEY to manage multisite configuration, triggers, and analytics.</p>
+      <p>Enter your ADMIN_KEY to manage multisite configuration, triggers, navigation, and content.</p>
       <form id="auth-form">
         <input type="password" id="admin-key-input" placeholder="ADMIN_KEY" required autofocus />
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">Unlock Dashboard</button>
@@ -386,6 +365,9 @@
   <nav class="tabs-nav">
     <button class="tab-btn active" data-tab="triggers">⚡ Triggers & Timing</button>
     <button class="tab-btn" data-tab="utm">🎯 UTM & Product</button>
+    <button class="tab-btn" data-tab="nav">🧭 Navigation & Header</button>
+    <button class="tab-btn" data-tab="categories">🏷️ Categories</button>
+    <button class="tab-btn" data-tab="pages">📄 Static Pages</button>
     <button class="tab-btn" data-tab="roundups">📚 Roundups Manager</button>
     <button class="tab-btn" data-tab="stats">📊 Real-Time Stats</button>
   </nav>
@@ -516,10 +498,162 @@
       </div>
     </section>
 
-    <!-- TAB 3: ROUNDUPS MANAGER -->
+    <!-- TAB 3: NAVIGATION & HEADER BUILDER -->
+    <section id="tab-nav" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">Navigation & Header Builder</h2>
+        <p class="card-desc">Customize header branding text and menu links displayed across the site.</p>
+
+        <div class="form-group">
+          <label>Header Logo Text</label>
+          <input type="text" id="nav-logo-text" style="width: 100%; max-width: 420px;" placeholder="e.g. Delicious Kitchen Hub" />
+          <div class="hint">Appears next to the brand badge in the top navigation bar.</div>
+        </div>
+
+        <div style="margin: 1.5rem 0 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="font-size: 0.95rem; font-weight: 700;">Header Navigation Links</h3>
+            <button class="btn btn-secondary btn-sm" id="btn-add-nav-link">+ Add Nav Link</button>
+          </div>
+          <div id="nav-links-container" style="display: flex; flex-direction: column; gap: 0.65rem;"></div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button class="btn btn-primary" id="btn-save-nav">Save Navigation</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: CATEGORIES MANAGER -->
+    <section id="tab-categories" class="tab-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h2 class="card-title">Categories Manager</h2>
+            <p class="card-desc" style="margin-bottom: 0;">Organize recipes into thematic sections (<code>/category/:slug</code>).</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-new-category">+ Create Category</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Category Name</th>
+                <th>Slug</th>
+                <th>Description</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="categories-tbody">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading categories...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Category Edit Form Card -->
+      <div class="card" id="category-form-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 class="card-title" id="category-form-title">Create Category</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-cancel-cat">Cancel</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" id="cat-name" style="width: 100%;" placeholder="e.g. Slow Cooker" />
+          </div>
+          <div class="form-group">
+            <label>Slug (URL segment)</label>
+            <input type="text" id="cat-slug" style="width: 100%;" placeholder="e.g. slow-cooker" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Category Description</label>
+          <input type="text" id="cat-desc" style="width: 100%;" placeholder="Brief intro to display on the category archive page..." />
+        </div>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button class="btn btn-primary" id="btn-save-cat">Save Category</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: STATIC PAGES (LEGAL & E-E-A-T) -->
+    <section id="tab-pages" class="tab-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <h2 class="card-title">Static Pages (Legal & E-E-A-T)</h2>
+            <p class="card-desc" style="margin-bottom: 0;">Pages required for Pinterest and search authority (Privacy, Terms, About, Contact).</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-new-page">+ Create Page</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Slug / URL</th>
+                <th>Last Updated</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pages-tbody">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading static pages...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Static Page Form Card -->
+      <div class="card" id="page-form-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 class="card-title" id="page-form-title">Edit Static Page</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-cancel-page">Cancel</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Page Title</label>
+            <input type="text" id="pg-title" style="width: 100%;" placeholder="e.g. Privacy Policy" />
+          </div>
+          <div class="form-group">
+            <label>Slug</label>
+            <input type="text" id="pg-slug" style="width: 100%;" placeholder="e.g. privacy-policy" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.4rem;">Quick Legal Templates (1-Click Generator):</label>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm tpl-btn" data-type="privacy">📄 Privacy Policy</button>
+            <button type="button" class="btn btn-secondary btn-sm tpl-btn" data-type="terms">📜 Terms of Service</button>
+            <button type="button" class="btn btn-secondary btn-sm tpl-btn" data-type="about">👨‍🍳 About Us</button>
+            <button type="button" class="btn btn-secondary btn-sm tpl-btn" data-type="contact">✉️ Contact Us</button>
+            <button type="button" class="btn btn-secondary btn-sm tpl-btn" data-type="disclosure">⚖️ Affiliate Disclosure</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Page Content (HTML / Text)</label>
+          <textarea id="pg-content" rows="12" style="width: 100%; font-family: monospace; font-size: 0.85rem;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button class="btn btn-danger" id="btn-delete-page" style="display: none;">Delete Page</button>
+          <button class="btn btn-primary" id="btn-save-page">Save Page</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: ROUNDUPS MANAGER -->
     <section id="tab-roundups" class="tab-panel">
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <div>
             <h2 class="card-title">Curated Roundup Articles</h2>
             <p class="card-desc" style="margin-bottom: 0;">Multi-card recipe collections stored under <code>roundups:{siteId}:{slug}</code>.</p>
@@ -533,33 +667,37 @@
               <tr>
                 <th>Slug</th>
                 <th>Title</th>
+                <th>Category</th>
                 <th>Cards Count</th>
-                <th>Updated</th>
                 <th style="text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="roundups-tbody">
-              <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to add one.</td></tr>
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to begin.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Roundup Edit Form Modal/Card -->
+      <!-- Roundup Edit Form Card -->
       <div class="card" id="roundup-form-card" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
           <h2 class="card-title" id="roundup-form-title">Edit Roundup Article</h2>
           <button class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
         </div>
 
-        <div class="grid-2">
+        <div class="grid-3">
           <div class="form-group">
             <label>Slug (URL segment)</label>
             <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. best-summer-salads" />
           </div>
           <div class="form-group">
             <label>Article Title</label>
-            <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. 10 Best Refreshing Summer Salads" />
+            <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. 10 Best Summer Salads" />
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="rf-category" style="width: 100%;"></select>
           </div>
         </div>
 
@@ -588,7 +726,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: REAL-TIME STATS -->
+    <!-- TAB 7: REAL-TIME STATS -->
     <section id="tab-stats" class="tab-panel">
       <div class="grid-4" style="margin-bottom: 1.5rem;">
         <div class="card" style="margin-bottom: 0;">
@@ -639,6 +777,7 @@
     (function() {
       var currentSite = 'site1';
       var currentConfig = {};
+      var siteCategories = [];
       var token = sessionStorage.getItem('ADMIN_TOKEN') || '';
 
       var authOverlay = document.getElementById('auth-overlay');
@@ -725,11 +864,14 @@
           tabBtns.forEach(function(b) { b.classList.remove('active'); });
           document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
           btn.classList.add('active');
-          var target = document.getElementById('tab-' + btn.getAttribute('data-tab'));
-          if (target) target.classList.add('active');
+          var targetTab = btn.getAttribute('data-tab');
+          var targetPanel = document.getElementById('tab-' + targetTab);
+          if (targetPanel) targetPanel.classList.add('active');
 
-          if (btn.getAttribute('data-tab') === 'roundups') loadRoundups();
-          if (btn.getAttribute('data-tab') === 'stats') loadStats();
+          if (targetTab === 'categories') loadCategories();
+          if (targetTab === 'pages') loadPages();
+          if (targetTab === 'roundups') loadRoundups();
+          if (targetTab === 'stats') loadStats();
         });
       });
 
@@ -751,16 +893,18 @@
             });
             currentSite = siteSelect.value || 'site1';
             loadConfig();
+            loadCategories();
           }
-        }).catch(function(err) {
-          console.error(err);
         });
       }
 
       siteSelect.addEventListener('change', function() {
         currentSite = siteSelect.value;
         loadConfig();
+        loadCategories();
         var activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+        if (activeTab === 'categories') loadCategories();
+        if (activeTab === 'pages') loadPages();
         if (activeTab === 'roundups') loadRoundups();
         if (activeTab === 'stats') loadStats();
       });
@@ -779,8 +923,6 @@
           currentSite = newSite;
           loadSites();
           showToast('New site ' + newSite + ' added successfully!');
-        }).catch(function() {
-          showToast('Failed to add site', 'error');
         });
       });
 
@@ -790,8 +932,6 @@
             currentConfig = data.config;
             populateConfigUI(data.config);
           }
-        }).catch(function() {
-          showToast('Failed to load site config', 'error');
         });
       }
 
@@ -815,6 +955,17 @@
         document.getElementById('prod-availability').value = (cfg.productDefaults && cfg.productDefaults.availability) || 'https://schema.org/InStock';
         document.getElementById('prod-brand').value = (cfg.productDefaults && cfg.productDefaults.brand) || 'Recipe Bridge';
 
+        // Navigation
+        var nav = cfg.navigation || {};
+        document.getElementById('nav-logo-text').value = nav.logoText || cfg.siteName || (currentSite.toUpperCase() + ' Kitchen');
+        renderNavLinksInputs(nav.navLinks || [
+          { label: 'Home', url: '/' },
+          { label: 'Slow Cooker', url: '/category/slow-cooker' },
+          { label: 'High Protein', url: '/category/high-protein' },
+          { label: 'Quick Dinners', url: '/category/quick-dinners' },
+          { label: 'E-Books', url: '/#recipe' }
+        ]);
+
         updateUtmPreview();
       }
 
@@ -829,6 +980,41 @@
       ['cfg-targetDomain', 'utm-source', 'utm-medium', 'utm-campaign'].forEach(function(id) {
         document.getElementById(id).addEventListener('input', updateUtmPreview);
       });
+
+      // Navigation builder
+      var navContainer = document.getElementById('nav-links-container');
+
+      function renderNavLinksInputs(links) {
+        navContainer.innerHTML = '';
+        links.forEach(function(l) { addNavLinkRow(l); });
+      }
+
+      function addNavLinkRow(link) {
+        link = link || { label: '', url: '' };
+        var row = document.createElement('div');
+        row.style.cssText = 'display: flex; gap: 0.5rem; align-items: center;';
+        row.innerHTML =
+          '<input type="text" class="nav-label-input" placeholder="Label (e.g. Slow Cooker)" value="' + escapeHtml(link.label) + '" style="flex: 1;" />' +
+          '<input type="text" class="nav-url-input" placeholder="URL (e.g. /category/slow-cooker)" value="' + escapeHtml(link.url) + '" style="flex: 1.5;" />' +
+          '<button type="button" class="btn btn-danger btn-sm remove-nav-btn">Remove</button>';
+
+        row.querySelector('.remove-nav-btn').addEventListener('click', function() { row.remove(); });
+        navContainer.appendChild(row);
+      }
+
+      document.getElementById('btn-add-nav-link').addEventListener('click', function() {
+        addNavLinkRow();
+      });
+
+      function collectNavLinks() {
+        var links = [];
+        document.querySelectorAll('#nav-links-container > div').forEach(function(row) {
+          var lbl = row.querySelector('.nav-label-input').value.trim();
+          var u = row.querySelector('.nav-url-input').value.trim();
+          if (lbl && u) links.push({ label: lbl, url: u });
+        });
+        return links;
+      }
 
       function saveFullConfig() {
         var updated = {
@@ -855,6 +1041,10 @@
             currency: document.getElementById('prod-currency').value.trim() || 'USD',
             availability: document.getElementById('prod-availability').value.trim() || 'https://schema.org/InStock',
             brand: document.getElementById('prod-brand').value.trim() || 'Recipe Bridge'
+          },
+          navigation: {
+            logoText: document.getElementById('nav-logo-text').value.trim() || (currentSite.toUpperCase() + ' Kitchen'),
+            navLinks: collectNavLinks()
           }
         };
 
@@ -865,19 +1055,249 @@
         }).then(function(res) {
           if (res.success) {
             currentConfig = res.config;
-            showToast('Settings successfully synced to RECIPE_KV!');
-          } else {
-            showToast(res.error || 'Save failed', 'error');
+            showToast('Settings saved successfully!');
           }
-        }).catch(function() {
-          showToast('Failed to save configuration', 'error');
         });
       }
 
       document.getElementById('btn-save-triggers').addEventListener('click', saveFullConfig);
       document.getElementById('btn-save-utm').addEventListener('click', saveFullConfig);
+      document.getElementById('btn-save-nav').addEventListener('click', saveFullConfig);
 
-      // Roundups Manager
+      // CATEGORIES MANAGER
+      var categoriesTbody = document.getElementById('categories-tbody');
+      var categoryFormCard = document.getElementById('category-form-card');
+
+      function loadCategories() {
+        apiFetch('/api/admin/categories?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
+          if (data && data.categories) {
+            siteCategories = data.categories;
+            renderCategoriesList(data.categories);
+            populateCategoryDropdown(data.categories);
+          }
+        });
+      }
+
+      function populateCategoryDropdown(cats) {
+        var sel = document.getElementById('rf-category');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">-- Select Category --</option>';
+        cats.forEach(function(c) {
+          var opt = document.createElement('option');
+          opt.value = c.slug;
+          opt.textContent = c.name;
+          sel.appendChild(opt);
+        });
+      }
+
+      function renderCategoriesList(list) {
+        if (!list || list.length === 0) {
+          categoriesTbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No categories found. Click "+ Create Category" to add one.</td></tr>';
+          return;
+        }
+
+        categoriesTbody.innerHTML = list.map(function(c) {
+          return '<tr>' +
+            '<td><strong style="color: #fff;">' + escapeHtml(c.name) + '</strong></td>' +
+            '<td><code>/category/' + escapeHtml(c.slug) + '</code></td>' +
+            '<td>' + escapeHtml(c.description || '') + '</td>' +
+            '<td style="text-align: right;">' +
+              '<button class="btn btn-secondary btn-sm edit-cat-btn" data-slug="' + escapeHtml(c.slug) + '" data-name="' + escapeHtml(c.name) + '" data-desc="' + escapeHtml(c.description || '') + '">Edit</button> ' +
+              '<button class="btn btn-danger btn-sm del-cat-btn" data-slug="' + escapeHtml(c.slug) + '">Delete</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+
+        document.querySelectorAll('.edit-cat-btn').forEach(function(b) {
+          b.addEventListener('click', function() {
+            document.getElementById('cat-name').value = b.getAttribute('data-name');
+            document.getElementById('cat-slug').value = b.getAttribute('data-slug');
+            document.getElementById('cat-desc').value = b.getAttribute('data-desc');
+            document.getElementById('category-form-title').textContent = 'Edit Category';
+            categoryFormCard.style.display = 'block';
+          });
+        });
+
+        document.querySelectorAll('.del-cat-btn').forEach(function(b) {
+          b.addEventListener('click', function() {
+            var slug = b.getAttribute('data-slug');
+            if (!confirm('Delete category "' + slug + '"?')) return;
+            apiFetch('/api/admin/categories?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug), {
+              method: 'DELETE'
+            }).then(function() {
+              showToast('Category deleted');
+              loadCategories();
+            });
+          });
+        });
+      }
+
+      document.getElementById('btn-new-category').addEventListener('click', function() {
+        document.getElementById('cat-name').value = '';
+        document.getElementById('cat-slug').value = '';
+        document.getElementById('cat-desc').value = '';
+        document.getElementById('category-form-title').textContent = 'Create Category';
+        categoryFormCard.style.display = 'block';
+      });
+
+      document.getElementById('btn-cancel-cat').addEventListener('click', function() {
+        categoryFormCard.style.display = 'none';
+      });
+
+      document.getElementById('btn-save-cat').addEventListener('click', function() {
+        var name = document.getElementById('cat-name').value.trim();
+        var slug = document.getElementById('cat-slug').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        var desc = document.getElementById('cat-desc').value.trim();
+
+        if (!name || !slug) {
+          showToast('Name and Slug are required', 'error');
+          return;
+        }
+
+        apiFetch('/api/admin/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId: currentSite, name: name, slug: slug, description: desc })
+        }).then(function(res) {
+          if (res.success) {
+            showToast('Category saved!');
+            categoryFormCard.style.display = 'none';
+            loadCategories();
+          }
+        });
+      });
+
+      // STATIC PAGES MANAGER
+      var pagesTbody = document.getElementById('pages-tbody');
+      var pageFormCard = document.getElementById('page-form-card');
+      var editingPageSlug = null;
+
+      function loadPages() {
+        apiFetch('/api/admin/pages?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
+          if (data && data.pages) {
+            renderPagesList(data.pages);
+          }
+        });
+      }
+
+      function renderPagesList(list) {
+        if (!list || list.length === 0) {
+          pagesTbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No custom pages yet. Click "+ Create Page" or choose a legal template.</td></tr>';
+          return;
+        }
+
+        pagesTbody.innerHTML = list.map(function(p) {
+          return '<tr>' +
+            '<td><strong style="color: #fff;">' + escapeHtml(p.title) + '</strong></td>' +
+            '<td><code>/' + escapeHtml(p.slug) + '</code></td>' +
+            '<td>' + (p.updatedAt ? new Date(p.updatedAt).toLocaleDateString() : 'N/A') + '</td>' +
+            '<td style="text-align: right;">' +
+              '<button class="btn btn-secondary btn-sm edit-page-btn" data-slug="' + escapeHtml(p.slug) + '">Edit</button> ' +
+              '<button class="btn btn-danger btn-sm del-page-btn" data-slug="' + escapeHtml(p.slug) + '">Delete</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+
+        document.querySelectorAll('.edit-page-btn').forEach(function(b) {
+          b.addEventListener('click', function() { openEditPage(b.getAttribute('data-slug')); });
+        });
+        document.querySelectorAll('.del-page-btn').forEach(function(b) {
+          b.addEventListener('click', function() { deletePage(b.getAttribute('data-slug')); });
+        });
+      }
+
+      function openEditPage(slug) {
+        editingPageSlug = slug;
+        document.getElementById('page-form-title').textContent = slug ? 'Edit Page (' + slug + ')' : 'Create Static Page';
+        document.getElementById('btn-delete-page').style.display = slug ? 'inline-block' : 'none';
+        pageFormCard.style.display = 'block';
+
+        if (slug) {
+          apiFetch('/api/admin/pages?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug)).then(function(res) {
+            if (res && res.page) {
+              document.getElementById('pg-title').value = res.page.title || '';
+              document.getElementById('pg-slug').value = res.page.slug || '';
+              document.getElementById('pg-content').value = res.page.content || '';
+            }
+          });
+        } else {
+          document.getElementById('pg-title').value = '';
+          document.getElementById('pg-slug').value = '';
+          document.getElementById('pg-content').value = '';
+        }
+      }
+
+      document.getElementById('btn-new-page').addEventListener('click', function() { openEditPage(null); });
+      document.getElementById('btn-cancel-page').addEventListener('click', function() { pageFormCard.style.display = 'none'; });
+
+      document.querySelectorAll('.tpl-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var type = btn.getAttribute('data-type');
+          var siteName = currentConfig.siteName || (currentSite.toUpperCase() + ' Kitchen');
+
+          if (type === 'privacy') {
+            document.getElementById('pg-title').value = 'Privacy Policy';
+            document.getElementById('pg-slug').value = 'privacy-policy';
+            document.getElementById('pg-content').value = '<p>Last updated: September 2026. This Privacy Policy details how ' + siteName + ' respects and protects your data while exploring our recipes.</p>\n<h2>Analytics & Cookies</h2>\n<p>We use standard performance telemetry to analyze recipe viewing trends and improve content delivery speeds.</p>';
+          } else if (type === 'terms') {
+            document.getElementById('pg-title').value = 'Terms of Service';
+            document.getElementById('pg-slug').value = 'terms-of-service';
+            document.getElementById('pg-content').value = '<p>Welcome to ' + siteName + '. By accessing our recipe guides, you accept our standard terms and conditions.</p>\n<h2>Culinary Disclaimer</h2>\n<p>All recipes are tested for general home kitchen use. Nutritional approximations may vary.</p>';
+          } else if (type === 'about') {
+            document.getElementById('pg-title').value = 'About Our Kitchen';
+            document.getElementById('pg-slug').value = 'about-us';
+            document.getElementById('pg-content').value = '<p>At ' + siteName + ', our kitchen developers and culinary editors develop trustworthy, foolproof meals for families.</p>\n<h2>E-E-A-T Excellence</h2>\n<p>Every dish is kitchen-approved, photographed, and reviewed for nutritional balance.</p>';
+          } else if (type === 'contact') {
+            document.getElementById('pg-title').value = 'Contact Us';
+            document.getElementById('pg-slug').value = 'contact';
+            document.getElementById('pg-content').value = '<p>Have questions about our recipes or digital packs? Reach out directly to our editorial team at <strong>contact@' + (currentConfig.siteName || 'recipebridge').toLowerCase().replace(/\s+/g, '') + '.com</strong>.</p>';
+          } else if (type === 'disclosure') {
+            document.getElementById('pg-title').value = 'Affiliate & Recipe Disclosure';
+            document.getElementById('pg-slug').value = 'disclosure';
+            document.getElementById('pg-content').value = '<p>To support our testing kitchen, some ingredient or kitchenware links on ' + siteName + ' may earn affiliate commissions at no extra cost to you.</p>';
+          }
+        });
+      });
+
+      document.getElementById('btn-save-page').addEventListener('click', function() {
+        var title = document.getElementById('pg-title').value.trim();
+        var slug = document.getElementById('pg-slug').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+        var content = document.getElementById('pg-content').value.trim();
+
+        if (!title || !slug) {
+          showToast('Title and Slug are required', 'error');
+          return;
+        }
+
+        apiFetch('/api/admin/pages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ siteId: currentSite, slug: slug, title: title, content: content })
+        }).then(function(res) {
+          if (res.success) {
+            showToast('Static page saved to RECIPE_KV!');
+            pageFormCard.style.display = 'none';
+            loadPages();
+          }
+        });
+      });
+
+      function deletePage(slug) {
+        if (!confirm('Delete static page "' + slug + '"?')) return;
+        apiFetch('/api/admin/pages?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug), {
+          method: 'DELETE'
+        }).then(function() {
+          showToast('Page deleted');
+          pageFormCard.style.display = 'none';
+          loadPages();
+        });
+      }
+
+      document.getElementById('btn-delete-page').addEventListener('click', function() {
+        if (editingPageSlug) deletePage(editingPageSlug);
+      });
+
+      // ROUNDUPS MANAGER
       var roundupsTbody = document.getElementById('roundups-tbody');
       var roundupFormCard = document.getElementById('roundup-form-card');
       var cardsContainer = document.getElementById('cards-container');
@@ -888,8 +1308,6 @@
           if (data && data.roundups) {
             renderRoundupsList(data.roundups);
           }
-        }).catch(function() {
-          showToast('Failed to load roundups', 'error');
         });
       }
 
@@ -903,8 +1321,8 @@
           return '<tr>' +
             '<td><strong style="color: #fff;">' + escapeHtml(r.slug) + '</strong></td>' +
             '<td>' + escapeHtml(r.title) + '</td>' +
+            '<td><span style="font-size: 0.8rem; background: #374151; padding: 0.2rem 0.5rem; border-radius: 4px;">' + escapeHtml(r.category || 'general') + '</span></td>' +
             '<td>' + r.cardsCount + ' cards</td>' +
-            '<td>' + (r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : 'N/A') + '</td>' +
             '<td style="text-align: right;">' +
               '<button class="btn btn-secondary btn-sm edit-r-btn" data-slug="' + escapeHtml(r.slug) + '">Edit</button> ' +
               '<button class="btn btn-danger btn-sm del-r-btn" data-slug="' + escapeHtml(r.slug) + '">Delete</button>' +
@@ -935,6 +1353,7 @@
               document.getElementById('rf-title').value = r.title || '';
               document.getElementById('rf-desc').value = r.description || '';
               document.getElementById('rf-image').value = r.image || '';
+              document.getElementById('rf-category').value = r.category || '';
               renderCardInputs(r.cards || []);
             }
           });
@@ -943,17 +1362,13 @@
           document.getElementById('rf-title').value = '';
           document.getElementById('rf-desc').value = '';
           document.getElementById('rf-image').value = '';
+          document.getElementById('rf-category').value = '';
           renderCardInputs([]);
         }
       }
 
-      document.getElementById('btn-new-roundup').addEventListener('click', function() {
-        openEditRoundup(null);
-      });
-
-      document.getElementById('btn-cancel-roundup').addEventListener('click', function() {
-        roundupFormCard.style.display = 'none';
-      });
+      document.getElementById('btn-new-roundup').addEventListener('click', function() { openEditRoundup(null); });
+      document.getElementById('btn-cancel-roundup').addEventListener('click', function() { roundupFormCard.style.display = 'none'; });
 
       function renderCardInputs(cards) {
         cardsContainer.innerHTML = '';
@@ -975,11 +1390,9 @@
             '<input type="url" class="card-image-input" placeholder="Image URL" value="' + escapeHtml(data.image || '') + '" />' +
           '</div>' +
           '<input type="text" class="card-desc-input" placeholder="Card Description" style="width: 100%; margin-bottom: 0.5rem;" value="' + escapeHtml(data.description || '') + '" />' +
-          '<input type="url" class="card-url-input" placeholder="Target / Recipe URL" style="width: 100%;" value="' + escapeHtml(data.targetUrl || '') + '" />';
+          '<input type="text" class="card-url-input" placeholder="Target / Recipe Path (e.g. /slow-cooker-chicken)" style="width: 100%;" value="' + escapeHtml(data.targetUrl || data.targetPath || '') + '" />';
 
-        row.querySelector('.remove-card-btn').addEventListener('click', function() {
-          row.remove();
-        });
+        row.querySelector('.remove-card-btn').addEventListener('click', function() { row.remove(); });
         cardsContainer.appendChild(row);
       }
 
@@ -991,6 +1404,7 @@
         var slug = document.getElementById('rf-slug').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
         var title = document.getElementById('rf-title').value.trim();
         var description = document.getElementById('rf-desc').value.trim();
+        var category = document.getElementById('rf-category').value;
         var image = document.getElementById('rf-image').value.trim();
 
         if (!slug || !title) {
@@ -1016,6 +1430,7 @@
             slug: slug,
             title: title,
             description: description,
+            category: category,
             image: image,
             cards: cards
           })
@@ -1024,14 +1439,12 @@
             showToast('Roundup article saved to RECIPE_KV!');
             roundupFormCard.style.display = 'none';
             loadRoundups();
-          } else {
-            showToast(res.error || 'Failed to save roundup', 'error');
           }
         });
       });
 
       function deleteRoundup(slug) {
-        if (!confirm('Are you sure you want to delete roundup "' + slug + '"?')) return;
+        if (!confirm('Delete roundup "' + slug + '"?')) return;
         apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug), {
           method: 'DELETE'
         }).then(function(res) {
@@ -1047,7 +1460,7 @@
         if (editingRoundupSlug) deleteRoundup(editingRoundupSlug);
       });
 
-      // Stats
+      // STATS
       var statTotalClicks = document.getElementById('stat-total-clicks');
       var statActiveSlugs = document.getElementById('stat-active-slugs');
       var statTopSlug = document.getElementById('stat-top-slug');
@@ -1060,8 +1473,6 @@
           if (res && res.stats) {
             renderStatsUI(res.stats);
           }
-        }).catch(function() {
-          showToast('Failed to load click statistics', 'error');
         });
       }
 
@@ -1088,7 +1499,6 @@
           return;
         }
 
-        // Sort by clicks desc
         slugKeys.sort(function(a, b) { return slugs[b] - slugs[a]; });
 
         statsTbody.innerHTML = slugKeys.map(function(slug) {
@@ -1121,7 +1531,8 @@
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
     })();
   </script>

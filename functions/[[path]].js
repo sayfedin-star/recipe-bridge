@@ -1,6 +1,32 @@
 import defaultConfig from '../config.json';
 import recipesData from '../data/recipes.json';
 
+const defaultNavLinks = [
+  { label: 'Home', url: '/' },
+  { label: 'Slow Cooker', url: '/category/slow-cooker' },
+  { label: 'High Protein', url: '/category/high-protein' },
+  { label: 'Quick Dinners', url: '/category/quick-dinners' },
+  { label: 'E-Books', url: '/#recipe' },
+];
+
+const defaultCategories = [
+  {
+    name: 'Slow Cooker',
+    slug: 'slow-cooker',
+    description: 'Tender, hearty, and effortlessly delicious slow-cooked meals for busy days.',
+  },
+  {
+    name: 'High Protein',
+    slug: 'high-protein',
+    description: 'Nutritious, high-protein recipes packed with clean ingredients and macros.',
+  },
+  {
+    name: 'Quick Dinners',
+    slug: 'quick-dinners',
+    description: 'Fast 30-minute skillet and sheet pan meals perfect for easy weeknights.',
+  },
+];
+
 /**
  * Escapes characters to prevent XSS in HTML output.
  */
@@ -61,11 +87,440 @@ function resolveRecipe(slug) {
 }
 
 /**
- * Generates the full HTML response using a Light Editorial American Food Blog Theme.
- * Bot requests get clean Product Rich Pins metadata without any redirect code.
- * Human requests receive Base64-encoded targets with interactive triggers and tracking.
+ * Returns shared CSS styles for the Light Editorial Food Theme.
  */
-function renderHtml({
+function getSharedStyles() {
+  return `
+    :root {
+      --bg-page: #fbfaf8;
+      --surface: #ffffff;
+      --border-subtle: #f1f5f9;
+      --border-card: #e2e8f0;
+      --text-heading: #1e293b;
+      --text-body: #475569;
+      --text-muted: #64748b;
+      --primary: #ea580c;
+      --primary-hover: #c2410c;
+      --primary-light: #fff7ed;
+      --emerald: #059669;
+      --emerald-light: #ecfdf5;
+      --amber: #d97706;
+      --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-card);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .header-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text-heading);
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #ea580c, #f97316);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 0.25rem 0.55rem;
+      border-radius: 0.375rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+    }
+
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+    }
+
+    footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-card);
+      margin-top: auto;
+      padding: 3rem 1.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--primary);
+    }
+
+    .footer-disclaimer {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 760px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+  `;
+}
+
+/**
+ * Returns header HTML with custom logo text and navigation links.
+ */
+function renderHeader(siteConfig) {
+  const logoText = escapeHtml(siteConfig.navigation?.logoText || siteConfig.siteName || 'Recipe Bridge');
+  const links = Array.isArray(siteConfig.navigation?.navLinks) && siteConfig.navigation.navLinks.length > 0
+    ? siteConfig.navigation.navLinks
+    : defaultNavLinks;
+
+  return `
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-badge">RB</span>
+        <span>${logoText}</span>
+      </a>
+      <ul class="nav-links">
+        ${links.map((l) => `<li><a href="${escapeHtml(l.url)}" class="nav-link">${escapeHtml(l.label)}</a></li>`).join('')}
+      </ul>
+    </div>
+  </header>`;
+}
+
+/**
+ * Returns compliance footer HTML.
+ */
+function renderFooter(siteConfig) {
+  const siteName = escapeHtml(siteConfig.siteName || 'Recipe Bridge');
+  return `
+  <footer>
+    <div class="footer-inner">
+      <ul class="footer-links">
+        <li><a href="/privacy-policy" class="footer-link">Privacy Policy</a></li>
+        <li><a href="/terms-of-service" class="footer-link">Terms of Service</a></li>
+        <li><a href="/disclosure" class="footer-link">Affiliate & Recipe Disclosure</a></li>
+        <li><a href="/about-us" class="footer-link">About Us</a></li>
+        <li><a href="/contact" class="footer-link">Contact</a></li>
+      </ul>
+      <p class="footer-disclaimer">
+        Disclaimer: The culinary advice, nutritional guides, and recipe suggestions published on ${siteName} are for educational and inspirational purposes. Actual nutritional values may vary based on preparation and ingredients.
+      </p>
+      <p class="footer-copy">
+        &copy; 2026 ${siteName}. All rights reserved.
+      </p>
+    </div>
+  </footer>`;
+}
+
+/**
+ * Generates the rich dynamic Homepage HTML. (No redirect, natural browsing)
+ */
+function renderHomepage({ siteConfig, categories, roundups }) {
+  const siteName = escapeHtml(siteConfig.siteName || 'Recipe Bridge');
+
+  const categoriesHtml = categories
+    .map(
+      (c) => `
+      <a href="/category/${escapeHtml(c.slug)}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9999px; text-decoration: none; color: #1e293b; font-weight: 700; font-size: 0.875rem; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: all 0.2s;">
+        <span>🍲</span>
+        <span>${escapeHtml(c.name)}</span>
+      </a>
+    `
+    )
+    .join('');
+
+  const articlesHtml = (roundups && roundups.length > 0 ? roundups : [
+    {
+      slug: 'broccoli-salad',
+      title: 'Quick & Easy Broccoli Salad with Creamy Dressing',
+      description: 'Fresh, crunchy, and tossed in a creamy homemade dressing for the perfect family dinner side.',
+      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+      category: 'quick-dinners',
+    },
+  ])
+    .map(
+      (r) => `
+      <article style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column; transition: transform 0.2s;">
+        <div style="height: 220px; overflow: hidden; position: relative;">
+          <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" />
+          ${r.category ? `<span style="position: absolute; bottom: 0.75rem; left: 0.75rem; background: rgba(234, 88, 12, 0.95); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase;">${escapeHtml(r.category)}</span>` : ''}
+        </div>
+        <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="font-family: Georgia, serif; font-size: 1.35rem; font-weight: 800; color: #1e293b; line-height: 1.3; margin-bottom: 0.5rem;">
+              <a href="/${escapeHtml(r.slug)}" style="color: inherit; text-decoration: none;">${escapeHtml(r.title)}</a>
+            </h3>
+            <p style="font-size: 0.9rem; color: #64748b; line-height: 1.6; margin-bottom: 1.25rem;">${escapeHtml(r.description || '')}</p>
+          </div>
+          <a href="/${escapeHtml(r.slug)}" style="display: inline-flex; align-items: center; gap: 0.35rem; color: #ea580c; font-weight: 700; font-size: 0.9rem; text-decoration: none;">
+            <span>Read Full Recipe</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </article>
+    `
+    )
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${siteName} - Tested Everyday Recipes & Healthy Meal Ideas</title>
+  <meta name="description" content="Discover tested, wholesome, and delicious family recipes. From slow cooker sensations to quick 30-minute dinners." />
+  <style>
+    ${getSharedStyles()}
+  </style>
+</head>
+<body>
+  ${renderHeader(siteConfig)}
+
+  <main>
+    <section style="text-align: center; margin-bottom: 3rem;">
+      <span style="display: inline-block; padding: 0.3rem 0.8rem; background: #fff7ed; color: #ea580c; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">Culinary Excellence</span>
+      <h1 style="font-family: var(--font-serif); font-size: clamp(2.2rem, 5vw, 3.25rem); font-weight: 900; color: var(--text-heading); margin-bottom: 0.75rem; letter-spacing: -0.02em;">Fresh, Tested & Wholesome Everyday Recipes</h1>
+      <p style="font-size: 1.15rem; color: var(--text-muted); max-width: 680px; margin: 0 auto 1.75rem;">Explore our chef-developed collections designed for busy families who love healthy, flavor-packed meals.</p>
+      
+      <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
+        ${categoriesHtml}
+      </div>
+    </section>
+
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="font-family: var(--font-serif); font-size: 1.75rem; font-weight: 800; color: var(--text-heading);">Latest Recipe Collections</h2>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">Hand-picked, kitchen-tested meal inspirations.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem;">
+        ${articlesHtml}
+      </div>
+    </section>
+  </main>
+
+  ${renderFooter(siteConfig)}
+</body>
+</html>`;
+}
+
+/**
+ * Generates the Category Archive page HTML. (No redirect, natural browsing)
+ */
+function renderCategoryArchive({ siteConfig, category, roundups }) {
+  const catName = escapeHtml(category.name);
+  const catDesc = escapeHtml(category.description || `Browse our best ${category.name} recipes and meal ideas.`);
+
+  const itemsHtml = roundups.length > 0
+    ? roundups
+        .map(
+          (r) => `
+        <article style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column;">
+          <div style="height: 220px; overflow: hidden;">
+            <img src="${escapeHtml(r.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80')}" alt="${escapeHtml(r.title)}" style="width: 100%; height: 100%; object-fit: cover;" />
+          </div>
+          <div style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-family: Georgia, serif; font-size: 1.3rem; font-weight: 800; color: #1e293b; line-height: 1.3; margin-bottom: 0.5rem;">
+                <a href="/${escapeHtml(r.slug)}" style="color: inherit; text-decoration: none;">${escapeHtml(r.title)}</a>
+              </h3>
+              <p style="font-size: 0.9rem; color: #64748b; line-height: 1.6; margin-bottom: 1.25rem;">${escapeHtml(r.description || '')}</p>
+            </div>
+            <a href="/${escapeHtml(r.slug)}" style="display: inline-flex; align-items: center; gap: 0.35rem; color: #ea580c; font-weight: 700; font-size: 0.9rem; text-decoration: none;">
+              <span>View Recipe Guide</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        </article>
+      `
+        )
+        .join('')
+    : `<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; color: #64748b;">
+        Recipes in this category are being updated. Check back shortly or browse our <a href="/" style="color: #ea580c; font-weight: 700;">Home Page</a>.
+      </div>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${catName} Recipes - ${escapeHtml(siteConfig.siteName || 'Recipe Bridge')}</title>
+  <meta name="description" content="${catDesc}" />
+  <style>
+    ${getSharedStyles()}
+  </style>
+</head>
+<body>
+  ${renderHeader(siteConfig)}
+
+  <main>
+    <div style="margin-bottom: 2.5rem; text-align: center;">
+      <div style="font-size: 0.85rem; color: #ea580c; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem;">Recipe Category</div>
+      <h1 style="font-family: var(--font-serif); font-size: 2.5rem; font-weight: 900; color: var(--text-heading); margin-bottom: 0.75rem;">${catName}</h1>
+      <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">${catDesc}</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem;">
+      ${itemsHtml}
+    </div>
+  </main>
+
+  ${renderFooter(siteConfig)}
+</body>
+</html>`;
+}
+
+/**
+ * Generates clean static legal / E-E-A-T pages HTML. (No redirect, natural browsing)
+ */
+function renderStaticPage({ siteConfig, title, content }) {
+  const safeTitle = escapeHtml(title);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${safeTitle} - ${escapeHtml(siteConfig.siteName || 'Recipe Bridge')}</title>
+  <style>
+    ${getSharedStyles()}
+    .static-article {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+    .static-article h1 {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 1rem;
+    }
+    .static-article p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-body);
+      margin-bottom: 1.25rem;
+    }
+    .static-article h2 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin: 2rem 0 0.75rem;
+    }
+    .static-article ul {
+      margin: 1rem 0 1.5rem 1.5rem;
+      color: var(--text-body);
+    }
+    .static-article li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  ${renderHeader(siteConfig)}
+
+  <main>
+    <article class="static-article">
+      <h1>${safeTitle}</h1>
+      <div>${content}</div>
+    </article>
+  </main>
+
+  ${renderFooter(siteConfig)}
+</body>
+</html>`;
+}
+
+/**
+ * Generates the full Recipe/Roundup Article HTML response (Light Editorial Food Theme).
+ */
+function renderRecipeArticle({
   title,
   description,
   image,
@@ -264,7 +719,6 @@ function renderHtml({
               const cardImg = escapeHtml(c.image || image);
               const cardSlug = escapeHtml(c.slug || `${slug}-recipe-${idx + 1}`);
 
-              // Resolve card target URL safely with leading slash
               let cardEncoded = encodedTarget;
               if (!isPinterestBot) {
                 let rawTarget = (c.targetUrl || c.targetPath || '').trim();
@@ -346,121 +800,15 @@ function renderHtml({
   <meta name="twitter:description" content="${safeDesc}" />
   <meta name="twitter:image" content="${safeImage}" />
 
-  <!-- Schema.org Product Structured Data for Pinterest Product Rich Pins -->
+  <!-- Schema.org Product Structured Data for Product Rich Pins -->
   <script type="application/ld+json">
     ${productSchema}
   </script>
 
   <style>
-    :root {
-      --bg-page: #fbfaf8;
-      --surface: #ffffff;
-      --border-subtle: #f1f5f9;
-      --border-card: #e2e8f0;
-      --text-heading: #1e293b;
-      --text-body: #475569;
-      --text-muted: #64748b;
-      --primary: #ea580c;
-      --primary-hover: #c2410c;
-      --primary-light: #fff7ed;
-      --emerald: #059669;
-      --emerald-light: #ecfdf5;
-      --amber: #d97706;
-      --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    ${getSharedStyles()}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-page);
-      color: var(--text-body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Header */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border-card);
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    }
-
-    .header-inner {
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 0.9rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      color: var(--text-heading);
-      font-weight: 800;
-      font-size: 1.3rem;
-      letter-spacing: -0.02em;
-    }
-
-    .logo-badge {
-      background: linear-gradient(135deg, #ea580c, #f97316);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 800;
-      padding: 0.25rem 0.55rem;
-      border-radius: 0.375rem;
-      letter-spacing: normal;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      list-style: none;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: color 0.15s ease;
-    }
-
-    .nav-link:hover {
-      color: var(--primary);
-    }
-
-    @media (max-width: 720px) {
-      .nav-links { display: none; }
-    }
-
-    /* Main Container */
-    main {
-      flex: 1;
-      max-width: 920px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 2.5rem 1.25rem 4rem;
-    }
-
-    /* Article Header */
-    .article-header {
-      margin-bottom: 2rem;
-    }
-
+    .article-header { margin-bottom: 2rem; }
     .category-tag {
       display: inline-flex;
       align-items: center;
@@ -475,7 +823,6 @@ function renderHtml({
       letter-spacing: 0.06em;
       margin-bottom: 1rem;
     }
-
     .article-title {
       font-family: var(--font-serif);
       font-size: clamp(2rem, 5vw, 3rem);
@@ -485,15 +832,12 @@ function renderHtml({
       letter-spacing: -0.02em;
       margin-bottom: 1rem;
     }
-
     .article-lead {
       font-size: 1.15rem;
       line-height: 1.7;
       color: var(--text-body);
       margin-bottom: 1.5rem;
     }
-
-    /* E-E-A-T Author & Editorial Bar */
     .eeat-bar {
       display: flex;
       align-items: center;
@@ -507,13 +851,7 @@ function renderHtml({
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
       margin-bottom: 2rem;
     }
-
-    .author-info {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
+    .author-info { display: flex; align-items: center; gap: 0.75rem; }
     .chef-avatar {
       width: 42px;
       height: 42px;
@@ -525,17 +863,8 @@ function renderHtml({
       justify-content: center;
       font-size: 1.25rem;
     }
-
-    .author-text {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .author-name {
-      font-weight: 700;
-      color: var(--text-heading);
-    }
-
+    .author-text { font-size: 0.85rem; color: var(--text-muted); }
+    .author-name { font-weight: 700; color: var(--text-heading); }
     .recipe-quick-metrics {
       display: flex;
       align-items: center;
@@ -544,14 +873,7 @@ function renderHtml({
       font-weight: 600;
       color: var(--text-muted);
     }
-
-    .metric-item {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    /* Hero Image */
+    .metric-item { display: flex; align-items: center; gap: 0.25rem; }
     .hero-media {
       width: 100%;
       height: 440px;
@@ -561,15 +883,7 @@ function renderHtml({
       margin-bottom: 2.25rem;
       border: 1px solid var(--border-card);
     }
-
-    .hero-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* DIGITAL RECIPE PACK BOX ($2.25 Product Box) */
+    .hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .product-box {
       background: var(--surface);
       border: 2px solid #fed7aa;
@@ -577,9 +891,7 @@ function renderHtml({
       padding: 1.75rem 2rem;
       margin-bottom: 3rem;
       box-shadow: 0 8px 30px rgba(234, 88, 12, 0.08);
-      position: relative;
     }
-
     .product-box-header {
       display: flex;
       align-items: center;
@@ -588,7 +900,6 @@ function renderHtml({
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
-
     .product-tag {
       background: #ffedd5;
       color: #c2410c;
@@ -599,7 +910,6 @@ function renderHtml({
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-
     .product-reviews {
       display: flex;
       align-items: center;
@@ -608,12 +918,7 @@ function renderHtml({
       color: var(--text-muted);
       font-weight: 600;
     }
-
-    .star-rating {
-      color: #f59e0b;
-      letter-spacing: 0.05em;
-    }
-
+    .star-rating { color: #f59e0b; letter-spacing: 0.05em; }
     .product-body {
       display: flex;
       justify-content: space-between;
@@ -622,7 +927,6 @@ function renderHtml({
       gap: 1.5rem;
       margin-bottom: 1.5rem;
     }
-
     .product-title {
       font-family: var(--font-serif);
       font-size: 1.5rem;
@@ -630,17 +934,8 @@ function renderHtml({
       color: var(--text-heading);
       margin-bottom: 0.35rem;
     }
-
-    .product-desc {
-      font-size: 0.95rem;
-      color: var(--text-body);
-      max-width: 540px;
-    }
-
-    .price-badge-wrap {
-      text-align: right;
-    }
-
+    .product-desc { font-size: 0.95rem; color: var(--text-body); max-width: 540px; }
+    .price-badge-wrap { text-align: right; }
     .price-value {
       font-size: 2.2rem;
       font-weight: 900;
@@ -651,13 +946,7 @@ function renderHtml({
       gap: 0.2rem;
       justify-content: flex-end;
     }
-
-    .price-currency {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
+    .price-currency { font-size: 0.95rem; color: var(--text-muted); font-weight: 700; }
     .stock-pill {
       display: inline-block;
       margin-top: 0.35rem;
@@ -669,7 +958,6 @@ function renderHtml({
       font-weight: 700;
       text-transform: uppercase;
     }
-
     .product-cta-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -677,13 +965,11 @@ function renderHtml({
       padding-top: 1.25rem;
       border-top: 1px solid var(--border-subtle);
     }
-
     @media (max-width: 600px) {
       .product-cta-group { grid-template-columns: 1fr; }
       .price-badge-wrap { text-align: left; }
       .price-value { justify-content: flex-start; }
     }
-
     .btn-pdf {
       display: inline-flex;
       align-items: center;
@@ -700,12 +986,7 @@ function renderHtml({
       cursor: pointer;
       transition: all 0.2s ease;
     }
-
-    .btn-pdf:hover {
-      background: #f1f5f9;
-      border-color: #cbd5e1;
-    }
-
+    .btn-pdf:hover { background: #f1f5f9; border-color: #cbd5e1; }
     .btn-jump {
       display: inline-flex;
       align-items: center;
@@ -723,17 +1004,8 @@ function renderHtml({
       transition: all 0.2s ease;
       border: none;
     }
-
-    .btn-jump:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    /* Roundup Recipe Cards */
-    .roundup-section {
-      margin-top: 3.5rem;
-    }
-
+    .btn-jump:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .roundup-section { margin-top: 3.5rem; }
     .section-badge {
       display: inline-block;
       font-size: 0.8rem;
@@ -743,7 +1015,6 @@ function renderHtml({
       color: var(--primary);
       margin-bottom: 0.5rem;
     }
-
     .section-title {
       font-family: var(--font-serif);
       font-size: 2rem;
@@ -752,20 +1023,8 @@ function renderHtml({
       margin-bottom: 0.5rem;
       letter-spacing: -0.01em;
     }
-
-    .section-subtitle {
-      font-size: 1rem;
-      color: var(--text-body);
-      margin-bottom: 2rem;
-      max-width: 680px;
-    }
-
-    .cards-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
+    .section-subtitle { font-size: 1rem; color: var(--text-body); margin-bottom: 2rem; max-width: 680px; }
+    .cards-stack { display: flex; flex-direction: column; gap: 2rem; }
     .food-card {
       background: var(--surface);
       border: 1px solid var(--border-card);
@@ -776,29 +1035,10 @@ function renderHtml({
       grid-template-columns: 320px 1fr;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
-    .food-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
-    }
-
-    @media (max-width: 740px) {
-      .food-card { grid-template-columns: 1fr; }
-    }
-
-    .food-card-media {
-      position: relative;
-      height: 100%;
-      min-height: 240px;
-    }
-
-    .food-card-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    .food-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07); }
+    @media (max-width: 740px) { .food-card { grid-template-columns: 1fr; } }
+    .food-card-media { position: relative; height: 100%; min-height: 240px; }
+    .food-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .recipe-number-badge {
       position: absolute;
       top: 1rem;
@@ -815,33 +1055,12 @@ function renderHtml({
       font-size: 0.95rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
     }
-
-    .food-card-body {
-      padding: 1.75rem 2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .macro-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .macro-pill {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      letter-spacing: 0.02em;
-    }
-
+    .food-card-body { padding: 1.75rem 2rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .macro-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem; }
+    .macro-pill { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 9999px; }
     .macro-protein { background: #eff6ff; color: #1d4ed8; }
     .macro-cals { background: #fef2f2; color: #b91c1c; }
     .macro-time { background: #f0fdf4; color: #15803d; }
-
     .food-card-title {
       font-family: var(--font-serif);
       font-size: 1.45rem;
@@ -850,20 +1069,8 @@ function renderHtml({
       margin-bottom: 0.5rem;
       line-height: 1.3;
     }
-
-    .food-card-desc {
-      font-size: 0.95rem;
-      color: var(--text-body);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-
-    .food-card-footer {
-      margin-top: auto;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border-subtle);
-    }
-
+    .food-card-desc { font-size: 0.95rem; color: var(--text-body); margin-bottom: 1.5rem; line-height: 1.6; }
+    .food-card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-subtle); }
     .btn-card {
       display: inline-flex;
       align-items: center;
@@ -876,15 +1083,9 @@ function renderHtml({
       font-size: 0.85rem;
       letter-spacing: 0.04em;
       border-radius: 0.5rem;
-      transition: background 0.15s ease;
       cursor: pointer;
     }
-
-    .btn-card:hover {
-      background: var(--primary-hover);
-    }
-
-    /* Modal */
+    .btn-card:hover { background: var(--primary-hover); }
     .modal-overlay {
       display: none;
       position: fixed;
@@ -896,7 +1097,6 @@ function renderHtml({
       justify-content: center;
       padding: 1.5rem;
     }
-
     .modal-card {
       background: #ffffff;
       border-radius: 1rem;
@@ -905,9 +1105,7 @@ function renderHtml({
       padding: 2rem;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
       text-align: center;
-      position: relative;
     }
-
     .modal-badge {
       display: inline-block;
       background: #ffedd5;
@@ -918,7 +1116,6 @@ function renderHtml({
       font-weight: 700;
       margin-bottom: 0.75rem;
     }
-
     .modal-title {
       font-family: var(--font-serif);
       font-size: 1.4rem;
@@ -926,96 +1123,19 @@ function renderHtml({
       color: var(--text-heading);
       margin-bottom: 0.75rem;
     }
-
-    .modal-text {
-      font-size: 0.95rem;
-      color: var(--text-body);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-
-    .modal-btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    /* Compliance Footer */
-    footer {
-      background: #ffffff;
-      border-top: 1px solid var(--border-card);
-      margin-top: auto;
-      padding: 3rem 1.5rem 2rem;
-    }
-
-    .footer-inner {
-      max-width: 1040px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-      list-style: none;
-    }
-
-    .footer-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: color 0.15s ease;
-    }
-
-    .footer-link:hover {
-      color: var(--primary);
-    }
-
-    .footer-disclaimer {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 760px;
-      margin: 0 auto 1.25rem;
-    }
-
-    .footer-copy {
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
+    .modal-text { font-size: 0.95rem; color: var(--text-body); margin-bottom: 1.5rem; line-height: 1.6; }
+    .modal-btn-group { display: flex; flex-direction: column; gap: 0.5rem; }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <div class="header-inner">
-      <a href="/" class="logo">
-        <span class="logo-badge">RB</span>
-        <span>${safeSiteName}</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="/" class="nav-link">Home</a></li>
-        <li><a href="#recipes-list" class="nav-link">Slow Cooker</a></li>
-        <li><a href="#recipes-list" class="nav-link">High Protein</a></li>
-        <li><a href="#recipes-list" class="nav-link">Quick Dinners</a></li>
-        <li><a href="#recipe" class="nav-link">E-Books</a></li>
-      </ul>
-    </div>
-  </header>
+  ${renderHeader(siteConfig)}
 
   <main id="recipe">
-    <!-- Article Header -->
     <header class="article-header">
       <div class="category-tag">Editor's Recipe Pick</div>
       <h1 class="article-title">${safeTitle}</h1>
       <p class="article-lead">${safeDesc}</p>
 
-      <!-- E-E-A-T Author & Metadata Bar -->
       <div class="eeat-bar">
         <div class="author-info">
           <div class="chef-avatar">👨‍🍳</div>
@@ -1033,12 +1153,11 @@ function renderHtml({
       </div>
     </header>
 
-    <!-- Hero Image -->
     <div class="hero-media">
       <img src="${safeImage}" alt="${safeTitle}" class="hero-img" loading="eager" />
     </div>
 
-    <!-- DIGITAL RECIPE PACK BOX ($2.25 Product Box) -->
+    <!-- $2.25 Product Box -->
     <div class="product-box">
       <div class="product-box-header">
         <span class="product-tag">Digital Instant Download (Printable PDF)</span>
@@ -1072,29 +1191,11 @@ function renderHtml({
       </div>
     </div>
 
-    <!-- Roundup Cards Stack -->
     ${cardsHtml}
   </main>
 
-  <!-- Compliance Footer -->
-  <footer>
-    <div class="footer-inner">
-      <ul class="footer-links">
-        <li><a href="/privacy-policy" class="footer-link">Privacy Policy</a></li>
-        <li><a href="/terms-of-service" class="footer-link">Terms of Service</a></li>
-        <li><a href="/disclosure" class="footer-link">Affiliate & Recipe Disclosure</a></li>
-        <li><a href="/contact" class="footer-link">Contact Us</a></li>
-      </ul>
-      <p class="footer-disclaimer">
-        Disclaimer: The nutritional information and culinary suggestions provided on ${safeSiteName} are for educational and inspirational purposes. Actual nutritional values may vary based on specific ingredient brands, preparation methods, and portion sizes.
-      </p>
-      <p class="footer-copy">
-        &copy; 2026 ${safeSiteName}. All rights reserved.
-      </p>
-    </div>
-  </footer>
+  ${renderFooter(siteConfig)}
 
-  <!-- PDF Modal -->
   <div class="modal-overlay" id="pdf-modal">
     <div class="modal-card">
       <span class="modal-badge">Digital Edition</span>
@@ -1113,17 +1214,79 @@ function renderHtml({
 }
 
 /**
+ * Returns default legal static pages content if not configured in KV.
+ */
+function getDefaultPageContent(slug, siteName) {
+  switch (slug) {
+    case 'privacy-policy':
+      return {
+        title: 'Privacy Policy',
+        content: `
+          <p>Last updated: September 2026. This Privacy Policy outlines how <strong>${escapeHtml(siteName)}</strong> collects, utilizes, and safeguards your information when you visit our culinary website.</p>
+          <h2>Information Collection</h2>
+          <p>We may collect non-personal analytics data such as browser type, referring pages, and device information to optimize recipe reading experiences and recipe loading speeds.</p>
+          <h2>Cookies and Tracking</h2>
+          <p>We use essential cookies and web analytics to understand reader preferences and improve culinary content quality. You may configure your browser to decline cookies at any time.</p>
+          <h2>Third-Party Links</h2>
+          <p>Our website may contain links to external culinary and ingredient sources. We are not responsible for the privacy practices or content of third-party platforms.</p>
+        `,
+      };
+    case 'terms-of-service':
+    case 'terms':
+      return {
+        title: 'Terms of Service',
+        content: `
+          <p>Welcome to <strong>${escapeHtml(siteName)}</strong>. By accessing our website, recipe collections, and digital guides, you agree to comply with and be bound by these Terms of Service.</p>
+          <h2>Use License</h2>
+          <p>Permission is granted to view and print recipe materials for personal, non-commercial home cooking use only. Reproduction or redistribution without prior written consent is strictly prohibited.</p>
+          <h2>Recipe Accuracy & Nutritional Guidance</h2>
+          <p>While all recipes are developed and tested by our culinary team, actual results and nutritional macros may vary depending on individual ingredients, equipment, and preparation methods.</p>
+        `,
+      };
+    case 'about-us':
+    case 'about':
+      return {
+        title: 'About Our Culinary Kitchen',
+        content: `
+          <p>Welcome to <strong>${escapeHtml(siteName)}</strong>! We are an independent group of home cooks, recipe developers, and food lovers dedicated to bringing dependable, flavorful meals to every family table.</p>
+          <h2>Our Philosophy</h2>
+          <p>We believe great food does not have to be intimidating. Every recipe we publish is tested thoroughly in everyday home kitchens to ensure accessible ingredients, accurate timings, and mouthwatering results.</p>
+          <h2>E-E-A-T Commitment</h2>
+          <p>Our team continuously reviews and updates culinary guides to maintain high editorial standards, seasonal freshness, and genuine cooking enthusiasm.</p>
+        `,
+      };
+    case 'contact':
+      return {
+        title: 'Contact Us',
+        content: `
+          <p>We would love to hear from you! Whether you have questions regarding a recipe, kitchen feedback, or editorial inquiries, please feel free to reach out.</p>
+          <h2>Culinary Inquiries</h2>
+          <p>Email our kitchen team at: <strong>contact@recipebridge.local</strong></p>
+          <p>We strive to reply to reader recipe queries within 24 to 48 business hours.</p>
+        `,
+      };
+    case 'disclosure':
+      return {
+        title: 'Affiliate & Recipe Disclosure',
+        content: `
+          <p>In accordance with FTC guidelines, please assume that some links on <strong>${escapeHtml(siteName)}</strong> may be affiliate links. If you purchase items through these links, we may earn a small commission at no additional cost to you.</p>
+          <p>We only recommend kitchen equipment, pantry staples, and culinary tools that our team genuinely uses, tests, and believes add value to your cooking.</p>
+        `,
+      };
+    default:
+      return null;
+  }
+}
+
+/**
  * Cloudflare Pages Catch-All onRequest handler.
  */
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   const pathname = url.pathname;
 
-  // Exclude root path, static assets, admin dashboard, and API endpoints
+  // 1. Exclude static assets and admin APIs
   if (
-    pathname === '/' ||
-    pathname === '' ||
-    pathname === '/index.html' ||
     pathname === '/favicon.ico' ||
     pathname === '/robots.txt' ||
     pathname.startsWith('/admin') ||
@@ -1134,12 +1297,12 @@ export async function onRequest(context) {
     return context.next();
   }
 
-  // 1. Resolve siteId (from env SITE_ID or hostname or default to 'site1')
+  // 2. Resolve siteId (from env SITE_ID or hostname or default to 'site1')
   const siteId = (context.env?.SITE_ID || 'site1').trim().toLowerCase();
-
-  // 2. Fetch site config from RECIPE_KV or fallback to local config.json
-  let siteConfig = defaultConfig;
   const kv = context.env?.RECIPE_KV;
+
+  // 3. Fetch site config from RECIPE_KV or fallback to local config.json
+  let siteConfig = defaultConfig;
   if (kv) {
     try {
       const kvConfig = await kv.get(`config:${siteId}`, 'json');
@@ -1147,17 +1310,130 @@ export async function onRequest(context) {
         siteConfig = kvConfig;
       }
     } catch {
-      // fallback to defaultConfig
+      // fallback
     }
   }
 
   const baseDomain = (siteConfig.targetDomain || 'https://schnellrezept.com').replace(/\/+$/, '');
 
-  // 3. Extract slug from URL path (e.g. /en/broccoli-salad -> broccoli-salad)
+  // 4. ROUTE: HOMEPAGE (/) -> Rich Content Homepage (Natural browsing, NO redirect)
+  if (pathname === '/' || pathname === '' || pathname === '/index.html') {
+    let categories = defaultCategories;
+    let roundups = [];
+
+    if (kv) {
+      try {
+        const storedCats = await kv.get(`categories:${siteId}`, 'json');
+        if (Array.isArray(storedCats) && storedCats.length > 0) {
+          categories = storedCats;
+        }
+
+        const listed = await kv.list({ prefix: `roundups:${siteId}:`, limit: 12 });
+        for (const key of listed.keys || []) {
+          const item = await kv.get(key.name, 'json');
+          if (item) roundups.push(item);
+        }
+      } catch {
+        // fallback
+      }
+    }
+
+    const homeHtml = renderHomepage({ siteConfig, categories, roundups });
+    return new Response(homeHtml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=600',
+      },
+    });
+  }
+
+  // 5. ROUTE: CATEGORY ARCHIVE (/category/:slug) -> (Natural browsing, NO redirect)
+  if (pathname.startsWith('/category/')) {
+    const catSlug = pathname.replace(/^\/category\//, '').split('/')[0].toLowerCase();
+    let categories = defaultCategories;
+    let matchedCategory = null;
+    let roundups = [];
+
+    if (kv) {
+      try {
+        const storedCats = await kv.get(`categories:${siteId}`, 'json');
+        if (Array.isArray(storedCats) && storedCats.length > 0) {
+          categories = storedCats;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    matchedCategory = categories.find((c) => c.slug === catSlug);
+    if (!matchedCategory) {
+      matchedCategory = {
+        name: formatTitleFromSlug(catSlug),
+        slug: catSlug,
+        description: `Explore our collection of ${formatTitleFromSlug(catSlug)} recipes and guides.`,
+      };
+    }
+
+    if (kv) {
+      try {
+        const listed = await kv.list({ prefix: `roundups:${siteId}:` });
+        for (const key of listed.keys || []) {
+          const item = await kv.get(key.name, 'json');
+          if (item && (item.category === catSlug || !item.category)) {
+            roundups.push(item);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const archiveHtml = renderCategoryArchive({ siteConfig, category: matchedCategory, roundups });
+    return new Response(archiveHtml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=600',
+      },
+    });
+  }
+
+  // 6. ROUTE: STATIC PAGES (/privacy-policy, /terms, /about-us, /contact, etc.) -> (Natural browsing, NO redirect)
+  const cleanSlug = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+  let staticPage = null;
+
+  if (kv) {
+    try {
+      staticPage = await kv.get(`pages:${siteId}:${cleanSlug}`, 'json');
+    } catch {
+      // ignore
+    }
+  }
+
+  if (!staticPage) {
+    staticPage = getDefaultPageContent(cleanSlug, siteConfig.siteName || 'Recipe Bridge');
+  }
+
+  if (staticPage) {
+    const pageHtml = renderStaticPage({
+      siteConfig,
+      title: staticPage.title,
+      content: staticPage.content,
+    });
+    return new Response(pageHtml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
+  }
+
+  // 7. ROUTE: RECIPE / ROUNDUP LANDING PAGE (Targeted monetization page)
   const segments = pathname.split('/').filter(Boolean);
   const slug = segments[segments.length - 1] || 'recipe';
 
-  // 4. Check for roundup data in KV first, then fallback to local recipes.json
   let recipe = null;
   if (kv) {
     try {
@@ -1179,11 +1455,9 @@ export async function onRequest(context) {
     recipe = resolveRecipe(slug);
   }
 
-  // 5. Check User-Agent for Pinterest bots
   const userAgent = (context.request.headers.get('user-agent') || '').toLowerCase();
   const isPinterestBot = userAgent.includes('pinterestbot') || userAgent.includes('pinterest');
 
-  // 6. Calculate and encode dynamic targetUrl with UTM tags
   let encodedTarget = '';
   if (!isPinterestBot) {
     const targetUrlObj = new URL(`${baseDomain}${pathname}${url.search}`);
@@ -1201,7 +1475,7 @@ export async function onRequest(context) {
     encodedTarget = btoa(targetUrlObj.toString());
   }
 
-  const html = renderHtml({
+  const html = renderRecipeArticle({
     title: recipe.title,
     description: recipe.description,
     image: recipe.image,
