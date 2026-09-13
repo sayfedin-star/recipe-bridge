@@ -262,6 +262,903 @@ function getSharedStyles() {
 }
 
 /**
+ * Returns CSS styles specifically tailored for the 40 Aprons Theme.
+ * Warm ivory background, charcoal serif titles, terracotta accents, WPRM card, 2-column layout.
+ */
+function get40ApronsStyles() {
+  return `
+    :root {
+      --fa-bg: #faf7f2;
+      --fa-surface: #ffffff;
+      --fa-surface-card: #fdfbf7;
+      --fa-surface-peach: #fceded;
+      --fa-peach-border: #fed7aa;
+      --fa-border: #e7e0d6;
+      --fa-heading: #2d2926;
+      --fa-body: #374151;
+      --fa-muted: #6b7280;
+      --fa-primary: #c86a37;
+      --fa-primary-hover: #b45b29;
+      --fa-stars: #d97706;
+      --font-serif: Georgia, "Times New Roman", Times, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--fa-bg);
+      color: var(--fa-body);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header flows naturally with page (no sticky, no fixed) */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--fa-border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--fa-heading);
+    }
+
+    .logo-badge {
+      background: var(--fa-primary);
+      color: #fff;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--fa-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--fa-primary);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+    }
+
+    /* Hero Bar */
+    .fa-hero-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 0;
+    }
+
+    .fa-breadcrumbs {
+      font-size: 0.85rem;
+      color: var(--fa-muted);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .fa-breadcrumbs a {
+      color: var(--fa-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .fa-breadcrumbs a:hover {
+      color: var(--fa-primary);
+    }
+
+    .fa-breadcrumbs .active {
+      color: var(--fa-heading);
+      font-weight: 600;
+    }
+
+    .fa-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 3.1rem);
+      font-weight: 700;
+      color: var(--fa-heading);
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.015em;
+    }
+
+    .fa-rating-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .fa-stars {
+      color: var(--fa-stars);
+      font-size: 1.15rem;
+      letter-spacing: 2px;
+    }
+
+    .fa-rating-score {
+      font-weight: 700;
+      color: var(--fa-heading);
+      font-size: 0.95rem;
+    }
+
+    .fa-rating-count {
+      font-size: 0.85rem;
+      color: var(--fa-muted);
+    }
+
+    .fa-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      color: var(--fa-muted);
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--fa-border);
+      margin-bottom: 1.25rem;
+    }
+
+    .fa-meta-sep {
+      color: #d1d5db;
+    }
+
+    .fa-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-jump-recipe {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.75rem 1.75rem;
+      background: var(--fa-primary);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.925rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(200, 106, 55, 0.3);
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-jump-recipe:hover {
+      background: var(--fa-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .fa-icon-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-icon-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.6rem 1rem;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--fa-heading);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-icon-action:hover {
+      border-color: var(--fa-primary);
+      color: var(--fa-primary);
+    }
+
+    /* 2-Column Grid */
+    .fa-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .fa-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* Main Column */
+    .fa-main-content {
+      min-width: 0;
+    }
+
+    .fa-hero-media {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .fa-hero-img {
+      width: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fa-media-caption {
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      color: var(--fa-muted);
+      font-style: italic;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-top: none;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    .fa-lead-content {
+      margin-bottom: 2rem;
+    }
+
+    .fa-lead-p {
+      font-size: 1.15rem;
+      line-height: 1.75;
+      color: var(--fa-heading);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .fa-story-p {
+      font-size: 1.025rem;
+      line-height: 1.8;
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Chef's Tips */
+    .fa-tips-box {
+      background: var(--fa-surface-peach);
+      border: 1px solid var(--fa-peach-border);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .fa-tips-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .fa-tips-icon {
+      font-size: 1.25rem;
+    }
+
+    .fa-tips-title {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #9a3412;
+      margin: 0;
+    }
+
+    .fa-tips-list {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: #7c2d12;
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .fa-tips-list li {
+      margin-bottom: 0.4rem;
+    }
+
+    /* Cooking FAQ */
+    .fa-faq-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .fa-faq-heading {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      margin-bottom: 1rem;
+    }
+
+    .fa-faq-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .fa-faq-item {
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .fa-faq-question {
+      padding: 1rem 1.25rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--fa-heading);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      background: var(--fa-surface-card);
+    }
+
+    .fa-faq-question::-webkit-details-marker {
+      display: none;
+    }
+
+    .fa-faq-question::after {
+      content: "＋";
+      font-size: 1.1rem;
+      color: var(--fa-primary);
+      font-weight: 700;
+    }
+
+    .fa-faq-item[open] .fa-faq-question::after {
+      content: "−";
+    }
+
+    .fa-faq-answer {
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #4b5563;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    /* WPRM Recipe Card */
+    .wprm-recipe-card {
+      background: var(--fa-surface-card);
+      border: 2px solid var(--fa-border);
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.03);
+      margin-bottom: 2.5rem;
+    }
+
+    .wprm-badge {
+      display: inline-block;
+      background: var(--fa-primary);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .wprm-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+      font-weight: 700;
+      color: var(--fa-heading);
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .wprm-stars-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .wprm-stars {
+      color: var(--fa-stars);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+
+    .wprm-rating-text {
+      font-size: 0.85rem;
+      color: var(--fa-muted);
+      font-weight: 600;
+    }
+
+    .wprm-summary {
+      font-size: 0.975rem;
+      line-height: 1.65;
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+
+    .wprm-times-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      padding: 1.1rem;
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-radius: 8px;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .wprm-times-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .wprm-time-label {
+      display: block;
+      font-size: 0.725rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      margin-bottom: 0.25rem;
+    }
+
+    .wprm-time-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+    }
+
+    /* Digital Product Box inside WPRM */
+    .fa-product-box {
+      background: #ffffff;
+      border: 1.5px dashed var(--fa-primary);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .fa-prod-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: #fff7ed;
+      color: var(--fa-primary);
+      border: 1px solid #fed7aa;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .fa-prod-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .fa-prod-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--fa-heading);
+      margin-bottom: 0.2rem;
+    }
+
+    .fa-prod-desc {
+      font-size: 0.8rem;
+      color: var(--fa-muted);
+    }
+
+    .fa-prod-price-tag {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--fa-primary);
+    }
+
+    .btn-fa-preview {
+      padding: 0.6rem 1.1rem;
+      background: var(--fa-primary);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-fa-preview:hover {
+      background: var(--fa-primary-hover);
+    }
+
+    /* WPRM Ingredients Checklist */
+    .wprm-ingredients-section {
+      margin-bottom: 1.75rem;
+    }
+
+    .wprm-section-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      margin-bottom: 0.25rem;
+    }
+
+    .wprm-section-hint {
+      font-size: 0.85rem;
+      color: var(--fa-muted);
+      margin-bottom: 1rem;
+    }
+
+    .wprm-checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .wprm-item {
+      padding: 0.6rem 0.85rem;
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-radius: 8px;
+    }
+
+    .wprm-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .wprm-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--fa-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .wprm-text {
+      font-size: 0.95rem;
+      color: var(--fa-heading);
+      transition: all 0.15s ease;
+    }
+
+    /* WPRM CTA Button */
+    .wprm-btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 1.15rem 1.5rem;
+      background: var(--fa-primary);
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(200, 106, 55, 0.35);
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .wprm-btn-cta:hover {
+      background: var(--fa-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Sidebar */
+    .fa-sidebar {
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .fa-widget {
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .fa-widget-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--fa-peach-border);
+      margin-bottom: 1.25rem;
+    }
+
+    .fa-author-widget {
+      text-align: center;
+    }
+
+    .fa-author-avatar-wrap {
+      width: 90px;
+      height: 90px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .fa-author-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fa-author-name {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      margin-bottom: 0.5rem;
+    }
+
+    .fa-author-bio {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: #4b5563;
+      margin-bottom: 1.25rem;
+    }
+
+    .fa-author-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.65rem 1rem;
+      border: 2px solid var(--fa-primary);
+      color: var(--fa-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .fa-author-btn:hover {
+      background: var(--fa-primary);
+      color: #ffffff;
+    }
+
+    .fa-search-form {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .fa-search-input {
+      flex: 1;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--fa-border);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .fa-search-input:focus {
+      border-color: var(--fa-primary);
+    }
+
+    .fa-search-btn {
+      padding: 0.6rem 1rem;
+      background: var(--fa-heading);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .fa-search-btn:hover {
+      background: var(--fa-primary);
+    }
+
+    .fa-mini-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .fa-mini-card {
+      display: flex;
+      gap: 0.85rem;
+      align-items: center;
+    }
+
+    .fa-mini-thumb {
+      width: 68px;
+      height: 68px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+
+    .fa-mini-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--fa-primary);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .fa-mini-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .fa-mini-link {
+      color: var(--fa-heading);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .fa-mini-link:hover {
+      color: var(--fa-primary);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 1px solid var(--fa-border);
+      border-radius: 1.25rem;
+      max-width: 480px;
+      width: 100%;
+      padding: 2.25rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .modal-badge {
+      display: inline-block;
+      background: #fff7ed;
+      color: var(--fa-primary);
+      border: 1px solid var(--fa-peach-border);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-text {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--fa-body);
+      margin-bottom: 1.75rem;
+    }
+
+    .modal-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-modal-primary {
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      background: var(--fa-primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(200, 106, 55, 0.3);
+    }
+
+    .btn-modal-sec {
+      width: 100%;
+      padding: 0.75rem 1.25rem;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+    }
+  `;
+}
+
+/**
  * Returns header HTML with custom logo text and navigation links.
  */
 function renderHeader(siteConfig) {
@@ -546,6 +1443,7 @@ function renderRecipeArticle({
   image,
   cards,
   postType,
+  category,
   customPrice,
   customProductTitle,
   ingredients,
@@ -673,13 +1571,31 @@ function renderRecipeArticle({
       }
 
       // CTA button triggers
-      var ctaButtons = document.querySelectorAll('#cta-link, .btn-wide-recipe, .btn-make-recipe');
+      var ctaButtons = document.querySelectorAll('#cta-link, .btn-wide-recipe, .btn-make-recipe, .btn-jump-recipe, .wprm-btn-cta');
       ctaButtons.forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
           var customTarget = btn.getAttribute('data-target');
           var itemSlug = btn.getAttribute('data-slug');
           doRedirect(customTarget, itemSlug);
+        });
+      });
+
+      // WPRM interactive checkboxes
+      document.querySelectorAll('.wprm-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          var item = cb.closest('.wprm-item');
+          if (!item) return;
+          var text = item.querySelector('.wprm-text');
+          if (text) {
+            if (cb.checked) {
+              text.style.textDecoration = 'line-through';
+              text.style.opacity = '0.55';
+            } else {
+              text.style.textDecoration = 'none';
+              text.style.opacity = '1';
+            }
+          }
         });
       });
 
@@ -729,14 +1645,81 @@ function renderRecipeArticle({
     })();
   </script>`;
 
+  const rawIngs = ingredients && ingredients.trim()
+    ? ingredients.split('\n').map((l) => l.trim()).filter(Boolean)
+    : defaultIngredients;
+
+  const theme = siteConfig.theme || '40aprons';
+  const articleParams = {
+    title,
+    description,
+    image,
+    cards,
+    postType,
+    category,
+    customPrice,
+    customProductTitle,
+    ingredients,
+    pageUrl,
+    encodedTarget,
+    isPinterestBot,
+    siteConfig,
+    siteId,
+    slug,
+    baseDomain,
+    safeTitle,
+    safeDesc,
+    safeImage,
+    safeUrl,
+    safeSiteName,
+    safePrice,
+    safeCurrency,
+    safeBrand,
+    safeProductTitle,
+    finalPrice,
+    finalProductTitle,
+    isSingle,
+    productSchema,
+    redirectScript,
+    rawIngs,
+  };
+
+  if (theme === 'editorial') {
+    return renderEditorialThemeArticle(articleParams);
+  }
+  return render40ApronsThemeArticle(articleParams);
+}
+
+/**
+ * Generates the classic Editorial Theme layout.
+ */
+function renderEditorialThemeArticle({
+  cards,
+  postType,
+  safeTitle,
+  safeDesc,
+  safeImage,
+  safeUrl,
+  safeSiteName,
+  safePrice,
+  safeCurrency,
+  safeProductTitle,
+  isSingle,
+  productSchema,
+  redirectScript,
+  rawIngs,
+  encodedTarget,
+  isPinterestBot,
+  siteConfig,
+  siteId,
+  slug,
+  baseDomain,
+  image,
+}) {
   // Build Single Recipe Ingredients Checklist OR Roundup Recipe Cards
   let mainContentHtml = '';
 
   if (isSingle) {
-    // Parse ingredients checklist
-    const rawIngs = ingredients && ingredients.trim()
-      ? ingredients.split('\n').map((l) => l.trim()).filter(Boolean)
-      : defaultIngredients;
 
     const btnAttributes = isPinterestBot
       ? 'href="#recipe"'
@@ -1360,6 +2343,397 @@ function renderRecipeArticle({
 }
 
 /**
+ * Generates the rich 40 Aprons Theme layout (2-Column Grid, WPRM Recipe Card, Warm Editorial).
+ */
+function render40ApronsThemeArticle({
+  cards,
+  postType,
+  category,
+  safeTitle,
+  safeDesc,
+  safeImage,
+  safeUrl,
+  safeSiteName,
+  safePrice,
+  safeCurrency,
+  safeProductTitle,
+  isSingle,
+  productSchema,
+  redirectScript,
+  rawIngs,
+  encodedTarget,
+  isPinterestBot,
+  siteConfig,
+  siteId,
+  slug,
+  baseDomain,
+  image,
+}) {
+  const jumpBtnAttributes = isPinterestBot
+    ? 'href="#recipe"'
+    : `href="#recipe" class="btn-jump-recipe btn-make-recipe" id="cta-link" data-target="${encodedTarget}" data-slug="${slug}"`;
+
+  const btnWideAttributes = isPinterestBot
+    ? 'href="#recipe"'
+    : `href="#recipe" class="wprm-btn-cta btn-make-recipe" data-target="${encodedTarget}" data-slug="${slug}"`;
+
+  const categoryName = category ? formatTitleFromSlug(category) : 'Recipes';
+
+  // Roundup stack if postType is roundup
+  let roundupCardsHtml = '';
+  if (!isSingle && Array.isArray(cards) && cards.length > 0) {
+    roundupCardsHtml = `
+      <div style="margin: 2.5rem 0;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; color: var(--fa-heading); margin-bottom: 1.25rem;">Complete Recipe Variations</h3>
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          ${cards.map((c, idx) => {
+            const cardTitle = escapeHtml(c.title || `Recipe #${idx + 1}`);
+            const cardDesc = escapeHtml(c.description || 'Rich flavor and kitchen-tested simplicity.');
+            const cardImg = escapeHtml(c.image || image);
+            const cardSlug = escapeHtml(c.slug || `${slug}-recipe-${idx + 1}`);
+
+            let cardEncoded = encodedTarget;
+            if (!isPinterestBot) {
+              let rawTarget = (c.targetUrl || c.targetPath || '').trim();
+              let cardTargetUrlObj;
+              try {
+                if (rawTarget.startsWith('http://') || rawTarget.startsWith('https://')) {
+                  cardTargetUrlObj = new URL(rawTarget);
+                } else {
+                  const cleanPath = rawTarget ? (rawTarget.startsWith('/') ? rawTarget : `/${rawTarget}`) : `/${slug}`;
+                  cardTargetUrlObj = new URL(`${baseDomain}${cleanPath}`);
+                }
+              } catch {
+                cardTargetUrlObj = new URL(`${baseDomain}/${slug}`);
+              }
+
+              if (siteConfig.utm) {
+                if (siteConfig.utm.source) cardTargetUrlObj.searchParams.set('utm_source', siteConfig.utm.source);
+                if (siteConfig.utm.medium) cardTargetUrlObj.searchParams.set('utm_medium', (siteConfig.utm.medium || '').replace('{siteId}', siteId));
+                if (siteConfig.utm.campaign) cardTargetUrlObj.searchParams.set('utm_campaign', (siteConfig.utm.campaign || '').replace('{slug}', cardSlug));
+              }
+              cardEncoded = btoa(cardTargetUrlObj.toString());
+            }
+
+            const cardBtnAttrs = isPinterestBot
+              ? 'href="#recipe"'
+              : `href="#recipe" class="wprm-btn-cta btn-make-recipe" data-target="${cardEncoded}" data-slug="${cardSlug}"`;
+
+            return `
+              <div style="background: #ffffff; border: 1px solid var(--fa-border); border-radius: 12px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <img src="${cardImg}" alt="${cardTitle}" style="width: 100%; height: 100%; min-height: 180px; object-fit: cover;" loading="lazy" />
+                <div style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--fa-primary); text-transform: uppercase;">RECIPE #${idx + 1}</span>
+                    <h4 style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--fa-heading); margin: 0.25rem 0 0.5rem;">${cardTitle}</h4>
+                    <p style="font-size: 0.9rem; color: #4b5563; line-height: 1.6; margin: 0 0 1rem;">${cardDesc}</p>
+                  </div>
+                  <div>
+                    <a ${cardBtnAttrs} style="display: inline-flex; align-items: center; justify-content: center; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 700; border-radius: 8px; text-decoration: none;">
+                      <span>MAKE THIS RECIPE &rarr;</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${safeTitle} - ${safeSiteName}</title>
+  <meta name="description" content="${safeDesc}" />
+
+  <!-- Open Graph Meta Tags (Pinterest Product Pins & Social Media) -->
+  <meta property="og:site_name" content="${safeSiteName}" />
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content="${safeTitle}" />
+  <meta property="og:description" content="${safeDesc}" />
+  <meta property="og:image" content="${safeImage}" />
+  <meta property="og:url" content="${safeUrl}" />
+  <meta property="product:price:amount" content="${safePrice}" />
+  <meta property="product:price:currency" content="${safeCurrency}" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${safeTitle}" />
+  <meta name="twitter:description" content="${safeDesc}" />
+  <meta name="twitter:image" content="${safeImage}" />
+
+  <!-- Schema.org Product Structured Data for Product Rich Pins -->
+  <script type="application/ld+json">
+    ${productSchema}
+  </script>
+
+  <style>
+    ${get40ApronsStyles()}
+  </style>
+</head>
+<body>
+  ${renderHeader(siteConfig)}
+
+  <!-- Hero Bar -->
+  <div class="fa-hero-wrapper">
+    <nav class="fa-breadcrumbs" aria-label="Breadcrumbs">
+      <a href="/">Home</a>
+      <span>/</span>
+      <a href="/category/${escapeHtml((category || 'recipes').toLowerCase())}">${escapeHtml(categoryName)}</a>
+      <span>/</span>
+      <span class="active">${safeTitle}</span>
+    </nav>
+
+    <h1 class="fa-title">${safeTitle}</h1>
+
+    <div class="fa-rating-bar">
+      <div class="fa-stars">★★★★★</div>
+      <span class="fa-rating-score">5.0</span>
+      <span class="fa-rating-count">(378 ratings & reviews)</span>
+    </div>
+
+    <div class="fa-meta-bar">
+      <span class="fa-meta-item">Recipe by <strong>Cheryl Malik</strong></span>
+      <span class="fa-meta-sep">•</span>
+      <span class="fa-meta-item">Updated: <strong>September 2026</strong></span>
+      <span class="fa-meta-sep">•</span>
+      <span class="fa-meta-item">💬 <strong>24 Comments</strong></span>
+    </div>
+
+    <div class="fa-action-bar">
+      <a ${jumpBtnAttributes}>
+        <span>↓ JUMP TO RECIPE</span>
+      </a>
+
+      <div class="fa-icon-actions">
+        <button type="button" class="btn-icon-action" onclick="window.print()">
+          <span>🖨️</span> <span>Print</span>
+        </button>
+        <button type="button" class="btn-icon-action" ${isPinterestBot ? '' : 'onclick="window.location.hash=\'recipe\'"'}>
+          <span>📌</span> <span>Pin</span>
+        </button>
+        <button type="button" class="btn-icon-action" id="btn-save-recipe">
+          <span>🔖</span> <span>Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2-Column Grid -->
+  <div class="fa-container">
+    <main class="fa-main-content">
+      <div class="fa-hero-media">
+        <img src="${safeImage}" alt="${safeTitle}" class="fa-hero-img" />
+        <div class="fa-media-caption">Tender, deeply flavorful, and kitchen-tested for foolproof home cooking.</div>
+      </div>
+
+      <div class="fa-lead-content">
+        <p class="fa-lead-p">${safeDesc}</p>
+        <p class="fa-story-p">This dish has quickly become one of our most requested family recipes. Between the silky textures, balanced seasonings, and wholesome pantry ingredients, it delivers gourmet dining satisfaction in minimal kitchen time. Whether prepping for a weeknight dinner or entertaining guests, this foolproof guide guarantees rave reviews.</p>
+      </div>
+
+      <!-- Chef's Ingredient Tips Box -->
+      <div class="fa-tips-box">
+        <div class="fa-tips-header">
+          <span class="fa-tips-icon">✨</span>
+          <h3 class="fa-tips-title">Chef's Secret Ingredient Notes & Substitutions</h3>
+        </div>
+        <ul class="fa-tips-list">
+          <li><strong>Oil & Butter:</strong> Use high-quality extra virgin olive oil or clarified butter (ghee) for rich, aromatic browning without burning.</li>
+          <li><strong>Garlic & Herbs:</strong> Freshly minced garlic and cracked black pepper release tenfold more flavor compared to jarred powders.</li>
+          <li><strong>Dietary Swaps:</strong> Need dairy-free? Full-fat canned coconut milk or unsweetened cashew cream swaps in seamlessly with zero loss in richness.</li>
+          <li><strong>Make-Ahead Ease:</strong> Pre-chop aromatics and vegetables up to 24 hours in advance to make assembly a quick 10-minute breeze.</li>
+        </ul>
+      </div>
+
+      <!-- Cooking FAQ Accordion -->
+      <div class="fa-faq-section">
+        <h3 class="fa-faq-heading">Frequently Asked Questions</h3>
+        <div class="fa-faq-stack">
+          <details class="fa-faq-item" open>
+            <summary class="fa-faq-question">Can I make this recipe ahead of time?</summary>
+            <div class="fa-faq-answer">
+              Yes! You can assemble the full dish up to 24 hours in advance. Store covered in the refrigerator, then bring to room temperature for 15 minutes before final cooking.
+            </div>
+          </details>
+          <details class="fa-faq-item">
+            <summary class="fa-faq-question">How do I store and reheat leftovers?</summary>
+            <div class="fa-faq-answer">
+              Keep leftovers in an airtight glass container in the fridge for up to 4 days. Reheat gently over low-medium heat on the stovetop with a splash of broth or water to revive moisture.
+            </div>
+          </details>
+          <details class="fa-faq-item">
+            <summary class="fa-faq-question">Can this recipe be frozen?</summary>
+            <div class="fa-faq-answer">
+              Absolutely. Allow the dish to cool completely, portion into freezer-safe containers or silicone bags, and freeze for up to 3 months. Thaw overnight in the refrigerator before reheating.
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- WPRM Recipe Card -->
+      <div class="wprm-recipe-card" id="recipe">
+        <div class="wprm-badge">KITCHEN TESTED & APPROVED</div>
+        <h2 class="wprm-title">${safeTitle}</h2>
+        <div class="wprm-stars-line">
+          <span class="wprm-stars">★★★★★</span>
+          <span class="wprm-rating-text">5.0 from 378 votes</span>
+        </div>
+        <p class="wprm-summary">${safeDesc}</p>
+
+        <div class="wprm-times-grid">
+          <div class="wprm-time-block">
+            <span class="wprm-time-label">PREP TIME</span>
+            <span class="wprm-time-val">15 mins</span>
+          </div>
+          <div class="wprm-time-block">
+            <span class="wprm-time-label">COOK TIME</span>
+            <span class="wprm-time-val">25 mins</span>
+          </div>
+          <div class="wprm-time-block">
+            <span class="wprm-time-label">TOTAL TIME</span>
+            <span class="wprm-time-val">40 mins</span>
+          </div>
+          <div class="wprm-time-block">
+            <span class="wprm-time-label">SERVINGS</span>
+            <span class="wprm-time-val">4 servings</span>
+          </div>
+        </div>
+
+        <!-- Digital Product Box inside WPRM -->
+        <div class="fa-product-box">
+          <div class="fa-prod-badge">DIGITAL CHEF'S PACK</div>
+          <div class="fa-prod-info">
+            <div class="fa-prod-name">${safeProductTitle}</div>
+            <div class="fa-prod-desc">Includes laminated printable card, prep checklists, and nutritional macro breakdown.</div>
+          </div>
+          <div class="fa-prod-price-tag">$${safePrice}</div>
+          <button type="button" class="btn-fa-preview" id="btn-pdf-pack">Instant PDF Download</button>
+        </div>
+
+        <!-- Ingredients Checklist with Checkboxes -->
+        <div class="wprm-ingredients-section">
+          <h3 class="wprm-section-title">Ingredients Checklist</h3>
+          <p class="wprm-section-hint">Click checkboxes to cross off ingredients as you cook:</p>
+          <ul class="wprm-checklist">
+            ${rawIngs.map((ing, i) => `
+              <li class="wprm-item">
+                <label class="wprm-checkbox-label">
+                  <input type="checkbox" class="wprm-checkbox" id="ing-${i}" />
+                  <span class="wprm-text">${escapeHtml(ing)}</span>
+                </label>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+
+        <!-- WPRM Full-Width CTA Button -->
+        <div style="margin-top: 1.75rem;">
+          <a ${btnWideAttributes}>
+            <span>Get Recipe Ingredients / Jump to Recipe &rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      ${roundupCardsHtml}
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="fa-sidebar">
+      <!-- Meet Cheryl Author Card -->
+      <div class="fa-widget fa-author-widget">
+        <div class="fa-author-avatar-wrap">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" alt="Cheryl Malik" class="fa-author-avatar" />
+        </div>
+        <h4 class="fa-author-name">Meet Cheryl</h4>
+        <p class="fa-author-bio">Hi, I'm Cheryl! Founder, recipe developer, and culinary obsessive. I create foolproof, flavor-packed recipes for busy home cooks who crave vibrant, wholesome meals without the fuss.</p>
+        <a href="/about-us" class="fa-author-btn">MEET MY TEAM &rarr;</a>
+      </div>
+
+      <!-- Search Widget -->
+      <div class="fa-widget">
+        <h4 class="fa-widget-title">Search Recipes</h4>
+        <form class="fa-search-form" onsubmit="return false;">
+          <input type="text" class="fa-search-input" placeholder="Search delicious recipes..." />
+          <button type="submit" class="fa-search-btn" ${isPinterestBot ? '' : 'onclick="window.location.hash=\'recipe\'"'}>SEARCH</button>
+        </form>
+      </div>
+
+      <!-- Trending Now -->
+      <div class="fa-widget">
+        <h4 class="fa-widget-title">Trending Now</h4>
+        <div class="fa-mini-cards">
+          <div class="fa-mini-card">
+            <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=160&q=80" alt="Creamy Tuscan Garlic Chicken" class="fa-mini-thumb" />
+            <div>
+              <span class="fa-mini-tag">DINNER</span>
+              <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Creamy Tuscan Garlic Chicken</a></h5>
+            </div>
+          </div>
+          <div class="fa-mini-card">
+            <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=160&q=80" alt="Slow Cooker Beef Stew" class="fa-mini-thumb" />
+            <div>
+              <span class="fa-mini-tag">SLOW COOKER</span>
+              <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Slow Cooker Rich Beef Stew</a></h5>
+            </div>
+          </div>
+          <div class="fa-mini-card">
+            <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=160&q=80" alt="Broccoli Bacon Salad" class="fa-mini-thumb" />
+            <div>
+              <span class="fa-mini-tag">QUICK SIDE</span>
+              <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Crispy Broccoli Bacon Salad</a></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seasonal Favorites -->
+      <div class="fa-widget">
+        <h4 class="fa-widget-title">Seasonal Favorites</h4>
+        <div class="fa-mini-cards">
+          <div class="fa-mini-card">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=160&q=80" alt="Harvest Kale & Quinoa Bowl" class="fa-mini-thumb" />
+            <div>
+              <span class="fa-mini-tag">HEALTHY</span>
+              <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Harvest Roasted Veggie Bowl</a></h5>
+            </div>
+          </div>
+          <div class="fa-mini-card">
+            <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=160&q=80" alt="Creamy Pumpkin Soup" class="fa-mini-thumb" />
+            <div>
+              <span class="fa-mini-tag">FALL SPECIAL</span>
+              <h5 class="fa-mini-title"><a href="/#recipe" class="fa-mini-link">Silky Roasted Pumpkin Soup</a></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  ${renderFooter(siteConfig)}
+
+  <div class="modal-overlay" id="pdf-modal">
+    <div class="modal-card">
+      <span class="modal-badge">Digital Edition</span>
+      <h3 class="modal-title">Instant Printable PDF Pack</h3>
+      <p class="modal-text">Our culinary team is currently refreshing the $${safePrice} downloadable PDF pack with the latest September 2026 bonus variations! You can access the full recipe online right now below.</p>
+      <div class="modal-btn-group">
+        <button type="button" class="btn-modal-primary" id="modal-jump-btn">Jump to Full Recipe Online ↓</button>
+        <button type="button" class="btn-modal-sec" id="close-pdf-modal">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  ${redirectScript}
+</body>
+</html>`;
+}
+
+/**
  * Returns default legal static pages content if not configured in KV.
  */
 function getDefaultPageContent(slug, siteName) {
@@ -1594,6 +2968,7 @@ export async function onRequest(context) {
           customPrice: roundup.customPrice || '',
           customProductTitle: roundup.customProductTitle || '',
           ingredients: roundup.ingredients || '',
+          category: roundup.category || '',
         };
       }
     } catch {
@@ -1634,6 +3009,7 @@ export async function onRequest(context) {
     customPrice: recipe.customPrice || '',
     customProductTitle: recipe.customProductTitle || '',
     ingredients: recipe.ingredients || '',
+    category: recipe.category || '',
     pageUrl: context.request.url,
     encodedTarget,
     isPinterestBot,

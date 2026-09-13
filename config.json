@@ -16,5 +16,6 @@
     "currency": "USD",
     "availability": "https://schema.org/InStock",
     "brand": "Recipe Bridge"
-  }
+  },
+  "theme": "40aprons"
 }

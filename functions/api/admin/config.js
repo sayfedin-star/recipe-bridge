@@ -49,12 +49,18 @@ export async function onRequestGet(context) {
         logoText: `${siteId.toUpperCase()} Kitchen`,
         navLinks: defaultNavLinks,
       },
+      theme: defaultConfig.theme || '40aprons',
     };
-  } else if (!siteConfig.navigation) {
-    siteConfig.navigation = {
-      logoText: siteConfig.siteName || `${siteId.toUpperCase()} Kitchen`,
-      navLinks: defaultNavLinks,
-    };
+  } else {
+    if (!siteConfig.navigation) {
+      siteConfig.navigation = {
+        logoText: siteConfig.siteName || `${siteId.toUpperCase()} Kitchen`,
+        navLinks: defaultNavLinks,
+      };
+    }
+    if (!siteConfig.theme) {
+      siteConfig.theme = defaultConfig.theme || '40aprons';
+    }
   }
 
   return jsonResponse({ success: true, siteId, config: siteConfig });
@@ -106,6 +112,7 @@ export async function onRequestPost(context) {
               .filter((l) => l.label && l.url)
           : defaultNavLinks,
       },
+      theme: newConfig.theme === 'editorial' ? 'editorial' : '40aprons',
     };
 
     const kv = context.env?.RECIPE_KV;

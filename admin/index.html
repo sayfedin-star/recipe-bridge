@@ -379,10 +379,20 @@
         <h2 class="card-title">Redirect Destination & Triggers</h2>
         <p class="card-desc">Configure redirection domain and interaction triggers for the active site in Cloudflare KV.</p>
 
-        <div class="form-group">
-          <label>Target Domain (Destination)</label>
-          <input type="url" id="cfg-targetDomain" style="width: 100%;" placeholder="https://schnellrezept.com" />
-          <div class="hint">Base domain where human visitors will be routed. Encoded with Base64 on server.</div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Target Domain (Destination)</label>
+            <input type="url" id="cfg-targetDomain" style="width: 100%;" placeholder="https://schnellrezept.com" />
+            <div class="hint">Base domain where human visitors will be routed. Encoded with Base64 on server.</div>
+          </div>
+          <div class="form-group">
+            <label>Active Theme Template</label>
+            <select id="siteTheme" style="width: 100%;">
+              <option value="40aprons">40 Aprons (Sidebar, WPRM Recipe Card, Warm Editorial)</option>
+              <option value="editorial">Modern Editorial (Clean Single Column)</option>
+            </select>
+            <div class="hint">Visual theme and layout applied to recipe pages.</div>
+          </div>
         </div>
 
         <div style="margin: 1.5rem 0 1rem;">
@@ -967,6 +977,7 @@
 
       function populateConfigUI(cfg) {
         document.getElementById('cfg-targetDomain').value = cfg.targetDomain || '';
+        document.getElementById('siteTheme').value = cfg.theme || '40aprons';
         document.getElementById('trg-touch').checked = Boolean(cfg.triggers && cfg.triggers.touch);
         document.getElementById('trg-scroll').checked = Boolean(cfg.triggers && cfg.triggers.scroll);
         document.getElementById('trg-click').checked = Boolean(cfg.triggers && cfg.triggers.click);
@@ -1075,7 +1086,8 @@
           navigation: {
             logoText: document.getElementById('nav-logo-text').value.trim() || (currentSite.toUpperCase() + ' Kitchen'),
             navLinks: collectNavLinks()
-          }
+          },
+          theme: document.getElementById('siteTheme').value || '40aprons'
         };
 
         return apiFetch('/api/admin/config', {
