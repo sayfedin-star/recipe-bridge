@@ -831,22 +831,31 @@ function get40ApronsStyles() {
     }
 
     /* WPRM Ingredients Checklist */
+    /* WPRM Ingredients Checklist (Compact 40 Aprons Style) */
     .wprm-ingredients-section {
       margin-bottom: 1.75rem;
     }
 
     .wprm-section-title {
       font-family: var(--font-serif);
-      font-size: 1.35rem;
+      font-size: 1.55rem;
       font-weight: 700;
-      color: var(--fa-heading);
-      margin-bottom: 0.25rem;
+      color: #2d2926;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wprm-section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e8e3dc;
     }
 
     .wprm-section-hint {
-      font-size: 0.85rem;
-      color: var(--fa-muted);
-      margin-bottom: 1rem;
+      display: none;
     }
 
     .wprm-checklist {
@@ -855,56 +864,72 @@ function get40ApronsStyles() {
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0;
     }
 
     .wprm-item {
-      padding: 0.6rem 0.85rem;
-      background: #ffffff;
-      border: 1px solid var(--fa-border);
-      border-radius: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 4px 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #2d2926;
     }
 
     .wprm-checkbox-label {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      align-items: baseline;
+      gap: 10px;
       cursor: pointer;
       user-select: none;
+      width: 100%;
     }
 
     .wprm-checkbox {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--fa-primary);
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      accent-color: #c05621;
+      border: 1px solid #d1d5db;
+      border-radius: 3px;
       cursor: pointer;
+      margin: 0;
       flex-shrink: 0;
+      position: relative;
+      top: 2px;
     }
 
     .wprm-text {
-      font-size: 0.95rem;
-      color: var(--fa-heading);
+      font-size: 15px;
+      line-height: 1.5;
+      color: #2d2926;
       transition: all 0.15s ease;
     }
 
     .wprm-section-subhead {
       list-style: none;
-      padding: 0.85rem 0 0.35rem 0;
-      margin-top: 0.5rem;
-      border-bottom: 2px solid var(--fa-border);
+      padding: 0 0 4px 0;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #e8e3dc;
     }
 
     .wprm-section-subhead:first-child {
-      margin-top: 0;
-      padding-top: 0;
+      margin-top: 4px;
     }
 
     .wprm-section-subhead h4 {
       font-family: var(--font-serif);
-      font-size: 1.15rem;
+      font-size: 18px;
       font-weight: 700;
-      color: var(--fa-heading);
+      color: #2d2926;
       margin: 0;
+      line-height: 1.3;
     }
 
     /* WPRM CTA Button */
@@ -1174,6 +1199,64 @@ function get40ApronsStyles() {
       border-radius: 0.5rem;
       border: none;
       cursor: pointer;
+    }
+
+    /* 40 Aprons Food Blog Professional Footer */
+    footer {
+      background: #f4eee6;
+      border-top: 1px solid #e8e0d5;
+      margin-top: 60px;
+      padding: 40px 20px 30px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .footer-links li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .footer-link {
+      color: #6b635b;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-link:hover {
+      color: #c05621;
+    }
+
+    .footer-disclaimer {
+      max-width: 680px;
+      margin: 16px auto 0;
+      font-size: 12px;
+      color: #8c8278;
+      line-height: 1.6;
+    }
+
+    .footer-copy {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #a3998f;
     }
   `;
 }
@@ -2490,20 +2573,26 @@ function render40ApronsThemeArticle({
 
   // Dynamic Smart Ingredients parsing (# for subheaders, checkboxes for ingredients)
   let ingItemIndex = 0;
-  const renderedIngredientsHtml = rawIngs.map((ing) => {
-    if (ing.startsWith('#')) {
-      const subhead = escapeHtml(ing.replace(/^#+\s*/, '').trim());
-      return `<li class="wprm-section-subhead"><h4>${subhead}</h4></li>`;
-    }
-    ingItemIndex++;
-    return `
+  const renderedIngredientsHtml = rawIngs
+    .map((ing, idx) => {
+      if (ing.startsWith('#')) {
+        const subhead = escapeHtml(ing.replace(/^#+\s*/, '').trim());
+        if (idx === 0 && (subhead.toLowerCase() === 'ingredients' || subhead.toLowerCase() === 'ingredients checklist')) {
+          return '';
+        }
+        return `<li class="wprm-section-subhead"><h4>${subhead}</h4></li>`;
+      }
+      ingItemIndex++;
+      return `
       <li class="wprm-item">
         <label class="wprm-checkbox-label">
           <input type="checkbox" class="wprm-checkbox" id="ing-${ingItemIndex}" />
           <span class="wprm-text">${escapeHtml(ing)}</span>
         </label>
       </li>`;
-  }).join('');
+    })
+    .filter(Boolean)
+    .join('');
 
   // Roundup stack if postType is roundup
   let roundupCardsHtml = '';
@@ -2708,8 +2797,7 @@ function render40ApronsThemeArticle({
 
         <!-- Ingredients Checklist with Checkboxes -->
         <div class="wprm-ingredients-section">
-          <h3 class="wprm-section-title">Ingredients Checklist</h3>
-          <p class="wprm-section-hint">Click checkboxes to cross off ingredients as you cook:</p>
+          <h3 class="wprm-section-title">Ingredients</h3>
           <ul class="wprm-checklist">
             ${renderedIngredientsHtml}
           </ul>
