@@ -657,15 +657,11 @@
 
     /* Modular Food CMS Accordion & Forms */
     .cms-accordion {
-      background: var(--surface-card);
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-    .cms-accordion[open] {
-      border-color: rgba(56, 189, 248, 0.4);
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
     }
     .cms-summary {
       display: flex;
@@ -739,6 +735,71 @@
       justify-content: center;
       z-index: 950;
       padding: 1rem;
+    }
+
+    /* Modern 2-Column Food Editor Layout */
+    .editor-layout-2col {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      margin-top: 1rem;
+    }
+    .editor-main-col {
+      flex: 1 1 65%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .editor-sidebar-col {
+      flex: 0 0 350px;
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: sticky;
+      top: 60px;
+    }
+    .cms-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    .image-preview-box {
+      margin-top: 0.6rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      background: #0b0f19;
+      border: 1px dashed var(--border);
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-preview-box img {
+      width: 100%;
+      max-height: 190px;
+      object-fit: cover;
+      display: none;
+      border-radius: 0.375rem;
+    }
+    .image-preview-placeholder {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    @media (max-width: 1024px) {
+      .editor-layout-2col {
+        flex-direction: column;
+      }
+      .editor-sidebar-col {
+        width: 100%;
+        position: static;
+      }
     }
   </style>
 </head>
@@ -1216,7 +1277,8 @@
 
     <!-- TAB 6: ROUNDUPS MANAGER -->
     <section id="tab-roundups" class="tab-panel active">
-      <div class="card">
+      <!-- Roundups Articles List View -->
+      <div class="card" id="roundups-list-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
           <div>
             <h2 class="card-title">Curated Roundup Articles</h2>
@@ -1267,223 +1329,213 @@
         </div>
       </div>
 
-      <!-- Roundup Edit Form Card (Modular Food CMS) -->
-      <div class="card" id="roundup-form-card" style="display: none;">
+      <!-- Roundup Edit Form View (Modern 2-Column Food Editor) -->
+      <div class="card" id="roundup-form-card" style="display: none; padding: 1.5rem;">
         <div class="recipe-editor-sticky-header">
-          <div>
-            <h2 class="card-title" id="roundup-form-title" style="margin-bottom: 0.15rem;">Edit Roundup Article</h2>
-            <p class="card-desc" style="margin-bottom: 0; font-size: 0.8rem;">Modular Food CMS Editor — customize timings, ingredients, chef notes, and FAQs.</p>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-roundup">← Back to Articles List</button>
+            <div>
+              <h2 class="card-title" id="roundup-form-title" style="margin-bottom: 0.1rem; font-size: 1.1rem;">Edit Recipe / Roundup</h2>
+              <p class="card-desc" style="margin-bottom: 0; font-size: 0.78rem;">Modern 2-Column Food Editor</p>
+            </div>
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
             <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-import">⚡ Quick Import / AI Text</button>
             <button type="button" class="btn btn-danger btn-sm" id="btn-delete-roundup" style="display: none;">Delete</button>
-            <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
-            <button type="button" class="btn btn-primary btn-sm" id="btn-save-roundup">Save Recipe / Roundup</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-save-roundup" style="background: var(--primary); font-weight: 700;">Save Recipe / Roundup</button>
           </div>
         </div>
 
-        <!-- Section 1: Basic Info & Commercial Details -->
-        <details class="cms-accordion" open>
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">📌</span>
-              <span>1. Basic Info & Commercial Metadata</span>
-              <span class="cms-badge">Core</span>
+        <!-- 2-Column Food Editor Layout -->
+        <div class="editor-layout-2col">
+          <!-- LEFT COLUMN: Main Content (65%) -->
+          <div class="editor-main-col">
+            <!-- Article Title Card -->
+            <div class="cms-card">
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em;">Article Title</label>
+              <input type="text" id="rf-title" style="width: 100%; font-size: 1.35rem; font-weight: 700; padding: 0.75rem 1rem; border-radius: 0.5rem; background: #0b0f19; border: 1px solid #374151; color: #fff;" placeholder="e.g. Slow Cooker Butter Chicken..." />
             </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <div class="grid-3">
-              <div class="form-group">
-                <label>Slug (URL segment)</label>
-                <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. slow-cooker-chicken-curry" />
+
+            <!-- Description / Story Card -->
+            <div class="cms-card">
+              <div class="cms-summary-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem;">
+                <span class="cms-summary-icon">📖</span>
+                <span style="font-weight: 700; font-size: 0.95rem; color: #fff;">Story & Narrative Description</span>
+              </div>
+              <textarea id="rf-desc" rows="4" style="width: 100%; font-size: 0.9rem;" placeholder="Rich introduction story, flavor profile, and family background..."></textarea>
+            </div>
+
+            <!-- Smart Ingredients Checklist Card -->
+            <div class="cms-accordion" id="ingredients-wrap">
+              <div class="cms-summary" style="padding: 0 0 0.6rem 0; background: transparent; cursor: default;">
+                <div class="cms-summary-title">
+                  <span class="cms-summary-icon">🥗</span>
+                  <span>3. Smart Ingredients Checklist</span>
+                  <span class="cms-badge">Interactive</span>
+                </div>
+              </div>
+              <div style="background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 0.5rem; padding: 0.6rem 0.85rem; margin-bottom: 0.75rem; font-size: 0.82rem; color: #bae6fd;">
+                <strong>💡 Pro Tip:</strong> Start a line with <code># Subsection Title</code> (e.g. <code># For the Dressing</code>) to group ingredients under headings!
+              </div>
+              <textarea id="rf-ingredients" rows="10" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="# For the Salad&#10;4 cups chopped fresh broccoli florets&#10;1/2 cup cooked crispy bacon, crumbled&#10;1/4 cup finely chopped red onion&#10;1/2 cup shredded sharp cheddar cheese&#10;&#10;# Creamy Homemade Dressing&#10;1/2 cup mayonnaise&#10;2 tbsp apple cider vinegar&#10;1 tbsp honey or maple syrup&#10;Salt and freshly ground black pepper"></textarea>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">Each line renders as an interactive checkbox with auto-strikethrough when checked by the user.</p>
+            </div>
+
+            <!-- Step-by-Step Instructions Card -->
+            <div class="cms-accordion" id="instructions-wrap">
+              <div class="cms-summary" style="padding: 0 0 0.6rem 0; background: transparent; cursor: default;">
+                <div class="cms-summary-title">
+                  <span class="cms-summary-icon">📝</span>
+                  <span>4. Step-by-Step Instructions</span>
+                  <span class="cms-badge cms-badge-green">Numbered Steps</span>
+                </div>
+              </div>
+              <div style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: 0.5rem; padding: 0.6rem 0.85rem; margin-bottom: 0.75rem; font-size: 0.82rem; color: #a7f3d0;">
+                <strong>💡 Step Formatting:</strong> Write each instruction step on a new line (e.g. <code>1. Step text</code> or just <code>Step text</code>). Subsections can start with <code># Sauce Method</code>.
+              </div>
+              <textarea id="rf-instructions" rows="10" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="1. Season the chicken generously on all sides with salt, pepper, and garlic powder.&#10;2. Heat olive oil in a large skillet over medium-high heat until shimmering.&#10;3. Sear the chicken for 5-6 minutes per side until golden brown and cooked through.&#10;4. Transfer chicken to a warm plate and let rest for 5 minutes before serving."></textarea>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">Instructions appear rendered as numbered circular badges inside the WPRM card.</p>
+            </div>
+
+            <!-- Chef's Secret Notes & Substitutions Card -->
+            <div class="cms-accordion">
+              <div class="cms-summary" style="padding: 0 0 0.6rem 0; background: transparent; cursor: default;">
+                <div class="cms-summary-title">
+                  <span class="cms-summary-icon">✨</span>
+                  <span>5. Chef's Secret Notes & Substitutions</span>
+                  <span class="cms-badge cms-badge-peach">Peach Box</span>
+                </div>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.5rem;">Enter tips, dietary swaps, or make-ahead secrets (one per line). Cleanly omitted from the page if left empty.</p>
+              <textarea id="rf-chef-notes" rows="4" style="width: 100%; font-size: 0.85rem; line-height: 1.5;" placeholder="Oil & Butter: Use high quality extra virgin olive oil or ghee for rich aromatic flavor.&#10;Dietary Swaps: Dairy-free coconut cream or cashew cream works seamlessly.&#10;Make-Ahead: Pre-chop veggies up to 24 hours in advance."></textarea>
+            </div>
+
+            <!-- Cooking FAQs Builder Card -->
+            <div class="cms-accordion">
+              <div class="cms-summary" style="padding: 0 0 0.6rem 0; background: transparent; cursor: default; justify-content: space-between;">
+                <div class="cms-summary-title">
+                  <span class="cms-summary-icon">❓</span>
+                  <span>6. Cooking FAQs Builder</span>
+                  <span class="cms-badge">Accordion</span>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-add-faq">+ Add Question</button>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">Build questions & answers for the interactive dropdown accordion.</p>
+              <div id="faqs-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
+
+            <!-- Roundup Cards Repeater (Roundup Mode Only) -->
+            <div id="cards-container-wrap" style="margin-bottom: 0.5rem;">
+              <div class="cms-accordion">
+                <div class="cms-summary" style="padding: 0 0 0.6rem 0; background: transparent; cursor: default; justify-content: space-between;">
+                  <div class="cms-summary-title">
+                    <span class="cms-summary-icon">📚</span>
+                    <span>8. Recipe Collection Cards</span>
+                    <span class="cms-badge">Roundup Mode</span>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" id="btn-add-card" type="button">+ Add Recipe Card</button>
+                </div>
+                <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Meta & Settings Sidebar (35%) -->
+          <div class="editor-sidebar-col">
+            <!-- Featured Cover Image Card with Instant Live Preview -->
+            <div class="cms-card">
+              <div class="cms-summary-title" style="margin-bottom: 0.6rem;">
+                <span class="cms-summary-icon">🖼️</span>
+                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">Featured Cover Image</span>
+              </div>
+              <div class="form-group" style="margin-bottom: 0.5rem;">
+                <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
+              </div>
+              <div class="image-preview-box" id="rf-image-preview-box">
+                <img id="rf-image-preview" src="" alt="Cover Preview" />
+                <div class="image-preview-placeholder" id="rf-image-placeholder">
+                  <span>🖼️</span>
+                  <span>No cover image preview</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Publishing & Taxonomies Card -->
+            <div class="cms-card">
+              <div class="cms-summary-title" style="margin-bottom: 0.85rem;">
+                <span class="cms-summary-icon">⚙️</span>
+                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">Publishing & Taxonomies</span>
               </div>
               <div class="form-group">
-                <label>Article Title</label>
-                <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. Slow Cooker Butter Chicken" />
+                <label>Slug (URL segment)</label>
+                <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. butter-chicken" />
               </div>
               <div class="form-group">
                 <label>Category</label>
                 <select id="rf-category" style="width: 100%;"></select>
               </div>
-            </div>
-
-            <div class="grid-2" style="margin-top: 0.75rem;">
-              <div class="form-group">
-                <label>Post Type</label>
-                <select id="rf-post-type" style="width: 100%;">
-                  <option value="single">Single Recipe</option>
-                  <option value="roundup">Roundup Collection</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Publishing Status</label>
-                <select id="rf-status" style="width: 100%;">
-                  <option value="published">🟢 Published (Live & Accessible)</option>
-                  <option value="draft">🟡 Draft (Hidden & Redirected to Home)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="grid-2" style="margin-top: 0.75rem;">
-              <div class="form-group">
-                <label>Custom Product Price ($) <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional - overrides site default)</span></label>
-                <input type="text" id="rf-custom-price" style="width: 100%;" placeholder="e.g. 2.25 or 3.50" />
-              </div>
-              <div class="form-group">
-                <label>Custom PDF Pack Title <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional)</span></label>
-                <input type="text" id="rf-custom-product-title" style="width: 100%;" placeholder="e.g. [Article Title] • Printable Recipe Card & Meal Guide" />
+              <div class="grid-2" style="gap: 0.6rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label>Post Type</label>
+                  <select id="rf-post-type" style="width: 100%;">
+                    <option value="single">Single Recipe</option>
+                    <option value="roundup">Roundup Collection</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label>Status</label>
+                  <select id="rf-status" style="width: 100%;">
+                    <option value="published">🟢 Published</option>
+                    <option value="draft">🟡 Draft</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div class="form-group" style="margin-top: 0.75rem;">
-              <label>Featured Cover Image URL</label>
-              <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
+            <!-- Recipe Meta & Timings 2x2 Grid Card -->
+            <div class="cms-card">
+              <div class="cms-summary-title" style="margin-bottom: 0.85rem;">
+                <span class="cms-summary-icon">⏱️</span>
+                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">2. Recipe Meta & Timings</span>
+                <span class="cms-badge cms-badge-green">WPRM Card</span>
+              </div>
+              <div class="grid-2" style="gap: 0.6rem;">
+                <div class="form-group" style="margin-bottom: 0.6rem;">
+                  <label>Prep Time</label>
+                  <input type="text" id="rf-prep-time" style="width: 100%;" placeholder="e.g. 15 mins" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0.6rem;">
+                  <label>Cook Time</label>
+                  <input type="text" id="rf-cook-time" style="width: 100%;" placeholder="e.g. 25 mins" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label>Servings</label>
+                  <input type="text" id="rf-servings" style="width: 100%;" placeholder="e.g. 4 servings" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label>Calories</label>
+                  <input type="text" id="rf-calories" style="width: 100%;" placeholder="e.g. 420 kcal" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Product Schema & Commercial Details Card -->
+            <div class="cms-card">
+              <div class="cms-summary-title" style="margin-bottom: 0.85rem;">
+                <span class="cms-summary-icon">💎</span>
+                <span style="font-weight: 700; font-size: 0.9rem; color: #fff;">Product & PDF Pack</span>
+              </div>
+              <div class="form-group">
+                <label>Custom Product Price ($) <span style="font-size: 0.75rem; color: var(--text-muted);">(Optional)</span></label>
+                <input type="text" id="rf-custom-price" style="width: 100%;" placeholder="e.g. 2.25" />
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Custom PDF Pack Title <span style="font-size: 0.75rem; color: var(--text-muted);">(Optional)</span></label>
+                <input type="text" id="rf-custom-product-title" style="width: 100%;" placeholder="e.g. [Article Title] • Printable Recipe Card" />
+              </div>
             </div>
           </div>
-        </details>
-
-        <!-- Section 2: Recipe Meta & Timings -->
-        <details class="cms-accordion" open>
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">⏱️</span>
-              <span>2. Recipe Meta & Timings</span>
-              <span class="cms-badge cms-badge-green">WPRM Card</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Prep Time</label>
-                <input type="text" id="rf-prep-time" style="width: 100%;" placeholder="e.g. 15 mins" />
-              </div>
-              <div class="form-group">
-                <label>Cook Time</label>
-                <input type="text" id="rf-cook-time" style="width: 100%;" placeholder="e.g. 25 mins" />
-              </div>
-            </div>
-            <div class="grid-2" style="margin-top: 0.75rem;">
-              <div class="form-group">
-                <label>Servings</label>
-                <input type="text" id="rf-servings" style="width: 100%;" placeholder="e.g. 4 servings" />
-              </div>
-              <div class="form-group">
-                <label>Calories</label>
-                <input type="text" id="rf-calories" style="width: 100%;" placeholder="e.g. 420 kcal" />
-              </div>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.5rem 0 0;">These values appear in the WPRM card and timing grid. Total time is calculated dynamically if numbers are provided.</p>
-          </div>
-        </details>
-
-        <!-- Section 3: Smart Ingredients Checklist -->
-        <details class="cms-accordion" open id="ingredients-wrap">
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">🥗</span>
-              <span>3. Smart Ingredients Checklist</span>
-              <span class="cms-badge">Interactive</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <div style="background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: #bae6fd;">
-              <strong>💡 Pro Tip:</strong> Start a line with <code># Subsection Title</code> (e.g. <code># For the Dressing</code> or <code># Seasoning Mix</code>) to group ingredients under elegant section headings!
-            </div>
-            <textarea id="rf-ingredients" rows="8" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="# For the Salad&#10;4 cups chopped fresh broccoli florets&#10;1/2 cup cooked crispy bacon, crumbled&#10;1/4 cup finely chopped red onion&#10;1/2 cup shredded sharp cheddar cheese&#10;&#10;# Creamy Homemade Dressing&#10;1/2 cup mayonnaise&#10;2 tbsp apple cider vinegar&#10;1 tbsp honey or maple syrup&#10;Salt and freshly ground black pepper"></textarea>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Each regular line renders as an interactive checkbox with auto-strikethrough when checked by the user.</p>
-          </div>
-        </details>
-
-        <!-- Section 4: Step-by-Step Instructions -->
-        <details class="cms-accordion" open id="instructions-wrap">
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">📝</span>
-              <span>4. Step-by-Step Instructions</span>
-              <span class="cms-badge cms-badge-green">Numbered Steps</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <div style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: #a7f3d0;">
-              <strong>💡 Step Formatting:</strong> Write each instruction step on a new line. You can write <code>1. Step text</code> or just <code>Step text</code> (it will automatically number sequentially). Optional subsections can start with <code># Sauce Method</code>.
-            </div>
-            <textarea id="rf-instructions" rows="8" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="1. Season the chicken generously on all sides with salt, pepper, and garlic powder.&#10;2. Heat olive oil in a large skillet over medium-high heat until shimmering.&#10;3. Sear the chicken for 5-6 minutes per side until golden brown and cooked through.&#10;4. Transfer chicken to a warm plate and let rest for 5 minutes before serving."></textarea>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Instructions appear rendered as numbered circular badges inside the WPRM card below the ingredients list.</p>
-          </div>
-        </details>
-
-        <!-- Section 5: Chef's Secret Notes & Substitutions -->
-        <details class="cms-accordion" open>
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">✨</span>
-              <span>5. Chef's Secret Notes & Substitutions</span>
-              <span class="cms-badge cms-badge-peach">Peach Box</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Enter tips, dietary swaps, or make-ahead secrets (one per line or bullet). If left empty, this box will be cleanly omitted from the live page.</p>
-            <textarea id="rf-chef-notes" rows="4" style="width: 100%; font-size: 0.85rem; line-height: 1.5;" placeholder="Oil & Butter: Use high quality extra virgin olive oil or ghee for rich aromatic flavor.&#10;Dietary Swaps: Dairy-free coconut cream or cashew cream works seamlessly.&#10;Make-Ahead: Pre-chop veggies up to 24 hours in advance."></textarea>
-          </div>
-        </details>
-
-        <!-- Section 6: Cooking FAQs Builder -->
-        <details class="cms-accordion" open>
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">❓</span>
-              <span>6. Cooking FAQs Builder</span>
-              <span class="cms-badge">Accordion</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-              <span style="font-size: 0.85rem; color: var(--text-muted);">Build questions & answers for the interactive dropdown accordion.</span>
-              <button type="button" class="btn btn-secondary btn-sm" id="btn-add-faq">+ Add Question</button>
-            </div>
-            <div id="faqs-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
-          </div>
-        </details>
-
-        <!-- Section 7: Story & Narrative Description -->
-        <details class="cms-accordion" open>
-          <summary class="cms-summary">
-            <div class="cms-summary-title">
-              <span class="cms-summary-icon">📖</span>
-              <span>7. Story & Narrative Description</span>
-            </div>
-            <span class="cms-chevron">&#9654;</span>
-          </summary>
-          <div class="cms-body">
-            <textarea id="rf-desc" rows="3" style="width: 100%;" placeholder="Rich introduction story, flavor profile, and family background..."></textarea>
-          </div>
-        </details>
-
-        <!-- Section 8: Roundup Cards Repeater (Roundup Mode Only) -->
-        <div id="cards-container-wrap" style="margin-bottom: 1rem;">
-          <details class="cms-accordion" open>
-            <summary class="cms-summary">
-              <div class="cms-summary-title">
-                <span class="cms-summary-icon">📚</span>
-                <span>8. Recipe Collection Cards</span>
-                <span class="cms-badge">Roundup Mode</span>
-              </div>
-              <span class="cms-chevron">&#9654;</span>
-            </summary>
-            <div class="cms-body">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">Add individual recipes that make up this curated collection.</span>
-                <button class="btn btn-secondary btn-sm" id="btn-add-card" type="button">+ Add Recipe Card</button>
-              </div>
-              <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
-            </div>
-          </details>
+        </div>
       </div>
     </section>
 
@@ -1698,7 +1750,10 @@
 
           if (targetTab === 'categories') loadCategories();
           if (targetTab === 'pages') loadPages();
-          if (targetTab === 'roundups') loadRoundups();
+          if (targetTab === 'roundups') {
+            showRoundupsListView();
+            loadRoundups();
+          }
           if (targetTab === 'stats') loadStats();
 
           // Close mobile sidebar drawer if open
@@ -2166,12 +2221,59 @@
 
       // ROUNDUPS / RECIPE CMS MANAGER
       var roundupsTbody = document.getElementById('roundups-tbody');
+      var roundupsListView = document.getElementById('roundups-list-view');
       var roundupFormCard = document.getElementById('roundup-form-card');
       var cardsContainerWrap = document.getElementById('cards-container-wrap');
       var cardsContainer = document.getElementById('cards-container');
       var faqsContainer = document.getElementById('faqs-container');
       var editingRoundupSlug = null;
       var rawRoundupsList = [];
+
+      function showRoundupsListView() {
+        if (roundupFormCard) roundupFormCard.style.display = 'none';
+        if (roundupsListView) roundupsListView.style.display = 'block';
+      }
+
+      function showRoundupsEditView() {
+        if (roundupsListView) roundupsListView.style.display = 'none';
+        if (roundupFormCard) roundupFormCard.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateImagePreview() {
+        var imgUrl = (document.getElementById('rf-image').value || '').trim();
+        var previewImg = document.getElementById('rf-image-preview');
+        var placeholder = document.getElementById('rf-image-placeholder');
+        if (!previewImg) return;
+        if (imgUrl) {
+          previewImg.src = imgUrl;
+          previewImg.style.display = 'block';
+          if (placeholder) placeholder.style.display = 'none';
+          previewImg.onerror = function() {
+            previewImg.style.display = 'none';
+            if (placeholder) {
+              placeholder.innerHTML = '<span>⚠️</span><span>Failed to load image preview</span>';
+              placeholder.style.display = 'flex';
+            }
+          };
+          previewImg.onload = function() {
+            previewImg.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+          };
+        } else {
+          previewImg.style.display = 'none';
+          if (placeholder) {
+            placeholder.innerHTML = '<span>🖼️</span><span>No cover image preview</span>';
+            placeholder.style.display = 'flex';
+          }
+        }
+      }
+
+      var rfImageInput = document.getElementById('rf-image');
+      if (rfImageInput) {
+        rfImageInput.addEventListener('input', updateImagePreview);
+        rfImageInput.addEventListener('change', updateImagePreview);
+      }
 
       var roundupSearchInput = document.getElementById('roundup-search');
       var roundupFilterCat = document.getElementById('roundup-filter-cat');
@@ -2332,8 +2434,8 @@
             renderCardInputs(r.cards || []);
             
             document.getElementById('btn-delete-roundup').style.display = 'none';
-            roundupFormCard.style.display = 'block';
-            roundupFormCard.scrollIntoView({ behavior: 'smooth' });
+            showRoundupsEditView();
+            updateImagePreview();
             showToast('Recipe cloned into form as draft! Review and save.');
           }
         });
@@ -2376,7 +2478,7 @@
         document.getElementById('roundup-form-title').textContent = slug ? 'Edit Recipe / Roundup (' + slug + ')' : 'Create New Recipe / Roundup';
         document.getElementById('rf-slug').disabled = Boolean(slug);
         document.getElementById('btn-delete-roundup').style.display = slug ? 'inline-block' : 'none';
-        roundupFormCard.style.display = 'block';
+        showRoundupsEditView();
 
         if (slug) {
           apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug)).then(function(res) {
@@ -2402,6 +2504,7 @@
               togglePostTypeFields(pType);
               renderFaqInputs(r.faqs || []);
               renderCardInputs(r.cards || []);
+              updateImagePreview();
             }
           });
         } else {
@@ -2424,11 +2527,12 @@
           togglePostTypeFields('single');
           renderFaqInputs([]);
           renderCardInputs([]);
+          updateImagePreview();
         }
       }
 
       document.getElementById('btn-new-roundup').addEventListener('click', function() { openEditRoundup(null); });
-      document.getElementById('btn-cancel-roundup').addEventListener('click', function() { roundupFormCard.style.display = 'none'; });
+      document.getElementById('btn-cancel-roundup').addEventListener('click', function() { showRoundupsListView(); });
 
       function renderCardInputs(cards) {
         cardsContainer.innerHTML = '';
@@ -2539,6 +2643,7 @@
           }
 
           showToast('Recipe parsed and fields populated!');
+          updateImagePreview();
           closeImportModal();
         });
       }
@@ -2614,7 +2719,7 @@
         }).then(function(res) {
           if (res.success) {
             showToast('Roundup / Recipe saved to RECIPE_KV!');
-            roundupFormCard.style.display = 'none';
+            showRoundupsListView();
             loadRoundups();
           }
         });
@@ -2627,7 +2732,7 @@
         }).then(function(res) {
           if (res.success) {
             showToast('Roundup deleted');
-            roundupFormCard.style.display = 'none';
+            showRoundupsListView();
             loadRoundups();
           }
         });
