@@ -45,7 +45,13 @@ export async function onRequestGet(context) {
           postType: itemData.postType || (Array.isArray(itemData.cards) && itemData.cards.length > 0 ? 'roundup' : 'single'),
           customPrice: itemData.customPrice || '',
           customProductTitle: itemData.customProductTitle || '',
+          prepTime: itemData.prepTime || '',
+          cookTime: itemData.cookTime || '',
+          servings: itemData.servings || '',
+          calories: itemData.calories || '',
           ingredients: itemData.ingredients || '',
+          chefNotes: itemData.chefNotes || '',
+          faqs: Array.isArray(itemData.faqs) ? itemData.faqs : [],
           image: itemData.image || '',
           cardsCount: Array.isArray(itemData.cards) ? itemData.cards.length : 0,
           updatedAt: itemData.updatedAt || null,
@@ -78,6 +84,15 @@ export async function onRequestPost(context) {
       return jsonResponse({ success: false, error: 'Slug is required' }, 400);
     }
 
+    const faqs = Array.isArray(body.faqs)
+      ? body.faqs
+          .filter((f) => f && typeof f === 'object' && ((f.question || f.q) || (f.answer || f.a)))
+          .map((f) => ({
+            question: String(f.question || f.q || '').trim(),
+            answer: String(f.answer || f.a || '').trim(),
+          }))
+      : [];
+
     const roundupData = {
       slug,
       title: body.title || slug,
@@ -86,7 +101,13 @@ export async function onRequestPost(context) {
       postType: body.postType === 'single' ? 'single' : 'roundup',
       customPrice: body.customPrice ? String(body.customPrice).trim() : '',
       customProductTitle: body.customProductTitle ? String(body.customProductTitle).trim() : '',
+      prepTime: body.prepTime ? String(body.prepTime).trim() : '',
+      cookTime: body.cookTime ? String(body.cookTime).trim() : '',
+      servings: body.servings ? String(body.servings).trim() : '',
+      calories: body.calories ? String(body.calories).trim() : '',
       ingredients: body.ingredients ? String(body.ingredients).trim() : '',
+      chefNotes: body.chefNotes ? String(body.chefNotes).trim() : '',
+      faqs,
       image: body.image || '',
       cards: Array.isArray(body.cards) ? body.cards : [],
       updatedAt: new Date().toISOString(),

@@ -326,6 +326,92 @@
     .auth-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
     .auth-card p { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
     .auth-card input { width: 100%; margin-bottom: 1rem; text-align: center; font-size: 1rem; }
+
+    /* Modular Food CMS Accordion & Forms */
+    .cms-accordion {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .cms-accordion[open] {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .cms-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 1.25rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.02);
+      list-style: none;
+    }
+    .cms-summary::-webkit-details-marker {
+      display: none;
+    }
+    .cms-summary:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .cms-summary-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .cms-summary-icon {
+      font-size: 1.1rem;
+    }
+    .cms-badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
+    }
+    .cms-badge-peach {
+      background: rgba(251, 146, 60, 0.15);
+      color: #fb923c;
+    }
+    .cms-badge-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    .cms-chevron {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+    .cms-accordion[open] .cms-chevron {
+      transform: rotate(90deg);
+    }
+    .cms-body {
+      padding: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .faq-row {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .quick-import-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 950;
+      padding: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -690,81 +776,216 @@
         </div>
       </div>
 
-      <!-- Roundup Edit Form Card -->
+      <!-- Roundup Edit Form Card (Modular Food CMS) -->
       <div class="card" id="roundup-form-card" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h2 class="card-title" id="roundup-form-title">Edit Roundup Article</h2>
-          <button class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
-        </div>
-
-        <div class="grid-4">
-          <div class="form-group">
-            <label>Slug (URL segment)</label>
-            <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. best-summer-salads" />
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h2 class="card-title" id="roundup-form-title">Edit Roundup Article</h2>
+            <p class="card-desc" style="margin-bottom: 0;">Modular Food CMS Editor — customize timings, ingredients, chef notes, and FAQs.</p>
           </div>
-          <div class="form-group">
-            <label>Article Title</label>
-            <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. 10 Best Summer Salads" />
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="rf-category" style="width: 100%;"></select>
-          </div>
-          <div class="form-group">
-            <label>Post Type</label>
-            <select id="rf-post-type" style="width: 100%;">
-              <option value="roundup">Roundup Collection</option>
-              <option value="single">Single Recipe</option>
-            </select>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-import">⚡ Quick Import / AI Text</button>
+            <button class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
           </div>
         </div>
 
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Custom Product Price ($) <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional - overrides site default)</span></label>
-            <input type="text" id="rf-custom-price" style="width: 100%;" placeholder="e.g. 1.99 or 3.50" />
-          </div>
-          <div class="form-group">
-            <label>Custom PDF Pack Title <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional)</span></label>
-            <input type="text" id="rf-custom-product-title" style="width: 100%;" placeholder="e.g. [Article Title] • Printable Recipe Card & Meal Guide" />
-          </div>
-        </div>
+        <!-- Section 1: Basic Info & Commercial Details -->
+        <details class="cms-accordion" open>
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">📌</span>
+              <span>1. Basic Info & Commercial Metadata</span>
+              <span class="cms-badge">Core</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <div class="grid-4">
+              <div class="form-group">
+                <label>Slug (URL segment)</label>
+                <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. slow-cooker-chicken-curry" />
+              </div>
+              <div class="form-group">
+                <label>Article Title</label>
+                <input type="text" id="rf-title" style="width: 100%;" placeholder="e.g. Slow Cooker Butter Chicken" />
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <select id="rf-category" style="width: 100%;"></select>
+              </div>
+              <div class="form-group">
+                <label>Post Type</label>
+                <select id="rf-post-type" style="width: 100%;">
+                  <option value="single">Single Recipe</option>
+                  <option value="roundup">Roundup Collection</option>
+                </select>
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Article Description</label>
-          <textarea id="rf-desc" rows="2" style="width: 100%;" placeholder="Brief summary of this recipe collection or dish..."></textarea>
-        </div>
+            <div class="grid-2" style="margin-top: 0.75rem;">
+              <div class="form-group">
+                <label>Custom Product Price ($) <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional - overrides site default)</span></label>
+                <input type="text" id="rf-custom-price" style="width: 100%;" placeholder="e.g. 2.25 or 3.50" />
+              </div>
+              <div class="form-group">
+                <label>Custom PDF Pack Title <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional)</span></label>
+                <input type="text" id="rf-custom-product-title" style="width: 100%;" placeholder="e.g. [Article Title] • Printable Recipe Card & Meal Guide" />
+              </div>
+            </div>
 
-        <div class="form-group">
-          <label>Featured Cover Image URL</label>
-          <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
-        </div>
-
-        <!-- Single Recipe Ingredients Section -->
-        <div id="ingredients-wrap" style="display: none; margin: 1.5rem 0 1rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <label style="font-size: 0.95rem; font-weight: 700; margin: 0;">Recipe Ingredients & Quick Summary</label>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">One ingredient or bullet per line</span>
+            <div class="form-group" style="margin-top: 0.75rem;">
+              <label>Featured Cover Image URL</label>
+              <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
+            </div>
           </div>
-          <textarea id="rf-ingredients" rows="7" style="width: 100%; font-family: monospace; font-size: 0.85rem;" placeholder="2 cups all-purpose flour&#10;1 tsp baking powder&#10;1/2 cup unsalted butter, softened&#10;1 cup granulated sugar&#10;2 large eggs&#10;1 tsp pure vanilla extract&#10;1/2 cup whole milk"></textarea>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Each line will render as an interactive checklist item with a checkmark badge on the single recipe page.</p>
-        </div>
+        </details>
 
-        <!-- Roundup Cards Repeater Section -->
-        <div id="cards-container-wrap" style="margin: 1.5rem 0 1rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-            <h3 style="font-size: 0.95rem; font-weight: 700;">Recipe Cards in this Roundup</h3>
-            <button class="btn btn-secondary btn-sm" id="btn-add-card" type="button">+ Add Card</button>
+        <!-- Section 2: Recipe Meta & Timings -->
+        <details class="cms-accordion" open>
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">⏱️</span>
+              <span>2. Recipe Meta & Timings</span>
+              <span class="cms-badge cms-badge-green">WPRM Card</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <div class="grid-4">
+              <div class="form-group">
+                <label>Prep Time</label>
+                <input type="text" id="rf-prep-time" style="width: 100%;" placeholder="e.g. 15 mins" />
+              </div>
+              <div class="form-group">
+                <label>Cook Time</label>
+                <input type="text" id="rf-cook-time" style="width: 100%;" placeholder="e.g. 25 mins" />
+              </div>
+              <div class="form-group">
+                <label>Servings</label>
+                <input type="text" id="rf-servings" style="width: 100%;" placeholder="e.g. 4 servings" />
+              </div>
+              <div class="form-group">
+                <label>Calories</label>
+                <input type="text" id="rf-calories" style="width: 100%;" placeholder="e.g. 420 kcal" />
+              </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.5rem 0 0;">These values appear in the WPRM card and timing grid. Total time is calculated dynamically if numbers are provided.</p>
           </div>
-          <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+        </details>
+
+        <!-- Section 3: Smart Ingredients Checklist -->
+        <details class="cms-accordion" open id="ingredients-wrap">
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">🥗</span>
+              <span>3. Smart Ingredients Checklist</span>
+              <span class="cms-badge">Interactive</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <div style="background: rgba(56, 189, 248, 0.08); border: 1px dashed rgba(56, 189, 248, 0.3); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: #bae6fd;">
+              <strong>💡 Pro Tip:</strong> Start a line with <code># Subsection Title</code> (e.g. <code># For the Dressing</code> or <code># Seasoning Mix</code>) to group ingredients under elegant section headings!
+            </div>
+            <textarea id="rf-ingredients" rows="8" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="# For the Salad&#10;4 cups chopped fresh broccoli florets&#10;1/2 cup cooked crispy bacon, crumbled&#10;1/4 cup finely chopped red onion&#10;1/2 cup shredded sharp cheddar cheese&#10;&#10;# Creamy Homemade Dressing&#10;1/2 cup mayonnaise&#10;2 tbsp apple cider vinegar&#10;1 tbsp honey or maple syrup&#10;Salt and freshly ground black pepper"></textarea>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Each regular line renders as an interactive checkbox with auto-strikethrough when checked by the user.</p>
+          </div>
+        </details>
+
+        <!-- Section 4: Chef's Secret Notes & Substitutions -->
+        <details class="cms-accordion" open>
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">✨</span>
+              <span>4. Chef's Secret Notes & Substitutions</span>
+              <span class="cms-badge cms-badge-peach">Peach Box</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Enter tips, dietary swaps, or make-ahead secrets (one per line or bullet). If left empty, this box will be cleanly omitted from the live page.</p>
+            <textarea id="rf-chef-notes" rows="4" style="width: 100%; font-size: 0.85rem; line-height: 1.5;" placeholder="Oil & Butter: Use high quality extra virgin olive oil or ghee for rich aromatic flavor.&#10;Dietary Swaps: Dairy-free coconut cream or cashew cream works seamlessly.&#10;Make-Ahead: Pre-chop veggies up to 24 hours in advance."></textarea>
+          </div>
+        </details>
+
+        <!-- Section 5: Cooking FAQs Builder -->
+        <details class="cms-accordion" open>
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">❓</span>
+              <span>5. Cooking FAQs Builder</span>
+              <span class="cms-badge">Accordion</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Build questions & answers for the interactive dropdown accordion.</span>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-add-faq">+ Add Question</button>
+            </div>
+            <div id="faqs-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+          </div>
+        </details>
+
+        <!-- Section 6: Story & Narrative Description -->
+        <details class="cms-accordion" open>
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">📖</span>
+              <span>6. Story & Narrative Description</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <textarea id="rf-desc" rows="3" style="width: 100%;" placeholder="Rich introduction story, flavor profile, and family background..."></textarea>
+          </div>
+        </details>
+
+        <!-- Section 7: Roundup Cards Repeater (Roundup Mode Only) -->
+        <div id="cards-container-wrap" style="margin-bottom: 1rem;">
+          <details class="cms-accordion" open>
+            <summary class="cms-summary">
+              <div class="cms-summary-title">
+                <span class="cms-summary-icon">📚</span>
+                <span>7. Recipe Collection Cards</span>
+                <span class="cms-badge">Roundup Mode</span>
+              </div>
+              <span class="cms-chevron">&#9654;</span>
+            </summary>
+            <div class="cms-body">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Add individual recipes that make up this curated collection.</span>
+                <button class="btn btn-secondary btn-sm" id="btn-add-card" type="button">+ Add Recipe Card</button>
+              </div>
+              <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
+          </details>
         </div>
 
         <div style="text-align: right; margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
-          <button class="btn btn-danger" id="btn-delete-roundup" style="display: none;">Delete Roundup</button>
-          <button class="btn btn-primary" id="btn-save-roundup">Save Roundup Article</button>
+          <button class="btn btn-danger" id="btn-delete-roundup" style="display: none;">Delete Recipe / Roundup</button>
+          <button class="btn btn-primary" id="btn-save-roundup">Save Recipe / Roundup</button>
         </div>
       </div>
     </section>
+
+    <!-- Quick Import / AI Text Modal -->
+    <div id="quick-import-modal" class="quick-import-modal" style="display: none;">
+      <div class="card" style="max-width: 620px; width: 100%; margin: 0; box-shadow: 0 25px 50px rgba(0,0,0,0.6);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; color: #fff;">⚡ Quick Import from Recipe / AI Text</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-close-import">✕</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+          Paste raw recipe text from ChatGPT, websites, or notes. The smart parser will auto-extract title, timings, servings, calories, ingredients, and chef notes.
+        </p>
+        <textarea id="quick-import-text" rows="10" style="width: 100%; font-family: monospace; font-size: 0.85rem; margin-bottom: 1rem;" placeholder="Title: Easy Tuscan Garlic Chicken&#10;Prep time: 10 mins&#10;Cook time: 20 mins&#10;Servings: 4 servings&#10;Calories: 450 kcal&#10;&#10;Ingredients:&#10;2 large boneless skinless chicken breasts&#10;1 tbsp olive oil&#10;3 cloves garlic, minced&#10;1 cup heavy cream&#10;1/2 cup chicken broth&#10;1 cup baby spinach&#10;&#10;Notes:&#10;Substitute half-and-half for a lighter sauce."></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-import">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-do-import">Auto-Fill Form</button>
+        </div>
+      </div>
+    </div>
 
     <!-- TAB 7: REAL-TIME STATS -->
     <section id="tab-stats" class="tab-panel">
@@ -1339,21 +1560,17 @@
         if (editingPageSlug) deletePage(editingPageSlug);
       });
 
-      // ROUNDUPS MANAGER
+      // ROUNDUPS / RECIPE CMS MANAGER
       var roundupsTbody = document.getElementById('roundups-tbody');
       var roundupFormCard = document.getElementById('roundup-form-card');
       var cardsContainerWrap = document.getElementById('cards-container-wrap');
       var cardsContainer = document.getElementById('cards-container');
-      var ingredientsWrap = document.getElementById('ingredients-wrap');
+      var faqsContainer = document.getElementById('faqs-container');
       var editingRoundupSlug = null;
 
       function togglePostTypeFields(type) {
-        if (type === 'single') {
-          if (cardsContainerWrap) cardsContainerWrap.style.display = 'none';
-          if (ingredientsWrap) ingredientsWrap.style.display = 'block';
-        } else {
-          if (cardsContainerWrap) cardsContainerWrap.style.display = 'block';
-          if (ingredientsWrap) ingredientsWrap.style.display = 'none';
+        if (cardsContainerWrap) {
+          cardsContainerWrap.style.display = type === 'roundup' ? 'block' : 'none';
         }
       }
 
@@ -1371,7 +1588,7 @@
 
       function renderRoundupsList(list) {
         if (!list || list.length === 0) {
-          roundupsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found for this site. Click "+ Create Roundup" to begin.</td></tr>';
+          roundupsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recipes or roundups found. Click "+ Create Roundup" to begin.</td></tr>';
           return;
         }
 
@@ -1402,9 +1619,41 @@
         });
       }
 
+      function renderFaqInputs(faqs) {
+        if (!faqsContainer) return;
+        faqsContainer.innerHTML = '';
+        if (Array.isArray(faqs) && faqs.length > 0) {
+          faqs.forEach(function(f, i) { addFaqRow(f, i); });
+        }
+      }
+
+      function addFaqRow(data, index) {
+        data = data || {};
+        var row = document.createElement('div');
+        row.className = 'faq-row';
+        row.innerHTML =
+          '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">' +
+            '<span style="font-weight: 700; font-size: 0.85rem; color: #fff;">FAQ #' + (index + 1) + '</span>' +
+            '<button type="button" class="btn btn-danger btn-sm remove-faq-btn">Remove</button>' +
+          '</div>' +
+          '<div style="margin-bottom: 0.5rem;">' +
+            '<input type="text" class="faq-q-input" style="width: 100%;" placeholder="Question (e.g. Can I freeze leftovers?)" value="' + escapeHtml(data.question || data.q || '') + '" />' +
+          '</div>' +
+          '<div>' +
+            '<textarea class="faq-a-input" rows="2" style="width: 100%; font-size: 0.85rem;" placeholder="Answer...">' + escapeHtml(data.answer || data.a || '') + '</textarea>' +
+          '</div>';
+
+        row.querySelector('.remove-faq-btn').addEventListener('click', function() { row.remove(); });
+        faqsContainer.appendChild(row);
+      }
+
+      document.getElementById('btn-add-faq').addEventListener('click', function() {
+        addFaqRow({}, faqsContainer.children.length);
+      });
+
       function openEditRoundup(slug) {
         editingRoundupSlug = slug;
-        document.getElementById('roundup-form-title').textContent = slug ? 'Edit Roundup / Recipe (' + slug + ')' : 'Create New Roundup or Recipe';
+        document.getElementById('roundup-form-title').textContent = slug ? 'Edit Recipe / Roundup (' + slug + ')' : 'Create New Recipe / Roundup';
         document.getElementById('rf-slug').disabled = Boolean(slug);
         document.getElementById('btn-delete-roundup').style.display = slug ? 'inline-block' : 'none';
         roundupFormCard.style.display = 'block';
@@ -1422,8 +1671,14 @@
               document.getElementById('rf-post-type').value = pType;
               document.getElementById('rf-custom-price').value = r.customPrice || '';
               document.getElementById('rf-custom-product-title').value = r.customProductTitle || '';
+              document.getElementById('rf-prep-time').value = r.prepTime || '';
+              document.getElementById('rf-cook-time').value = r.cookTime || '';
+              document.getElementById('rf-servings').value = r.servings || '';
+              document.getElementById('rf-calories').value = r.calories || '';
               document.getElementById('rf-ingredients').value = r.ingredients || '';
+              document.getElementById('rf-chef-notes').value = r.chefNotes || '';
               togglePostTypeFields(pType);
+              renderFaqInputs(r.faqs || []);
               renderCardInputs(r.cards || []);
             }
           });
@@ -1433,11 +1688,17 @@
           document.getElementById('rf-desc').value = '';
           document.getElementById('rf-image').value = '';
           document.getElementById('rf-category').value = '';
-          document.getElementById('rf-post-type').value = 'roundup';
+          document.getElementById('rf-post-type').value = 'single';
           document.getElementById('rf-custom-price').value = '';
           document.getElementById('rf-custom-product-title').value = '';
+          document.getElementById('rf-prep-time').value = '15 mins';
+          document.getElementById('rf-cook-time').value = '25 mins';
+          document.getElementById('rf-servings').value = '4 servings';
+          document.getElementById('rf-calories').value = '420 kcal';
           document.getElementById('rf-ingredients').value = '';
-          togglePostTypeFields('roundup');
+          document.getElementById('rf-chef-notes').value = '';
+          togglePostTypeFields('single');
+          renderFaqInputs([]);
           renderCardInputs([]);
         }
       }
@@ -1475,6 +1736,79 @@
         addCardRow({}, cardsContainer.children.length);
       });
 
+      // Quick Importer Logic
+      var quickImportModal = document.getElementById('quick-import-modal');
+      var quickImportText = document.getElementById('quick-import-text');
+      var btnQuickImport = document.getElementById('btn-quick-import');
+      var btnCloseImport = document.getElementById('btn-close-import');
+      var btnCancelImport = document.getElementById('btn-cancel-import');
+      var btnDoImport = document.getElementById('btn-do-import');
+
+      function closeImportModal() {
+        if (quickImportModal) quickImportModal.style.display = 'none';
+      }
+      if (btnQuickImport) {
+        btnQuickImport.addEventListener('click', function() {
+          if (quickImportModal) {
+            quickImportModal.style.display = 'flex';
+            if (quickImportText) quickImportText.focus();
+          }
+        });
+      }
+      if (btnCloseImport) btnCloseImport.addEventListener('click', closeImportModal);
+      if (btnCancelImport) btnCancelImport.addEventListener('click', closeImportModal);
+
+      if (btnDoImport) {
+        btnDoImport.addEventListener('click', function() {
+          var raw = (quickImportText.value || '').trim();
+          if (!raw) return closeImportModal();
+
+          var titleMatch = raw.match(/(?:title|recipe):\s*([^\n\r]+)/i) || raw.match(/^#+\s*([^\n\r]+)/m);
+          if (titleMatch && titleMatch[1]) {
+            var t = titleMatch[1].trim();
+            document.getElementById('rf-title').value = t;
+            if (!document.getElementById('rf-slug').value) {
+              document.getElementById('rf-slug').value = t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            }
+          }
+
+          var prepMatch = raw.match(/prep(?: time)?:\s*([^\n\r]+)/i);
+          if (prepMatch) document.getElementById('rf-prep-time').value = prepMatch[1].trim();
+
+          var cookMatch = raw.match(/cook(?: time)?:\s*([^\n\r]+)/i);
+          if (cookMatch) document.getElementById('rf-cook-time').value = cookMatch[1].trim();
+
+          var servingsMatch = raw.match(/(?:servings|yield):\s*([^\n\r]+)/i);
+          if (servingsMatch) document.getElementById('rf-servings').value = servingsMatch[1].trim();
+
+          var calMatch = raw.match(/(?:calories|kcal):\s*([^\n\r]+)/i);
+          if (calMatch) document.getElementById('rf-calories').value = calMatch[1].trim();
+
+          var ingMatch = raw.match(/ingredients?:?\s*([\s\S]*?)(?:instructions|directions|method|notes|tips|faqs|$)/i);
+          if (ingMatch && ingMatch[1]) {
+            var cleanedIngs = ingMatch[1]
+              .split('\n')
+              .map(function(l) { return l.replace(/^[-*•]\s*/, '').trim(); })
+              .filter(Boolean)
+              .join('\n');
+            if (cleanedIngs) document.getElementById('rf-ingredients').value = cleanedIngs;
+          }
+
+          var notesMatch = raw.match(/(?:notes|tips|chef'?s? notes):\s*([\s\S]*?)(?:instructions|directions|method|ingredients|faqs|$)/i);
+          if (notesMatch && notesMatch[1]) {
+            var cleanedNotes = notesMatch[1]
+              .split('\n')
+              .map(function(l) { return l.replace(/^[-*•]\s*/, '').trim(); })
+              .filter(Boolean)
+              .join('\n');
+            if (cleanedNotes) document.getElementById('rf-chef-notes').value = cleanedNotes;
+          }
+
+          showToast('Recipe parsed and fields populated!');
+          closeImportModal();
+        });
+      }
+
       document.getElementById('btn-save-roundup').addEventListener('click', function() {
         var slug = document.getElementById('rf-slug').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
         var title = document.getElementById('rf-title').value.trim();
@@ -1484,11 +1818,27 @@
         var postType = document.getElementById('rf-post-type').value;
         var customPrice = document.getElementById('rf-custom-price').value.trim();
         var customProductTitle = document.getElementById('rf-custom-product-title').value.trim();
+        var prepTime = document.getElementById('rf-prep-time').value.trim();
+        var cookTime = document.getElementById('rf-cook-time').value.trim();
+        var servings = document.getElementById('rf-servings').value.trim();
+        var calories = document.getElementById('rf-calories').value.trim();
         var ingredients = document.getElementById('rf-ingredients').value.trim();
+        var chefNotes = document.getElementById('rf-chef-notes').value.trim();
 
         if (!slug || !title) {
           showToast('Slug and Title are required', 'error');
           return;
+        }
+
+        var faqs = [];
+        if (faqsContainer) {
+          faqsContainer.querySelectorAll('.faq-row').forEach(function(row) {
+            var q = (row.querySelector('.faq-q-input').value || '').trim();
+            var a = (row.querySelector('.faq-a-input').value || '').trim();
+            if (q || a) {
+              faqs.push({ question: q, answer: a });
+            }
+          });
         }
 
         var cards = [];
@@ -1514,7 +1864,13 @@
             postType: postType,
             customPrice: customPrice,
             customProductTitle: customProductTitle,
+            prepTime: prepTime,
+            cookTime: cookTime,
+            servings: servings,
+            calories: calories,
             ingredients: ingredients,
+            chefNotes: chefNotes,
+            faqs: faqs,
             cards: cards
           })
         }).then(function(res) {

@@ -887,6 +887,26 @@ function get40ApronsStyles() {
       transition: all 0.15s ease;
     }
 
+    .wprm-section-subhead {
+      list-style: none;
+      padding: 0.85rem 0 0.35rem 0;
+      margin-top: 0.5rem;
+      border-bottom: 2px solid var(--fa-border);
+    }
+
+    .wprm-section-subhead:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .wprm-section-subhead h4 {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--fa-heading);
+      margin: 0;
+    }
+
     /* WPRM CTA Button */
     .wprm-btn-cta {
       display: flex;
@@ -1446,7 +1466,13 @@ function renderRecipeArticle({
   category,
   customPrice,
   customProductTitle,
+  prepTime,
+  cookTime,
+  servings,
+  calories,
   ingredients,
+  chefNotes,
+  faqs,
   pageUrl,
   encodedTarget,
   isPinterestBot,
@@ -1659,7 +1685,13 @@ function renderRecipeArticle({
     category,
     customPrice,
     customProductTitle,
+    prepTime,
+    cookTime,
+    servings,
+    calories,
     ingredients,
+    chefNotes,
+    faqs,
     pageUrl,
     encodedTarget,
     isPinterestBot,
@@ -1733,14 +1765,18 @@ function renderEditorialThemeArticle({
 
         <div class="ingredients-grid">
           ${rawIngs
-            .map(
-              (ing) => `
+            .map((ing) => {
+              if (ing.startsWith('#')) {
+                const subhead = escapeHtml(ing.replace(/^#+\s*/, '').trim());
+                return `<div style="grid-column: 1 / -1; font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem; color: var(--text-heading); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.35rem; margin-top: 0.75rem;">${subhead}</div>`;
+              }
+              return `
             <div class="ingredient-item">
               <span class="ingredient-check">✓</span>
               <span>${escapeHtml(ing)}</span>
             </div>
-          `
-            )
+          `;
+            })
             .join('')}
         </div>
 
@@ -2368,6 +2404,12 @@ function render40ApronsThemeArticle({
   slug,
   baseDomain,
   image,
+  prepTime,
+  cookTime,
+  servings,
+  calories,
+  chefNotes,
+  faqs,
 }) {
   const jumpBtnAttributes = isPinterestBot
     ? 'href="#recipe"'
@@ -2378,6 +2420,90 @@ function render40ApronsThemeArticle({
     : `href="#recipe" class="wprm-btn-cta btn-make-recipe" data-target="${encodedTarget}" data-slug="${slug}"`;
 
   const categoryName = category ? formatTitleFromSlug(category) : 'Recipes';
+
+  const prepDisplay = prepTime && prepTime.trim() ? prepTime.trim() : '15 mins';
+  const cookDisplay = cookTime && cookTime.trim() ? cookTime.trim() : '25 mins';
+  const servingsDisplay = servings && servings.trim() ? servings.trim() : '4 servings';
+
+  let totalDisplay = '40 mins';
+  const prepNum = parseInt(prepDisplay, 10);
+  const cookNum = parseInt(cookDisplay, 10);
+  if (!isNaN(prepNum) && !isNaN(cookNum)) {
+    totalDisplay = `${prepNum + cookNum} mins`;
+  }
+
+  // Dynamic Chef's Notes Box (omitted if empty)
+  let chefNotesHtml = '';
+  if (chefNotes && chefNotes.trim()) {
+    const noteLines = chefNotes.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (noteLines.length > 0) {
+      const itemsHtml = noteLines.map((line) => {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0 && colonIdx < 35) {
+          const heading = escapeHtml(line.slice(0, colonIdx).trim());
+          const text = escapeHtml(line.slice(colonIdx + 1).trim());
+          return `<li><strong>${heading}:</strong> ${text}</li>`;
+        }
+        return `<li>${escapeHtml(line.replace(/^[-*•]\s*/, ''))}</li>`;
+      }).join('');
+
+      chefNotesHtml = `
+      <!-- Chef's Ingredient Tips Box -->
+      <div class="fa-tips-box">
+        <div class="fa-tips-header">
+          <span class="fa-tips-icon">✨</span>
+          <h3 class="fa-tips-title">Chef's Secret Ingredient Notes & Substitutions</h3>
+        </div>
+        <ul class="fa-tips-list">
+          ${itemsHtml}
+        </ul>
+      </div>`;
+    }
+  }
+
+  // Dynamic FAQ Accordion (omitted if empty)
+  let faqsHtml = '';
+  if (Array.isArray(faqs) && faqs.length > 0) {
+    const validFaqs = faqs.filter((f) => f && (f.question || f.q) && (f.answer || f.a));
+    if (validFaqs.length > 0) {
+      const itemsHtml = validFaqs.map((f, i) => {
+        const q = escapeHtml(f.question || f.q || '');
+        const a = escapeHtml(f.answer || f.a || '');
+        const openAttr = i === 0 ? ' open' : '';
+        return `
+          <details class="fa-faq-item"${openAttr}>
+            <summary class="fa-faq-question">${q}</summary>
+            <div class="fa-faq-answer">${a}</div>
+          </details>`;
+      }).join('');
+
+      faqsHtml = `
+      <!-- Cooking FAQ Accordion -->
+      <div class="fa-faq-section">
+        <h3 class="fa-faq-heading">Frequently Asked Questions</h3>
+        <div class="fa-faq-stack">
+          ${itemsHtml}
+        </div>
+      </div>`;
+    }
+  }
+
+  // Dynamic Smart Ingredients parsing (# for subheaders, checkboxes for ingredients)
+  let ingItemIndex = 0;
+  const renderedIngredientsHtml = rawIngs.map((ing) => {
+    if (ing.startsWith('#')) {
+      const subhead = escapeHtml(ing.replace(/^#+\s*/, '').trim());
+      return `<li class="wprm-section-subhead"><h4>${subhead}</h4></li>`;
+    }
+    ingItemIndex++;
+    return `
+      <li class="wprm-item">
+        <label class="wprm-checkbox-label">
+          <input type="checkbox" class="wprm-checkbox" id="ing-${ingItemIndex}" />
+          <span class="wprm-text">${escapeHtml(ing)}</span>
+        </label>
+      </li>`;
+  }).join('');
 
   // Roundup stack if postType is roundup
   let roundupCardsHtml = '';
@@ -2536,44 +2662,9 @@ function render40ApronsThemeArticle({
         <p class="fa-story-p">This dish has quickly become one of our most requested family recipes. Between the silky textures, balanced seasonings, and wholesome pantry ingredients, it delivers gourmet dining satisfaction in minimal kitchen time. Whether prepping for a weeknight dinner or entertaining guests, this foolproof guide guarantees rave reviews.</p>
       </div>
 
-      <!-- Chef's Ingredient Tips Box -->
-      <div class="fa-tips-box">
-        <div class="fa-tips-header">
-          <span class="fa-tips-icon">✨</span>
-          <h3 class="fa-tips-title">Chef's Secret Ingredient Notes & Substitutions</h3>
-        </div>
-        <ul class="fa-tips-list">
-          <li><strong>Oil & Butter:</strong> Use high-quality extra virgin olive oil or clarified butter (ghee) for rich, aromatic browning without burning.</li>
-          <li><strong>Garlic & Herbs:</strong> Freshly minced garlic and cracked black pepper release tenfold more flavor compared to jarred powders.</li>
-          <li><strong>Dietary Swaps:</strong> Need dairy-free? Full-fat canned coconut milk or unsweetened cashew cream swaps in seamlessly with zero loss in richness.</li>
-          <li><strong>Make-Ahead Ease:</strong> Pre-chop aromatics and vegetables up to 24 hours in advance to make assembly a quick 10-minute breeze.</li>
-        </ul>
-      </div>
+      ${chefNotesHtml}
 
-      <!-- Cooking FAQ Accordion -->
-      <div class="fa-faq-section">
-        <h3 class="fa-faq-heading">Frequently Asked Questions</h3>
-        <div class="fa-faq-stack">
-          <details class="fa-faq-item" open>
-            <summary class="fa-faq-question">Can I make this recipe ahead of time?</summary>
-            <div class="fa-faq-answer">
-              Yes! You can assemble the full dish up to 24 hours in advance. Store covered in the refrigerator, then bring to room temperature for 15 minutes before final cooking.
-            </div>
-          </details>
-          <details class="fa-faq-item">
-            <summary class="fa-faq-question">How do I store and reheat leftovers?</summary>
-            <div class="fa-faq-answer">
-              Keep leftovers in an airtight glass container in the fridge for up to 4 days. Reheat gently over low-medium heat on the stovetop with a splash of broth or water to revive moisture.
-            </div>
-          </details>
-          <details class="fa-faq-item">
-            <summary class="fa-faq-question">Can this recipe be frozen?</summary>
-            <div class="fa-faq-answer">
-              Absolutely. Allow the dish to cool completely, portion into freezer-safe containers or silicone bags, and freeze for up to 3 months. Thaw overnight in the refrigerator before reheating.
-            </div>
-          </details>
-        </div>
-      </div>
+      ${faqsHtml}
 
       <!-- WPRM Recipe Card -->
       <div class="wprm-recipe-card" id="recipe">
@@ -2588,19 +2679,19 @@ function render40ApronsThemeArticle({
         <div class="wprm-times-grid">
           <div class="wprm-time-block">
             <span class="wprm-time-label">PREP TIME</span>
-            <span class="wprm-time-val">15 mins</span>
+            <span class="wprm-time-val">${escapeHtml(prepDisplay)}</span>
           </div>
           <div class="wprm-time-block">
             <span class="wprm-time-label">COOK TIME</span>
-            <span class="wprm-time-val">25 mins</span>
+            <span class="wprm-time-val">${escapeHtml(cookDisplay)}</span>
           </div>
           <div class="wprm-time-block">
             <span class="wprm-time-label">TOTAL TIME</span>
-            <span class="wprm-time-val">40 mins</span>
+            <span class="wprm-time-val">${escapeHtml(totalDisplay)}</span>
           </div>
           <div class="wprm-time-block">
             <span class="wprm-time-label">SERVINGS</span>
-            <span class="wprm-time-val">4 servings</span>
+            <span class="wprm-time-val">${escapeHtml(servingsDisplay)}</span>
           </div>
         </div>
 
@@ -2620,14 +2711,7 @@ function render40ApronsThemeArticle({
           <h3 class="wprm-section-title">Ingredients Checklist</h3>
           <p class="wprm-section-hint">Click checkboxes to cross off ingredients as you cook:</p>
           <ul class="wprm-checklist">
-            ${rawIngs.map((ing, i) => `
-              <li class="wprm-item">
-                <label class="wprm-checkbox-label">
-                  <input type="checkbox" class="wprm-checkbox" id="ing-${i}" />
-                  <span class="wprm-text">${escapeHtml(ing)}</span>
-                </label>
-              </li>
-            `).join('')}
+            ${renderedIngredientsHtml}
           </ul>
         </div>
 
@@ -2967,7 +3051,13 @@ export async function onRequest(context) {
           postType: roundup.postType || (Array.isArray(roundup.cards) && roundup.cards.length > 0 ? 'roundup' : 'single'),
           customPrice: roundup.customPrice || '',
           customProductTitle: roundup.customProductTitle || '',
+          prepTime: roundup.prepTime || '',
+          cookTime: roundup.cookTime || '',
+          servings: roundup.servings || '',
+          calories: roundup.calories || '',
           ingredients: roundup.ingredients || '',
+          chefNotes: roundup.chefNotes || '',
+          faqs: Array.isArray(roundup.faqs) ? roundup.faqs : [],
           category: roundup.category || '',
         };
       }
@@ -3008,7 +3098,13 @@ export async function onRequest(context) {
     postType: recipe.postType || 'single',
     customPrice: recipe.customPrice || '',
     customProductTitle: recipe.customProductTitle || '',
+    prepTime: recipe.prepTime || '',
+    cookTime: recipe.cookTime || '',
+    servings: recipe.servings || '',
+    calories: recipe.calories || '',
     ingredients: recipe.ingredients || '',
+    chefNotes: recipe.chefNotes || '',
+    faqs: recipe.faqs || [],
     category: recipe.category || '',
     pageUrl: context.request.url,
     encodedTarget,
