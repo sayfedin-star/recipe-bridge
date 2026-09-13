@@ -2079,6 +2079,10 @@ function renderFooter(siteConfig) {
   const rawSiteName = siteConfig?.siteName || '40 Aprons';
   const siteName = escapeHtml(rawSiteName);
   const kitchenName = escapeHtml(siteConfig?.siteName || 'our kitchen');
+  const author = siteConfig?.author || {};
+  const facebookUrl = escapeHtml(author.facebookUrl || author.facebook || 'https://facebook.com');
+  const instagramUrl = escapeHtml(author.instagramUrl || author.instagram || 'https://instagram.com');
+  const pinterestUrl = escapeHtml(author.pinterestUrl || author.pinterest || 'https://pinterest.com');
 
   return `
   <footer class="site-footer-4tier">
@@ -2103,35 +2107,31 @@ function renderFooter(siteConfig) {
     </div>
 
     <!-- TIER 2: Sage Green VIP Banner -->
-    <div class="footer-vip-wrap">
-      <div class="footer-vip-container">
-        <div class="footer-vip-left">
-          <h3 class="vip-heading">${siteName} VIP</h3>
-          <p class="vip-subtext">Access all of our new and existing content <strong>AD-FREE</strong> + exclusive member only recipes.</p>
+    <div class="footer-vip-banner">
+      <div class="vip-banner-inner">
+        <div class="vip-banner-text">
+          <h2 class="vip-banner-title">BECOME A VIP MEMBER</h2>
+          <p class="vip-banner-desc">Get an ad-free experience, free printable recipe cards, and full access to every secret recipe.</p>
         </div>
-        <div class="footer-vip-right">
-          <a href="#recipe" class="vip-cta-btn" onclick="const m=document.getElementById('pdf-modal');if(m){m.classList.add('active');return false;}">FIND OUT HOW &rarr;</a>
+        <div class="vip-banner-action">
+          <button type="button" class="vip-cta-btn" onclick="const p=document.getElementById('pdf-modal'); if(p) p.style.display='flex'; else window.location.hash='recipe';">FIND OUT HOW &rarr;</button>
         </div>
       </div>
     </div>
 
     <!-- TIER 3: Cream 3-Column Section -->
-    <div class="footer-cream-wrap">
-      <div class="footer-cream-container">
-        <!-- Col 1: Our Promise -->
+    <div class="footer-cream-section">
+      <div class="footer-cream-grid">
+        <!-- Col 1: Our Promise & Socials -->
         <div class="footer-cream-col col-promise">
-          <div class="promise-header-wrap">
-            <svg class="promise-apron-svg" width="48" height="48" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 16 V9 C21 7.5 31 7.5 31 9 V16" stroke="#c08460" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-              <path d="M18 25 H11 M34 25 H41" stroke="#c08460" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M18 16 H34 L39 46 H13 Z" fill="#f5c2a3" />
-              <rect x="22" y="29" width="8" height="9" rx="2" fill="#eed0be" />
-              <circle cx="17" cy="38" r="1" fill="#c08460" opacity="0.6"/>
-              <circle cx="21" cy="42" r="1" fill="#c08460" opacity="0.6"/>
-              <circle cx="31" cy="41" r="1" fill="#c08460" opacity="0.6"/>
-              <circle cx="35" cy="35" r="1" fill="#c08460" opacity="0.6"/>
-              <circle cx="20" cy="22" r="1" fill="#c08460" opacity="0.6"/>
-              <circle cx="32" cy="22" r="1" fill="#c08460" opacity="0.6"/>
+          <div class="promise-header">
+            <!-- Warm Sage Apron Icon -->
+            <svg class="apron-icon" width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 14 C16 9 20 5 24 5 C28 5 32 9 32 14" stroke="#4a675e" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M15 14 L33 14 L36 24 C37 32 35 41 24 41 C13 41 11 32 12 24 Z" fill="#e9dfd1" stroke="#4a675e" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M12 24 C7 23 4 21 3 19" stroke="#4a675e" stroke-width="2" stroke-linecap="round"/>
+              <path d="M36 24 C41 23 44 21 45 19" stroke="#4a675e" stroke-width="2" stroke-linecap="round"/>
+              <path d="M18 26 L30 26 C31 31 29 34 24 34 C19 34 17 31 18 26 Z" fill="#ffffff" stroke="#4a675e" stroke-width="1.8" stroke-linejoin="round"/>
               <path d="M33 14 C36 10 41 10 43 13 C41 16 37 16 33 14 Z" fill="#4a675e" />
               <path d="M37 15 C41 13 45 15 45 19 C41 19 38 17 37 15 Z" fill="#5b7e73" />
               <path d="M33 16 C36 18 38 21 38 24 C34 23 33 20 33 16 Z" fill="#759c90" />
@@ -2141,13 +2141,13 @@ function renderFooter(siteConfig) {
           </div>
           <p class="promise-body">At ${kitchenName} our goal is simple. To serve up delicious, approachable recipes the whole family can enjoy</p>
           <div class="social-icons-row">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-icon-link">
+            <a href="${facebookUrl}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-icon-link">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-icon-link">
+            <a href="${instagramUrl}" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="social-icon-link">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
-            <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest" class="social-icon-link">
+            <a href="${pinterestUrl}" target="_blank" rel="noopener noreferrer" aria-label="Pinterest" class="social-icon-link">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345-.09.375-.291 1.199-.334 1.357-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 12-5.373 12-12 0-6.628-5.393-12-12-12z"/></svg>
             </a>
             <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="social-icon-link">
@@ -2455,6 +2455,7 @@ function renderRecipeArticle({
   servings,
   calories,
   ingredients,
+  instructions,
   chefNotes,
   faqs,
   pageUrl,
@@ -2676,6 +2677,7 @@ function renderRecipeArticle({
     servings,
     calories,
     ingredients,
+    instructions,
     chefNotes,
     faqs,
     pageUrl,
@@ -2733,6 +2735,7 @@ function renderEditorialThemeArticle({
   slug,
   baseDomain,
   image,
+  instructions,
 }) {
   // Build Single Recipe Ingredients Checklist OR Roundup Recipe Cards
   let mainContentHtml = '';
@@ -2765,6 +2768,32 @@ function renderEditorialThemeArticle({
             })
             .join('')}
         </div>
+
+        ${(() => {
+          if (!instructions || !instructions.trim()) return '';
+          const stepLines = instructions.split('\n').map((l) => l.trim()).filter(Boolean);
+          if (stepLines.length === 0) return '';
+          let stepNum = 0;
+          const stepsHtml = stepLines.map((line) => {
+            if (line.startsWith('#')) {
+              const subhead = escapeHtml(line.replace(/^#+\s*/, '').trim());
+              return `<div style="font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem; color: var(--text-heading); border-bottom: 2px solid var(--border-subtle); padding-bottom: 0.35rem; margin-top: 1.25rem;">${subhead}</div>`;
+            }
+            stepNum++;
+            const stepText = escapeHtml(line.replace(/^(\d+[\.\)]|\-|\*)\s*/, ''));
+            return `
+            <div style="display: flex; gap: 0.85rem; margin-bottom: 0.85rem; align-items: baseline;">
+              <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">${stepNum}</span>
+              <span style="font-size: 0.95rem; line-height: 1.6; color: var(--text-heading);">${stepText}</span>
+            </div>`;
+          }).join('');
+
+          return `
+          <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-card);">
+            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--text-heading); margin-bottom: 1rem;">Step-by-Step Instructions</h3>
+            <div>${stepsHtml}</div>
+          </div>`;
+        })()}
 
         <div style="margin-top: 2rem;">
           <a ${btnAttributes}>
@@ -3399,6 +3428,7 @@ function render40ApronsThemeArticle({
   slug,
   baseDomain,
   image,
+  instructions,
   prepTime,
   cookTime,
   servings,
@@ -3406,6 +3436,13 @@ function render40ApronsThemeArticle({
   chefNotes,
   faqs,
 }) {
+  const author = siteConfig.author || {};
+  const authorRawName = (author.name || 'Cheryl Malik').trim();
+  const authorName = escapeHtml(authorRawName);
+  const authorDisplayName = authorRawName.toLowerCase().startsWith('meet ') ? authorName : `Meet ${authorName}`;
+  const authorBio = escapeHtml(author.bio || "Hi, I'm Cheryl! Founder, recipe developer, and culinary obsessive. I create foolproof, flavor-packed recipes for busy home cooks who crave vibrant, wholesome meals without the fuss.");
+  const authorAvatar = escapeHtml(author.avatar || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80');
+
   const jumpBtnAttributes = isPinterestBot
     ? 'href="#recipe"'
     : `href="#recipe" class="btn-jump-recipe btn-make-recipe" id="cta-link" data-target="${encodedTarget}" data-slug="${slug}"`;
@@ -3505,6 +3542,37 @@ function render40ApronsThemeArticle({
     })
     .filter(Boolean)
     .join('');
+
+  // Dynamic Instructions / Method
+  let renderedInstructionsHtml = '';
+  if (instructions && instructions.trim()) {
+    const stepLines = instructions.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (stepLines.length > 0) {
+      let stepNum = 0;
+      const stepsHtml = stepLines.map((line) => {
+        if (line.startsWith('#')) {
+          const subhead = escapeHtml(line.replace(/^#+\s*/, '').trim());
+          return `<li class="wprm-section-subhead" style="margin-top: 1.25rem; margin-bottom: 0.5rem; list-style: none;"><h4>${subhead}</h4></li>`;
+        }
+        stepNum++;
+        const stepText = escapeHtml(line.replace(/^(\d+[\.\)]|\-|\*)\s*/, ''));
+        return `
+        <li class="wprm-instruction-step" style="display: flex; gap: 0.85rem; margin-bottom: 0.85rem; align-items: baseline;">
+          <span class="wprm-step-num" style="display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; border-radius: 50%; background: var(--fa-primary); color: #fff; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">${stepNum}</span>
+          <span class="wprm-step-text" style="font-size: 0.95rem; line-height: 1.6; color: var(--fa-text);">${stepText}</span>
+        </li>`;
+      }).join('');
+
+      renderedInstructionsHtml = `
+      <!-- Instructions / Method -->
+      <div class="wprm-instructions-section" style="margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--fa-border);">
+        <h3 class="wprm-section-title">Instructions</h3>
+        <ol class="wprm-instructions-list" style="list-style: none; padding: 0; margin: 0;">
+          ${stepsHtml}
+        </ol>
+      </div>`;
+    }
+  }
 
   // Roundup stack if postType is roundup
   let roundupCardsHtml = '';
@@ -3625,7 +3693,7 @@ function render40ApronsThemeArticle({
     </div>
 
     <div class="fa-meta-bar">
-      <span class="fa-meta-item">Recipe by <strong>Cheryl Malik</strong></span>
+      <span class="fa-meta-item">Recipe by <strong>${authorName}</strong></span>
       <span class="fa-meta-sep">•</span>
       <span class="fa-meta-item">Updated: <strong>September 2026</strong></span>
       <span class="fa-meta-sep">•</span>
@@ -3716,6 +3784,8 @@ function render40ApronsThemeArticle({
           </ul>
         </div>
 
+        ${renderedInstructionsHtml}
+
         <!-- WPRM Full-Width CTA Button -->
         <div style="margin-top: 1.75rem;">
           <a ${btnWideAttributes}>
@@ -3729,13 +3799,13 @@ function render40ApronsThemeArticle({
 
     <!-- Sidebar -->
     <aside class="fa-sidebar">
-      <!-- Meet Cheryl Author Card -->
+      <!-- Author Card -->
       <div class="fa-widget fa-author-widget">
         <div class="fa-author-avatar-wrap">
-          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80" alt="Cheryl Malik" class="fa-author-avatar" loading="lazy" decoding="async" />
+          <img src="${authorAvatar}" alt="${authorName}" class="fa-author-avatar" loading="lazy" decoding="async" />
         </div>
-        <h4 class="fa-author-name">Meet Cheryl</h4>
-        <p class="fa-author-bio">Hi, I'm Cheryl! Founder, recipe developer, and culinary obsessive. I create foolproof, flavor-packed recipes for busy home cooks who crave vibrant, wholesome meals without the fuss.</p>
+        <h4 class="fa-author-name">${authorDisplayName}</h4>
+        <p class="fa-author-bio">${authorBio}</p>
         <a href="/about-us" class="fa-author-btn">MEET MY TEAM &rarr;</a>
       </div>
 
@@ -4043,24 +4113,31 @@ export async function onRequest(context) {
   if (kv) {
     try {
       const roundup = await kv.get(`roundups:${siteId}:${slug}`, 'json');
-      if (roundup && roundup.title) {
-        recipe = {
-          title: roundup.title,
-          description: roundup.description || '',
-          image: roundup.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
-          cards: Array.isArray(roundup.cards) ? roundup.cards : [],
-          postType: roundup.postType || (Array.isArray(roundup.cards) && roundup.cards.length > 0 ? 'roundup' : 'single'),
-          customPrice: roundup.customPrice || '',
-          customProductTitle: roundup.customProductTitle || '',
-          prepTime: roundup.prepTime || '',
-          cookTime: roundup.cookTime || '',
-          servings: roundup.servings || '',
-          calories: roundup.calories || '',
-          ingredients: roundup.ingredients || '',
-          chefNotes: roundup.chefNotes || '',
-          faqs: Array.isArray(roundup.faqs) ? roundup.faqs : [],
-          category: roundup.category || '',
-        };
+      if (roundup) {
+        if (roundup.status === 'draft') {
+          return Response.redirect(`${url.origin}/`, 302);
+        }
+        if (roundup.title) {
+          recipe = {
+            title: roundup.title,
+            description: roundup.description || '',
+            image: roundup.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
+            cards: Array.isArray(roundup.cards) ? roundup.cards : [],
+            postType: roundup.postType || (Array.isArray(roundup.cards) && roundup.cards.length > 0 ? 'roundup' : 'single'),
+            customPrice: roundup.customPrice || '',
+            customProductTitle: roundup.customProductTitle || '',
+            prepTime: roundup.prepTime || '',
+            cookTime: roundup.cookTime || '',
+            servings: roundup.servings || '',
+            calories: roundup.calories || '',
+            ingredients: roundup.ingredients || '',
+            instructions: roundup.instructions || '',
+            chefNotes: roundup.chefNotes || '',
+            faqs: Array.isArray(roundup.faqs) ? roundup.faqs : [],
+            category: roundup.category || '',
+            status: roundup.status || 'published',
+          };
+        }
       }
     } catch {
       // fallback
@@ -4104,6 +4181,7 @@ export async function onRequest(context) {
     servings: recipe.servings || '',
     calories: recipe.calories || '',
     ingredients: recipe.ingredients || '',
+    instructions: recipe.instructions || '',
     chefNotes: recipe.chefNotes || '',
     faqs: recipe.faqs || [],
     category: recipe.category || '',

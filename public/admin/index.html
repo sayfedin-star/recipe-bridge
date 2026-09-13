@@ -452,10 +452,12 @@
     <button class="tab-btn active" data-tab="triggers">⚡ Triggers & Timing</button>
     <button class="tab-btn" data-tab="utm">🎯 UTM & Product</button>
     <button class="tab-btn" data-tab="nav">🧭 Navigation & Header</button>
+    <button class="tab-btn" data-tab="author">👤 Author & Socials</button>
     <button class="tab-btn" data-tab="categories">🏷️ Categories</button>
     <button class="tab-btn" data-tab="pages">📄 Static Pages</button>
     <button class="tab-btn" data-tab="roundups">📚 Roundups Manager</button>
     <button class="tab-btn" data-tab="stats">📊 Real-Time Stats</button>
+    <button class="tab-btn" data-tab="backup">💾 Data Ops & Backup</button>
   </nav>
 
   <main>
@@ -620,6 +622,61 @@
       </div>
     </section>
 
+    <!-- TAB: AUTHOR & SOCIALS -->
+    <section id="tab-author" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">Author & Socials Profile</h2>
+        <p class="card-desc">Personalize recipe author info, editorial bio, avatar, and social media channels displayed across WPRM recipe cards, sidebar widgets, and the footer.</p>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Author Name</label>
+            <input type="text" id="author-name" style="width: 100%;" placeholder="e.g. Cheryl Malik" />
+            <div class="hint">Displayed as byline in article headers, WPRM card, and sidebar bio.</div>
+          </div>
+          <div class="form-group">
+            <label>Author Role / Title</label>
+            <input type="text" id="author-role" style="width: 100%;" placeholder="e.g. Recipe Developer & Certified Nutritionist" />
+            <div class="hint">Professional role displayed beneath the author's name.</div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.75rem;">
+          <label>Avatar Image URL</label>
+          <input type="url" id="author-avatar" style="width: 100%;" placeholder="https://images.unsplash.com/photo-..." />
+          <div class="hint">Profile headshot displayed in the WPRM card and sidebar author box.</div>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.75rem;">
+          <label>Author Bio</label>
+          <textarea id="author-bio" rows="4" style="width: 100%; font-size: 0.85rem; line-height: 1.5;" placeholder="Hey there! I am passionate about crafting wholesome, flavorful recipes that make healthy eating irresistible..."></textarea>
+          <div class="hint">Editorial bio paragraph displayed in the sidebar author widget.</div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem;">Social Media Links</h3>
+          <div class="grid-3">
+            <div class="form-group">
+              <label>Pinterest Profile URL</label>
+              <input type="url" id="author-pinterest" style="width: 100%;" placeholder="https://pinterest.com/..." />
+            </div>
+            <div class="form-group">
+              <label>Instagram Profile URL</label>
+              <input type="url" id="author-instagram" style="width: 100%;" placeholder="https://instagram.com/..." />
+            </div>
+            <div class="form-group">
+              <label>Facebook Profile URL</label>
+              <input type="url" id="author-facebook" style="width: 100%;" placeholder="https://facebook.com/..." />
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button class="btn btn-primary" id="btn-save-author">Save Author Profile</button>
+        </div>
+      </div>
+    </section>
+
     <!-- TAB 4: CATEGORIES MANAGER -->
     <section id="tab-categories" class="tab-panel">
       <div class="card">
@@ -749,12 +806,34 @@
     <!-- TAB 6: ROUNDUPS MANAGER -->
     <section id="tab-roundups" class="tab-panel">
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
           <div>
             <h2 class="card-title">Curated Roundup Articles</h2>
             <p class="card-desc" style="margin-bottom: 0;">Multi-card recipe collections stored under <code>roundups:{siteId}:{slug}</code>.</p>
           </div>
-          <button class="btn btn-primary btn-sm" id="btn-new-roundup">+ Create Roundup</button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-secondary btn-sm" id="btn-quick-export-roundups">⬇️ Export Site JSON</button>
+            <button class="btn btn-secondary btn-sm" id="btn-quick-import-roundups">⬆️ Restore JSON</button>
+            <button class="btn btn-primary btn-sm" id="btn-new-roundup">+ Create Roundup</button>
+          </div>
+        </div>
+
+        <!-- Live Search & Filtering Bar -->
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <input type="text" id="roundup-search" placeholder="🔍 Search recipes by title or slug..." style="flex: 2; min-width: 220px;" />
+          <select id="roundup-filter-cat" style="flex: 1; min-width: 150px;">
+            <option value="">All Categories</option>
+          </select>
+          <select id="roundup-filter-type" style="flex: 1; min-width: 130px;">
+            <option value="">All Types</option>
+            <option value="single">Single Recipe</option>
+            <option value="roundup">Roundup</option>
+          </select>
+          <select id="roundup-filter-status" style="flex: 1; min-width: 130px;">
+            <option value="">All Statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
         </div>
 
         <div class="table-container">
@@ -765,12 +844,13 @@
                 <th>Title</th>
                 <th>Category</th>
                 <th>Type</th>
-                <th>Cards Count</th>
+                <th>Status</th>
+                <th>Cards</th>
                 <th style="text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="roundups-tbody">
-              <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to begin.</td></tr>
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to begin.</td></tr>
             </tbody>
           </table>
         </div>
@@ -800,7 +880,7 @@
             <span class="cms-chevron">&#9654;</span>
           </summary>
           <div class="cms-body">
-            <div class="grid-4">
+            <div class="grid-3">
               <div class="form-group">
                 <label>Slug (URL segment)</label>
                 <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. slow-cooker-chicken-curry" />
@@ -813,11 +893,21 @@
                 <label>Category</label>
                 <select id="rf-category" style="width: 100%;"></select>
               </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 0.75rem;">
               <div class="form-group">
                 <label>Post Type</label>
                 <select id="rf-post-type" style="width: 100%;">
                   <option value="single">Single Recipe</option>
                   <option value="roundup">Roundup Collection</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Publishing Status</label>
+                <select id="rf-status" style="width: 100%;">
+                  <option value="published">🟢 Published (Live & Accessible)</option>
+                  <option value="draft">🟡 Draft (Hidden & Redirected to Home)</option>
                 </select>
               </div>
             </div>
@@ -892,12 +982,31 @@
           </div>
         </details>
 
-        <!-- Section 4: Chef's Secret Notes & Substitutions -->
+        <!-- Section 4: Step-by-Step Instructions -->
+        <details class="cms-accordion" open id="instructions-wrap">
+          <summary class="cms-summary">
+            <div class="cms-summary-title">
+              <span class="cms-summary-icon">📝</span>
+              <span>4. Step-by-Step Instructions</span>
+              <span class="cms-badge cms-badge-green">Numbered Steps</span>
+            </div>
+            <span class="cms-chevron">&#9654;</span>
+          </summary>
+          <div class="cms-body">
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: #a7f3d0;">
+              <strong>💡 Step Formatting:</strong> Write each instruction step on a new line. You can write <code>1. Step text</code> or just <code>Step text</code> (it will automatically number sequentially). Optional subsections can start with <code># Sauce Method</code>.
+            </div>
+            <textarea id="rf-instructions" rows="8" style="width: 100%; font-family: monospace; font-size: 0.85rem; line-height: 1.5;" placeholder="1. Season the chicken generously on all sides with salt, pepper, and garlic powder.&#10;2. Heat olive oil in a large skillet over medium-high heat until shimmering.&#10;3. Sear the chicken for 5-6 minutes per side until golden brown and cooked through.&#10;4. Transfer chicken to a warm plate and let rest for 5 minutes before serving."></textarea>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Instructions appear rendered as numbered circular badges inside the WPRM card below the ingredients list.</p>
+          </div>
+        </details>
+
+        <!-- Section 5: Chef's Secret Notes & Substitutions -->
         <details class="cms-accordion" open>
           <summary class="cms-summary">
             <div class="cms-summary-title">
               <span class="cms-summary-icon">✨</span>
-              <span>4. Chef's Secret Notes & Substitutions</span>
+              <span>5. Chef's Secret Notes & Substitutions</span>
               <span class="cms-badge cms-badge-peach">Peach Box</span>
             </div>
             <span class="cms-chevron">&#9654;</span>
@@ -908,12 +1017,12 @@
           </div>
         </details>
 
-        <!-- Section 5: Cooking FAQs Builder -->
+        <!-- Section 6: Cooking FAQs Builder -->
         <details class="cms-accordion" open>
           <summary class="cms-summary">
             <div class="cms-summary-title">
               <span class="cms-summary-icon">❓</span>
-              <span>5. Cooking FAQs Builder</span>
+              <span>6. Cooking FAQs Builder</span>
               <span class="cms-badge">Accordion</span>
             </div>
             <span class="cms-chevron">&#9654;</span>
@@ -927,12 +1036,12 @@
           </div>
         </details>
 
-        <!-- Section 6: Story & Narrative Description -->
+        <!-- Section 7: Story & Narrative Description -->
         <details class="cms-accordion" open>
           <summary class="cms-summary">
             <div class="cms-summary-title">
               <span class="cms-summary-icon">📖</span>
-              <span>6. Story & Narrative Description</span>
+              <span>7. Story & Narrative Description</span>
             </div>
             <span class="cms-chevron">&#9654;</span>
           </summary>
@@ -941,13 +1050,13 @@
           </div>
         </details>
 
-        <!-- Section 7: Roundup Cards Repeater (Roundup Mode Only) -->
+        <!-- Section 8: Roundup Cards Repeater (Roundup Mode Only) -->
         <div id="cards-container-wrap" style="margin-bottom: 1rem;">
           <details class="cms-accordion" open>
             <summary class="cms-summary">
               <div class="cms-summary-title">
                 <span class="cms-summary-icon">📚</span>
-                <span>7. Recipe Collection Cards</span>
+                <span>8. Recipe Collection Cards</span>
                 <span class="cms-badge">Roundup Mode</span>
               </div>
               <span class="cms-chevron">&#9654;</span>
@@ -1030,7 +1139,30 @@
         </div>
       </div>
     </section>
+
+    <!-- TAB 9: DATA OPS & BACKUP -->
+    <section id="tab-backup" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">Full Site Backup & Restore</h2>
+        <p class="card-desc">Export or restore all configurations, categories, static pages, and recipe collections for the active site in a single JSON package.</p>
+
+        <div class="grid-2" style="gap: 1.5rem; margin-top: 1rem;">
+          <div style="background: var(--surface-card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">📦 Export Site Snapshot</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Download an instant JSON snapshot of the active site including config, categories, pages, and all recipe articles.</p>
+            <button class="btn btn-primary" id="btn-tab-export-backup">⬇️ Export Site JSON</button>
+          </div>
+          <div style="background: var(--surface-card); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #fff;">📥 Restore / Import Site Snapshot</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Upload a previously exported JSON backup file to overwrite and restore all KV records for this site.</p>
+            <button class="btn btn-secondary" id="btn-tab-import-backup">⬆️ Upload & Restore JSON</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <input type="file" id="backup-file-input" accept=".json,application/json" style="display: none;" />
 
   <div id="toast"></div>
 
@@ -1228,6 +1360,16 @@
           { label: 'E-Books', url: '/#recipe' }
         ]);
 
+        // Author & Socials
+        var author = cfg.author || {};
+        document.getElementById('author-name').value = author.name || '';
+        document.getElementById('author-role').value = author.role || '';
+        document.getElementById('author-bio').value = author.bio || '';
+        document.getElementById('author-avatar').value = author.avatar || '';
+        document.getElementById('author-pinterest').value = author.pinterestUrl || '';
+        document.getElementById('author-instagram').value = author.instagramUrl || '';
+        document.getElementById('author-facebook').value = author.facebookUrl || '';
+
         updateUtmPreview();
       }
 
@@ -1308,6 +1450,15 @@
             logoText: document.getElementById('nav-logo-text').value.trim() || (currentSite.toUpperCase() + ' Kitchen'),
             navLinks: collectNavLinks()
           },
+          author: {
+            name: (document.getElementById('author-name').value || '').trim(),
+            role: (document.getElementById('author-role').value || '').trim(),
+            bio: (document.getElementById('author-bio').value || '').trim(),
+            avatar: (document.getElementById('author-avatar').value || '').trim(),
+            pinterestUrl: (document.getElementById('author-pinterest').value || '').trim(),
+            instagramUrl: (document.getElementById('author-instagram').value || '').trim(),
+            facebookUrl: (document.getElementById('author-facebook').value || '').trim()
+          },
           theme: document.getElementById('siteTheme').value || '40aprons'
         };
 
@@ -1326,6 +1477,7 @@
       document.getElementById('btn-save-triggers').addEventListener('click', saveFullConfig);
       document.getElementById('btn-save-utm').addEventListener('click', saveFullConfig);
       document.getElementById('btn-save-nav').addEventListener('click', saveFullConfig);
+      document.getElementById('btn-save-author').addEventListener('click', saveFullConfig);
 
       // CATEGORIES MANAGER
       var categoriesTbody = document.getElementById('categories-tbody');
@@ -1567,6 +1719,12 @@
       var cardsContainer = document.getElementById('cards-container');
       var faqsContainer = document.getElementById('faqs-container');
       var editingRoundupSlug = null;
+      var rawRoundupsList = [];
+
+      var roundupSearchInput = document.getElementById('roundup-search');
+      var roundupFilterCat = document.getElementById('roundup-filter-cat');
+      var roundupFilterType = document.getElementById('roundup-filter-type');
+      var roundupFilterStatus = document.getElementById('roundup-filter-status');
 
       function togglePostTypeFields(type) {
         if (cardsContainerWrap) {
@@ -1581,14 +1739,71 @@
       function loadRoundups() {
         apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
           if (data && data.roundups) {
-            renderRoundupsList(data.roundups);
+            rawRoundupsList = data.roundups || [];
+            populateRoundupFilterCategories();
+            filterAndRenderRoundups();
           }
         });
       }
 
+      function populateRoundupFilterCategories() {
+        if (!roundupFilterCat) return;
+        var currentVal = roundupFilterCat.value;
+        roundupFilterCat.innerHTML = '<option value="">All Categories</option>';
+        var cats = {};
+        (siteCategories || []).forEach(function(c) {
+          var s = (c.slug || c.id || c.name || '').trim();
+          var n = (c.name || s).trim();
+          if (s) cats[s] = n;
+        });
+        (rawRoundupsList || []).forEach(function(r) {
+          var c = (r.category || '').trim();
+          if (c && !cats[c]) cats[c] = c;
+        });
+        Object.keys(cats).sort().forEach(function(catSlug) {
+          var opt = document.createElement('option');
+          opt.value = catSlug;
+          opt.textContent = cats[catSlug];
+          if (catSlug === currentVal) opt.selected = true;
+          roundupFilterCat.appendChild(opt);
+        });
+      }
+
+      function filterAndRenderRoundups() {
+        var query = (roundupSearchInput ? roundupSearchInput.value : '').toLowerCase().trim();
+        var cat = (roundupFilterCat ? roundupFilterCat.value : '').trim();
+        var type = (roundupFilterType ? roundupFilterType.value : '').trim();
+        var status = (roundupFilterStatus ? roundupFilterStatus.value : '').trim();
+
+        var filtered = rawRoundupsList.filter(function(r) {
+          if (query) {
+            var titleMatch = (r.title || '').toLowerCase().indexOf(query) !== -1;
+            var slugMatch = (r.slug || '').toLowerCase().indexOf(query) !== -1;
+            if (!titleMatch && !slugMatch) return false;
+          }
+          if (cat && (r.category || 'general') !== cat) return false;
+          if (type) {
+            var pType = r.postType || (r.cards && r.cards.length > 0 ? 'roundup' : 'single');
+            if (pType !== type) return false;
+          }
+          if (status) {
+            var rStatus = r.status || 'published';
+            if (rStatus !== status) return false;
+          }
+          return true;
+        });
+
+        renderRoundupsList(filtered);
+      }
+
+      if (roundupSearchInput) roundupSearchInput.addEventListener('input', filterAndRenderRoundups);
+      if (roundupFilterCat) roundupFilterCat.addEventListener('change', filterAndRenderRoundups);
+      if (roundupFilterType) roundupFilterType.addEventListener('change', filterAndRenderRoundups);
+      if (roundupFilterStatus) roundupFilterStatus.addEventListener('change', filterAndRenderRoundups);
+
       function renderRoundupsList(list) {
         if (!list || list.length === 0) {
-          roundupsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recipes or roundups found. Click "+ Create Roundup" to begin.</td></tr>';
+          roundupsTbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No recipes or roundups found matching your filters.</td></tr>';
           return;
         }
 
@@ -1597,15 +1812,21 @@
           var typeBadge = isSingle
             ? '<span style="font-size: 0.75rem; background: #065f46; color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Single Recipe</span>'
             : '<span style="font-size: 0.75rem; background: #1e3a8a; color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Roundup</span>';
+          var isDraft = r.status === 'draft';
+          var statusBadge = isDraft
+            ? '<span style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Draft</span>'
+            : '<span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Published</span>';
           var cardsInfo = isSingle ? '<span style="color: var(--text-muted);">-</span>' : (r.cardsCount + ' cards');
           return '<tr>' +
             '<td><strong style="color: #fff;">' + escapeHtml(r.slug) + '</strong></td>' +
             '<td>' + escapeHtml(r.title) + '</td>' +
             '<td><span style="font-size: 0.8rem; background: #374151; padding: 0.2rem 0.5rem; border-radius: 4px;">' + escapeHtml(r.category || 'general') + '</span></td>' +
             '<td>' + typeBadge + '</td>' +
+            '<td>' + statusBadge + '</td>' +
             '<td>' + cardsInfo + '</td>' +
-            '<td style="text-align: right;">' +
+            '<td style="text-align: right; white-space: nowrap;">' +
               '<button class="btn btn-secondary btn-sm edit-r-btn" data-slug="' + escapeHtml(r.slug) + '">Edit</button> ' +
+              '<button class="btn btn-secondary btn-sm dup-r-btn" data-slug="' + escapeHtml(r.slug) + '">Duplicate</button> ' +
               '<button class="btn btn-danger btn-sm del-r-btn" data-slug="' + escapeHtml(r.slug) + '">Delete</button>' +
             '</td>' +
           '</tr>';
@@ -1614,8 +1835,55 @@
         document.querySelectorAll('.edit-r-btn').forEach(function(b) {
           b.addEventListener('click', function() { openEditRoundup(b.getAttribute('data-slug')); });
         });
+        document.querySelectorAll('.dup-r-btn').forEach(function(b) {
+          b.addEventListener('click', function() { duplicateRoundup(b.getAttribute('data-slug')); });
+        });
         document.querySelectorAll('.del-r-btn').forEach(function(b) {
           b.addEventListener('click', function() { deleteRoundup(b.getAttribute('data-slug')); });
+        });
+      }
+
+      function duplicateRoundup(slug) {
+        if (!slug) return;
+        apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite) + '&slug=' + encodeURIComponent(slug)).then(function(res) {
+          if (res && res.roundup) {
+            var r = res.roundup;
+            var newSlug = (r.slug || 'recipe') + '-copy';
+            editingRoundupSlug = null;
+            document.getElementById('roundup-form-title').textContent = 'Duplicate Recipe: ' + (r.title || slug);
+            
+            var slugInput = document.getElementById('rf-slug');
+            slugInput.disabled = false;
+            slugInput.value = newSlug;
+
+            document.getElementById('rf-title').value = (r.title || '') + ' (Copy)';
+            document.getElementById('rf-desc').value = r.description || '';
+            document.getElementById('rf-image').value = r.image || '';
+            document.getElementById('rf-category').value = r.category || '';
+            
+            var pType = r.postType || (r.cards && r.cards.length > 0 ? 'roundup' : 'single');
+            document.getElementById('rf-post-type').value = pType;
+            document.getElementById('rf-status').value = 'draft';
+            
+            document.getElementById('rf-custom-price').value = r.customPrice || '';
+            document.getElementById('rf-custom-product-title').value = r.customProductTitle || '';
+            document.getElementById('rf-prep-time').value = r.prepTime || '';
+            document.getElementById('rf-cook-time').value = r.cookTime || '';
+            document.getElementById('rf-servings').value = r.servings || '';
+            document.getElementById('rf-calories').value = r.calories || '';
+            document.getElementById('rf-ingredients').value = r.ingredients || '';
+            document.getElementById('rf-instructions').value = r.instructions || '';
+            document.getElementById('rf-chef-notes').value = r.chefNotes || '';
+            
+            togglePostTypeFields(pType);
+            renderFaqInputs(r.faqs || []);
+            renderCardInputs(r.cards || []);
+            
+            document.getElementById('btn-delete-roundup').style.display = 'none';
+            roundupFormCard.style.display = 'block';
+            roundupFormCard.scrollIntoView({ behavior: 'smooth' });
+            showToast('Recipe cloned into form as draft! Review and save.');
+          }
         });
       }
 
@@ -1669,6 +1937,7 @@
               document.getElementById('rf-category').value = r.category || '';
               var pType = r.postType || (r.cards && r.cards.length > 0 ? 'roundup' : 'single');
               document.getElementById('rf-post-type').value = pType;
+              document.getElementById('rf-status').value = r.status || 'published';
               document.getElementById('rf-custom-price').value = r.customPrice || '';
               document.getElementById('rf-custom-product-title').value = r.customProductTitle || '';
               document.getElementById('rf-prep-time').value = r.prepTime || '';
@@ -1676,6 +1945,7 @@
               document.getElementById('rf-servings').value = r.servings || '';
               document.getElementById('rf-calories').value = r.calories || '';
               document.getElementById('rf-ingredients').value = r.ingredients || '';
+              document.getElementById('rf-instructions').value = r.instructions || '';
               document.getElementById('rf-chef-notes').value = r.chefNotes || '';
               togglePostTypeFields(pType);
               renderFaqInputs(r.faqs || []);
@@ -1689,6 +1959,7 @@
           document.getElementById('rf-image').value = '';
           document.getElementById('rf-category').value = '';
           document.getElementById('rf-post-type').value = 'single';
+          document.getElementById('rf-status').value = 'published';
           document.getElementById('rf-custom-price').value = '';
           document.getElementById('rf-custom-product-title').value = '';
           document.getElementById('rf-prep-time').value = '15 mins';
@@ -1696,6 +1967,7 @@
           document.getElementById('rf-servings').value = '4 servings';
           document.getElementById('rf-calories').value = '420 kcal';
           document.getElementById('rf-ingredients').value = '';
+          document.getElementById('rf-instructions').value = '';
           document.getElementById('rf-chef-notes').value = '';
           togglePostTypeFields('single');
           renderFaqInputs([]);
@@ -1794,6 +2066,16 @@
             if (cleanedIngs) document.getElementById('rf-ingredients').value = cleanedIngs;
           }
 
+          var instMatch = raw.match(/(?:instructions|directions|method|steps):\s*([\s\S]*?)(?:notes|tips|chef'?s? notes|faqs|$)/i);
+          if (instMatch && instMatch[1]) {
+            var cleanedInst = instMatch[1]
+              .split('\n')
+              .map(function(l) { return l.trim(); })
+              .filter(Boolean)
+              .join('\n');
+            if (cleanedInst) document.getElementById('rf-instructions').value = cleanedInst;
+          }
+
           var notesMatch = raw.match(/(?:notes|tips|chef'?s? notes):\s*([\s\S]*?)(?:instructions|directions|method|ingredients|faqs|$)/i);
           if (notesMatch && notesMatch[1]) {
             var cleanedNotes = notesMatch[1]
@@ -1816,6 +2098,7 @@
         var category = document.getElementById('rf-category').value;
         var image = document.getElementById('rf-image').value.trim();
         var postType = document.getElementById('rf-post-type').value;
+        var status = document.getElementById('rf-status').value || 'published';
         var customPrice = document.getElementById('rf-custom-price').value.trim();
         var customProductTitle = document.getElementById('rf-custom-product-title').value.trim();
         var prepTime = document.getElementById('rf-prep-time').value.trim();
@@ -1823,6 +2106,7 @@
         var servings = document.getElementById('rf-servings').value.trim();
         var calories = document.getElementById('rf-calories').value.trim();
         var ingredients = document.getElementById('rf-ingredients').value.trim();
+        var instructions = document.getElementById('rf-instructions').value.trim();
         var chefNotes = document.getElementById('rf-chef-notes').value.trim();
 
         if (!slug || !title) {
@@ -1862,6 +2146,7 @@
             category: category,
             image: image,
             postType: postType,
+            status: status,
             customPrice: customPrice,
             customProductTitle: customProductTitle,
             prepTime: prepTime,
@@ -1869,6 +2154,7 @@
             servings: servings,
             calories: calories,
             ingredients: ingredients,
+            instructions: instructions,
             chefNotes: chefNotes,
             faqs: faqs,
             cards: cards
@@ -1898,6 +2184,96 @@
       document.getElementById('btn-delete-roundup').addEventListener('click', function() {
         if (editingRoundupSlug) deleteRoundup(editingRoundupSlug);
       });
+
+      // BACKUP & RESTORE DATA OPS
+      var backupFileInput = document.getElementById('backup-file-input');
+
+      function triggerExportBackup() {
+        showToast('Preparing site backup snapshot...');
+        apiFetch('/api/admin/backup?siteId=' + encodeURIComponent(currentSite))
+          .then(function(data) {
+            if (!data || !data.backup) {
+              showToast('Failed to export backup snapshot', 'error');
+              return;
+            }
+            var jsonStr = JSON.stringify(data.backup, null, 2);
+            var blob = new Blob([jsonStr], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            var dateStr = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = currentSite + '-backup-' + dateStr + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Site backup exported successfully!');
+          })
+          .catch(function(err) {
+            showToast('Export error: ' + (err.message || 'Unknown error'), 'error');
+          });
+      }
+
+      function triggerImportBackup(file) {
+        if (!confirm('Restore site snapshot for "' + currentSite + '"? This will overwrite site configuration, categories, pages, and roundups in RECIPE_KV.')) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          try {
+            var backupData = JSON.parse(evt.target.result);
+            showToast('Restoring backup to RECIPE_KV...');
+            apiFetch('/api/admin/backup?siteId=' + encodeURIComponent(currentSite), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                siteId: currentSite,
+                backup: backupData
+              })
+            }).then(function(res) {
+              if (res && res.success) {
+                showToast('Site snapshot restored successfully!');
+                loadConfig();
+                loadCategories();
+                loadPages();
+                loadRoundups();
+              } else {
+                showToast((res && res.error) || 'Restore failed', 'error');
+              }
+            }).catch(function(err) {
+              showToast('Restore error: ' + (err.message || 'Unknown error'), 'error');
+            });
+          } catch (parseErr) {
+            showToast('Invalid JSON file: ' + parseErr.message, 'error');
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      var btnQuickExportRoundups = document.getElementById('btn-quick-export-roundups');
+      if (btnQuickExportRoundups) btnQuickExportRoundups.addEventListener('click', triggerExportBackup);
+
+      var btnQuickImportRoundups = document.getElementById('btn-quick-import-roundups');
+      if (btnQuickImportRoundups && backupFileInput) {
+        btnQuickImportRoundups.addEventListener('click', function() { backupFileInput.click(); });
+      }
+
+      var btnTabExportBackup = document.getElementById('btn-tab-export-backup');
+      if (btnTabExportBackup) btnTabExportBackup.addEventListener('click', triggerExportBackup);
+
+      var btnTabImportBackup = document.getElementById('btn-tab-import-backup');
+      if (btnTabImportBackup && backupFileInput) {
+        btnTabImportBackup.addEventListener('click', function() { backupFileInput.click(); });
+      }
+
+      if (backupFileInput) {
+        backupFileInput.addEventListener('change', function(e) {
+          var file = e.target.files && e.target.files[0];
+          if (!file) return;
+          triggerImportBackup(file);
+          backupFileInput.value = '';
+        });
+      }
 
       // STATS
       var statTotalClicks = document.getElementById('stat-total-clicks');

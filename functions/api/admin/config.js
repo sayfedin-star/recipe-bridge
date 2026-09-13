@@ -1,6 +1,15 @@
 import { verifyAdmin, jsonResponse } from './auth.js';
 import defaultConfig from '../../../config.json';
 
+const defaultAuthor = {
+  name: 'Cheryl Malik',
+  bio: "Hi, I'm Cheryl! Founder, recipe developer, and culinary obsessive. I create foolproof, flavor-packed recipes for busy home cooks who crave vibrant, wholesome meals without the fuss.",
+  avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
+  pinterest: '',
+  instagram: '',
+  facebook: '',
+};
+
 const defaultNavLinks = [
   { label: 'Home', url: '/' },
   { label: 'Slow Cooker', url: '/category/slow-cooker' },
@@ -50,6 +59,7 @@ export async function onRequestGet(context) {
         navLinks: defaultNavLinks,
       },
       theme: defaultConfig.theme || '40aprons',
+      author: defaultConfig.author || defaultAuthor,
     };
   } else {
     if (!siteConfig.navigation) {
@@ -60,6 +70,9 @@ export async function onRequestGet(context) {
     }
     if (!siteConfig.theme) {
       siteConfig.theme = defaultConfig.theme || '40aprons';
+    }
+    if (!siteConfig.author) {
+      siteConfig.author = defaultConfig.author || defaultAuthor;
     }
   }
 
@@ -113,6 +126,18 @@ export async function onRequestPost(context) {
           : defaultNavLinks,
       },
       theme: newConfig.theme === 'editorial' ? 'editorial' : '40aprons',
+      author: {
+        name: String(newConfig.author?.name || 'Cheryl Malik').trim(),
+        role: String(newConfig.author?.role || 'Founder & Recipe Developer').trim(),
+        bio: String(newConfig.author?.bio || '').trim() || defaultAuthor.bio,
+        avatar: String(newConfig.author?.avatar || '').trim() || defaultAuthor.avatar,
+        pinterest: String(newConfig.author?.pinterest || newConfig.author?.pinterestUrl || '').trim(),
+        pinterestUrl: String(newConfig.author?.pinterestUrl || newConfig.author?.pinterest || '').trim(),
+        instagram: String(newConfig.author?.instagram || newConfig.author?.instagramUrl || '').trim(),
+        instagramUrl: String(newConfig.author?.instagramUrl || newConfig.author?.instagram || '').trim(),
+        facebook: String(newConfig.author?.facebook || newConfig.author?.facebookUrl || '').trim(),
+        facebookUrl: String(newConfig.author?.facebookUrl || newConfig.author?.facebook || '').trim(),
+      },
     };
 
     const kv = context.env?.RECIPE_KV;
