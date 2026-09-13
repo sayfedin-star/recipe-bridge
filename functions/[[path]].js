@@ -27,6 +27,16 @@ const defaultCategories = [
   },
 ];
 
+const defaultIngredients = [
+  '4 cups fresh broccoli florets, trimmed into bite-sized pieces',
+  '1/2 cup crisp crumbled bacon or smoked turkey bacon',
+  '1/3 cup red onion, finely diced',
+  '1/2 cup sharp cheddar cheese, freshly shredded',
+  '1/4 cup toasted sunflower seeds or sliced almonds',
+  '3/4 cup creamy homemade dressing (mayo, apple cider vinegar, honey)',
+  'Sea salt and freshly cracked black pepper to taste',
+];
+
 /**
  * Escapes characters to prevent XSS in HTML output.
  */
@@ -73,6 +83,10 @@ function resolveRecipe(slug) {
       title: matched.title,
       description: matched.description,
       image: matched.image,
+      postType: 'single',
+      customPrice: '',
+      customProductTitle: '',
+      ingredients: defaultIngredients.join('\n'),
       cards: [],
     };
   }
@@ -82,12 +96,17 @@ function resolveRecipe(slug) {
     title: generatedTitle,
     description: `Discover our easy and delicious recipe for ${generatedTitle}. Fresh ingredients, simple step-by-step instructions, and authentic culinary taste.`,
     image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
+    postType: 'single',
+    customPrice: '',
+    customProductTitle: '',
+    ingredients: defaultIngredients.join('\n'),
     cards: [],
   };
 }
 
 /**
  * Returns shared CSS styles for the Light Editorial Food Theme.
+ * Note: header uses position: relative to flow naturally with document.
  */
 function getSharedStyles() {
   return `
@@ -122,12 +141,12 @@ function getSharedStyles() {
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Header fixed to flow naturally with page (no sticky, no fixed) */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border-card);
-      position: sticky;
-      top: 0;
-      z-index: 40;
+      position: relative;
+      z-index: 10;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     }
 
@@ -519,12 +538,17 @@ function renderStaticPage({ siteConfig, title, content }) {
 
 /**
  * Generates the full Recipe/Roundup Article HTML response (Light Editorial Food Theme).
+ * Supports Single Recipe and Roundup Collection page types with per-page custom product schema.
  */
 function renderRecipeArticle({
   title,
   description,
   image,
   cards,
+  postType,
+  customPrice,
+  customProductTitle,
+  ingredients,
   pageUrl,
   encodedTarget,
   isPinterestBot,
@@ -548,16 +572,28 @@ function renderRecipeArticle({
     brand: siteName,
   };
 
-  const safePrice = escapeHtml(productDefaults.price || '2.25');
+  // Resolve custom per-page price and product title
+  const finalPrice = customPrice && String(customPrice).trim()
+    ? String(customPrice).trim()
+    : (productDefaults.price || '2.25');
+
+  const finalProductTitle = customProductTitle && String(customProductTitle).trim()
+    ? String(customProductTitle).trim()
+    : `${title} • Printable Collector Pack`;
+
+  const safePrice = escapeHtml(finalPrice);
   const safeCurrency = escapeHtml(productDefaults.currency || 'USD');
   const safeBrand = escapeHtml(productDefaults.brand || siteName);
+  const safeProductTitle = escapeHtml(finalProductTitle);
+
+  const isSingle = postType === 'single';
 
   // Schema.org Product structured data for Pinterest Product Rich Pins validation
   const productSchema = JSON.stringify({
     '@context': 'https://schema.org/',
     '@type': 'Product',
     '@id': pageUrl,
-    name: title,
+    name: finalProductTitle,
     description: description,
     image: [image],
     brand: {
@@ -566,7 +602,7 @@ function renderRecipeArticle({
     },
     offers: {
       '@type': 'Offer',
-      price: productDefaults.price || '2.25',
+      price: finalPrice,
       priceCurrency: productDefaults.currency || 'USD',
       availability: productDefaults.availability || 'https://schema.org/InStock',
       url: pageUrl,
@@ -636,23 +672,14 @@ function renderRecipeArticle({
         }, { once: true, passive: true });
       }
 
-      // Main CTA button click trigger
-      var cta = document.getElementById('cta-link');
-      if (cta) {
-        cta.addEventListener('click', function(e) {
-          e.preventDefault();
-          doRedirect();
-        });
-      }
-
-      // Individual roundup card buttons
-      var cardButtons = document.querySelectorAll('.btn-make-recipe');
-      cardButtons.forEach(function(btn) {
+      // CTA button triggers
+      var ctaButtons = document.querySelectorAll('#cta-link, .btn-wide-recipe, .btn-make-recipe');
+      ctaButtons.forEach(function(btn) {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
-          var cardTarget = btn.getAttribute('data-target');
-          var cardSlug = btn.getAttribute('data-slug');
-          doRedirect(cardTarget, cardSlug);
+          var customTarget = btn.getAttribute('data-target');
+          var itemSlug = btn.getAttribute('data-slug');
+          doRedirect(customTarget, itemSlug);
         });
       });
 
@@ -702,10 +729,48 @@ function renderRecipeArticle({
     })();
   </script>`;
 
-  // Build Roundup Recipe Cards HTML
-  let cardsHtml = '';
-  if (Array.isArray(cards) && cards.length > 0) {
-    cardsHtml = `
+  // Build Single Recipe Ingredients Checklist OR Roundup Recipe Cards
+  let mainContentHtml = '';
+
+  if (isSingle) {
+    // Parse ingredients checklist
+    const rawIngs = ingredients && ingredients.trim()
+      ? ingredients.split('\n').map((l) => l.trim()).filter(Boolean)
+      : defaultIngredients;
+
+    const btnAttributes = isPinterestBot
+      ? 'href="#recipe"'
+      : `href="#recipe" class="btn-wide-recipe" id="cta-link" data-target="${encodedTarget}" data-slug="${slug}"`;
+
+    mainContentHtml = `
+      <section class="ingredients-section" id="recipe-ingredients">
+        <div class="section-badge">Kitchen Tested</div>
+        <h2 class="ingredients-title">Ingredients Checklist</h2>
+        <p class="ingredients-desc">Gather these fresh, wholesome ingredients before cooking. Check off each item as you prep:</p>
+
+        <div class="ingredients-grid">
+          ${rawIngs
+            .map(
+              (ing) => `
+            <div class="ingredient-item">
+              <span class="ingredient-check">✓</span>
+              <span>${escapeHtml(ing)}</span>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <a ${btnAttributes}>
+            <span>Jump to Full Recipe & Instructions</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </section>
+    `;
+  } else if (Array.isArray(cards) && cards.length > 0) {
+    mainContentHtml = `
       <section class="roundup-section" id="recipes-list">
         <div class="section-badge">Featured Collection</div>
         <h2 class="section-title">The Complete Recipe Guide</h2>
@@ -775,6 +840,8 @@ function renderRecipeArticle({
       </section>
     `;
   }
+
+  const primaryJumpTarget = isSingle ? '#recipe-ingredients' : '#recipes-list';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1005,6 +1072,83 @@ function renderRecipeArticle({
       border: none;
     }
     .btn-jump:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+    /* Single Recipe Ingredients Checklist */
+    .ingredients-section {
+      background: var(--surface);
+      border: 1px solid var(--border-card);
+      border-radius: 1rem;
+      padding: 2.25rem 2rem;
+      margin-top: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+    .ingredients-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      margin-bottom: 0.5rem;
+    }
+    .ingredients-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .ingredients-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .ingredient-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-heading);
+    }
+    .ingredient-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--emerald-light);
+      color: var(--emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .btn-wide-recipe {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 1.15rem 1.5rem;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.35);
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-wide-recipe:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Roundup Recipe Cards */
     .roundup-section { margin-top: 3.5rem; }
     .section-badge {
       display: inline-block;
@@ -1086,6 +1230,8 @@ function renderRecipeArticle({
       cursor: pointer;
     }
     .btn-card:hover { background: var(--primary-hover); }
+
+    /* Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -1157,7 +1303,7 @@ function renderRecipeArticle({
       <img src="${safeImage}" alt="${safeTitle}" class="hero-img" loading="eager" />
     </div>
 
-    <!-- $2.25 Product Box -->
+    <!-- $2.25 Product Box (Per-Page Customized) -->
     <div class="product-box">
       <div class="product-box-header">
         <span class="product-tag">Digital Instant Download (Printable PDF)</span>
@@ -1169,7 +1315,7 @@ function renderRecipeArticle({
 
       <div class="product-body">
         <div>
-          <h2 class="product-title">${safeTitle} • Printable Collector Pack</h2>
+          <h2 class="product-title">${safeProductTitle}</h2>
           <p class="product-desc">Get the complete high-resolution printable card, ingredient shopping checklist, substitution guide, and step-by-step cooking notes.</p>
         </div>
         <div class="price-badge-wrap">
@@ -1185,13 +1331,13 @@ function renderRecipeArticle({
         <button type="button" class="btn-pdf" id="btn-pdf-pack">
           <span>📄 Get Printable PDF ($${safePrice})</span>
         </button>
-        <a href="#recipes-list" class="btn-jump" id="cta-link">
+        <a href="${primaryJumpTarget}" class="btn-jump" id="cta-link">
           <span>Jump to Free Online Recipe ↓</span>
         </a>
       </div>
     </div>
 
-    ${cardsHtml}
+    ${mainContentHtml}
   </main>
 
   ${renderFooter(siteConfig)}
@@ -1444,6 +1590,10 @@ export async function onRequest(context) {
           description: roundup.description || '',
           image: roundup.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=80',
           cards: Array.isArray(roundup.cards) ? roundup.cards : [],
+          postType: roundup.postType || (Array.isArray(roundup.cards) && roundup.cards.length > 0 ? 'roundup' : 'single'),
+          customPrice: roundup.customPrice || '',
+          customProductTitle: roundup.customProductTitle || '',
+          ingredients: roundup.ingredients || '',
         };
       }
     } catch {
@@ -1480,6 +1630,10 @@ export async function onRequest(context) {
     description: recipe.description,
     image: recipe.image,
     cards: recipe.cards || [],
+    postType: recipe.postType || 'single',
+    customPrice: recipe.customPrice || '',
+    customProductTitle: recipe.customProductTitle || '',
+    ingredients: recipe.ingredients || '',
     pageUrl: context.request.url,
     encodedTarget,
     isPinterestBot,

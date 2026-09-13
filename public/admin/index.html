@@ -668,12 +668,13 @@
                 <th>Slug</th>
                 <th>Title</th>
                 <th>Category</th>
+                <th>Type</th>
                 <th>Cards Count</th>
                 <th style="text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="roundups-tbody">
-              <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to begin.</td></tr>
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found. Click "+ Create Roundup" to begin.</td></tr>
             </tbody>
           </table>
         </div>
@@ -686,7 +687,7 @@
           <button class="btn btn-secondary btn-sm" id="btn-cancel-roundup">Cancel</button>
         </div>
 
-        <div class="grid-3">
+        <div class="grid-4">
           <div class="form-group">
             <label>Slug (URL segment)</label>
             <input type="text" id="rf-slug" style="width: 100%;" placeholder="e.g. best-summer-salads" />
@@ -699,11 +700,29 @@
             <label>Category</label>
             <select id="rf-category" style="width: 100%;"></select>
           </div>
+          <div class="form-group">
+            <label>Post Type</label>
+            <select id="rf-post-type" style="width: 100%;">
+              <option value="roundup">Roundup Collection</option>
+              <option value="single">Single Recipe</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Custom Product Price ($) <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional - overrides site default)</span></label>
+            <input type="text" id="rf-custom-price" style="width: 100%;" placeholder="e.g. 1.99 or 3.50" />
+          </div>
+          <div class="form-group">
+            <label>Custom PDF Pack Title <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">(Optional)</span></label>
+            <input type="text" id="rf-custom-product-title" style="width: 100%;" placeholder="e.g. [Article Title] • Printable Recipe Card & Meal Guide" />
+          </div>
         </div>
 
         <div class="form-group">
           <label>Article Description</label>
-          <textarea id="rf-desc" rows="2" style="width: 100%;" placeholder="Brief summary of this recipe collection..."></textarea>
+          <textarea id="rf-desc" rows="2" style="width: 100%;" placeholder="Brief summary of this recipe collection or dish..."></textarea>
         </div>
 
         <div class="form-group">
@@ -711,10 +730,21 @@
           <input type="url" id="rf-image" style="width: 100%;" placeholder="https://images.unsplash.com/..." />
         </div>
 
-        <div style="margin: 1.5rem 0 1rem;">
+        <!-- Single Recipe Ingredients Section -->
+        <div id="ingredients-wrap" style="display: none; margin: 1.5rem 0 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <label style="font-size: 0.95rem; font-weight: 700; margin: 0;">Recipe Ingredients & Quick Summary</label>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">One ingredient or bullet per line</span>
+          </div>
+          <textarea id="rf-ingredients" rows="7" style="width: 100%; font-family: monospace; font-size: 0.85rem;" placeholder="2 cups all-purpose flour&#10;1 tsp baking powder&#10;1/2 cup unsalted butter, softened&#10;1 cup granulated sugar&#10;2 large eggs&#10;1 tsp pure vanilla extract&#10;1/2 cup whole milk"></textarea>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Each line will render as an interactive checklist item with a checkmark badge on the single recipe page.</p>
+        </div>
+
+        <!-- Roundup Cards Repeater Section -->
+        <div id="cards-container-wrap" style="margin: 1.5rem 0 1rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
             <h3 style="font-size: 0.95rem; font-weight: 700;">Recipe Cards in this Roundup</h3>
-            <button class="btn btn-secondary btn-sm" id="btn-add-card">+ Add Card</button>
+            <button class="btn btn-secondary btn-sm" id="btn-add-card" type="button">+ Add Card</button>
           </div>
           <div id="cards-container" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
         </div>
@@ -1300,8 +1330,24 @@
       // ROUNDUPS MANAGER
       var roundupsTbody = document.getElementById('roundups-tbody');
       var roundupFormCard = document.getElementById('roundup-form-card');
+      var cardsContainerWrap = document.getElementById('cards-container-wrap');
       var cardsContainer = document.getElementById('cards-container');
+      var ingredientsWrap = document.getElementById('ingredients-wrap');
       var editingRoundupSlug = null;
+
+      function togglePostTypeFields(type) {
+        if (type === 'single') {
+          if (cardsContainerWrap) cardsContainerWrap.style.display = 'none';
+          if (ingredientsWrap) ingredientsWrap.style.display = 'block';
+        } else {
+          if (cardsContainerWrap) cardsContainerWrap.style.display = 'block';
+          if (ingredientsWrap) ingredientsWrap.style.display = 'none';
+        }
+      }
+
+      document.getElementById('rf-post-type').addEventListener('change', function(e) {
+        togglePostTypeFields(e.target.value);
+      });
 
       function loadRoundups() {
         apiFetch('/api/admin/roundups?siteId=' + encodeURIComponent(currentSite)).then(function(data) {
@@ -1313,16 +1359,22 @@
 
       function renderRoundupsList(list) {
         if (!list || list.length === 0) {
-          roundupsTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found for this site. Click "+ Create Roundup" to begin.</td></tr>';
+          roundupsTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">No roundups found for this site. Click "+ Create Roundup" to begin.</td></tr>';
           return;
         }
 
         roundupsTbody.innerHTML = list.map(function(r) {
+          var isSingle = r.postType === 'single';
+          var typeBadge = isSingle
+            ? '<span style="font-size: 0.75rem; background: #065f46; color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Single Recipe</span>'
+            : '<span style="font-size: 0.75rem; background: #1e3a8a; color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;">Roundup</span>';
+          var cardsInfo = isSingle ? '<span style="color: var(--text-muted);">-</span>' : (r.cardsCount + ' cards');
           return '<tr>' +
             '<td><strong style="color: #fff;">' + escapeHtml(r.slug) + '</strong></td>' +
             '<td>' + escapeHtml(r.title) + '</td>' +
             '<td><span style="font-size: 0.8rem; background: #374151; padding: 0.2rem 0.5rem; border-radius: 4px;">' + escapeHtml(r.category || 'general') + '</span></td>' +
-            '<td>' + r.cardsCount + ' cards</td>' +
+            '<td>' + typeBadge + '</td>' +
+            '<td>' + cardsInfo + '</td>' +
             '<td style="text-align: right;">' +
               '<button class="btn btn-secondary btn-sm edit-r-btn" data-slug="' + escapeHtml(r.slug) + '">Edit</button> ' +
               '<button class="btn btn-danger btn-sm del-r-btn" data-slug="' + escapeHtml(r.slug) + '">Delete</button>' +
@@ -1340,7 +1392,7 @@
 
       function openEditRoundup(slug) {
         editingRoundupSlug = slug;
-        document.getElementById('roundup-form-title').textContent = slug ? 'Edit Roundup (' + slug + ')' : 'Create New Roundup';
+        document.getElementById('roundup-form-title').textContent = slug ? 'Edit Roundup / Recipe (' + slug + ')' : 'Create New Roundup or Recipe';
         document.getElementById('rf-slug').disabled = Boolean(slug);
         document.getElementById('btn-delete-roundup').style.display = slug ? 'inline-block' : 'none';
         roundupFormCard.style.display = 'block';
@@ -1354,6 +1406,12 @@
               document.getElementById('rf-desc').value = r.description || '';
               document.getElementById('rf-image').value = r.image || '';
               document.getElementById('rf-category').value = r.category || '';
+              var pType = r.postType || (r.cards && r.cards.length > 0 ? 'roundup' : 'single');
+              document.getElementById('rf-post-type').value = pType;
+              document.getElementById('rf-custom-price').value = r.customPrice || '';
+              document.getElementById('rf-custom-product-title').value = r.customProductTitle || '';
+              document.getElementById('rf-ingredients').value = r.ingredients || '';
+              togglePostTypeFields(pType);
               renderCardInputs(r.cards || []);
             }
           });
@@ -1363,6 +1421,11 @@
           document.getElementById('rf-desc').value = '';
           document.getElementById('rf-image').value = '';
           document.getElementById('rf-category').value = '';
+          document.getElementById('rf-post-type').value = 'roundup';
+          document.getElementById('rf-custom-price').value = '';
+          document.getElementById('rf-custom-product-title').value = '';
+          document.getElementById('rf-ingredients').value = '';
+          togglePostTypeFields('roundup');
           renderCardInputs([]);
         }
       }
@@ -1406,6 +1469,10 @@
         var description = document.getElementById('rf-desc').value.trim();
         var category = document.getElementById('rf-category').value;
         var image = document.getElementById('rf-image').value.trim();
+        var postType = document.getElementById('rf-post-type').value;
+        var customPrice = document.getElementById('rf-custom-price').value.trim();
+        var customProductTitle = document.getElementById('rf-custom-product-title').value.trim();
+        var ingredients = document.getElementById('rf-ingredients').value.trim();
 
         if (!slug || !title) {
           showToast('Slug and Title are required', 'error');
@@ -1432,11 +1499,15 @@
             description: description,
             category: category,
             image: image,
+            postType: postType,
+            customPrice: customPrice,
+            customProductTitle: customProductTitle,
+            ingredients: ingredients,
             cards: cards
           })
         }).then(function(res) {
           if (res.success) {
-            showToast('Roundup article saved to RECIPE_KV!');
+            showToast('Roundup / Recipe saved to RECIPE_KV!');
             roundupFormCard.style.display = 'none';
             loadRoundups();
           }
